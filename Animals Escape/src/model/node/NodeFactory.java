@@ -25,7 +25,7 @@ public class NodeFactory {
 			break;
 		case BUSH: output = new BushNode(nk);
 			break;
-		case OAK: output = new OakNode(nk);
+		case OAK: output = new TreeNode(nk);
 			break;
 		case ROCK: output = new RockNode(nk);
 			break;
@@ -43,7 +43,7 @@ public class NodeFactory {
 			break;
 		case BUSH: output = new BushNode(nk);
 			break;
-		case OAK: output = new OakNode(nk);
+		case OAK: output = new TreeNode(nk);
 			break;
 		case ROCK: output = new RockNode(nk);
 			break;
@@ -83,7 +83,7 @@ public class NodeFactory {
 					deck.addAll(HexType.GRASS.getCards());
 				else if(n.getClass() == BushNode.class)
 					deck.addAll(HexType.BUSH.getCards());
-				else if(n.getClass() == OakNode.class)
+				else if(n.getClass() == TreeNode.class)
 					deck.addAll(HexType.OAK.getCards());
 				else if(n.getClass() == RockNode.class)
 					deck.addAll(HexType.ROCK.getCards());

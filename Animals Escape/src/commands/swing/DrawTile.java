@@ -1,22 +1,27 @@
 package commands.swing;
 
-import java.awt.Color;
+import java.io.File;
 
+import fileLoader.ArtLoader;
 import view.ViewFacade;
 
-class DrawTile extends Command{
-	ViewFacade view;
-	double[][] vertices;
-	Color fill;
+public abstract class DrawTile extends Command{
 	
-	DrawTile(ViewFacade v, double[][] vertices, Color fill) {
-		super();
-		view = v;
-		this.vertices = vertices;
-		this.fill = fill;
+	protected ArtLoader loader; 
+	protected File tile;
+	private double[] center;
+	private ViewFacade view;
+	
+	DrawTile(ViewFacade view, double[] center){
+		this.center = center;
+		this.view = view;
+		loader = ArtLoader.getInstance();
+		this.tile = init();
 	}
 	
+	protected abstract File init();
+	
 	public void execute() {
-		view.draw(vertices, fill);
+		view.testImages(tile, center);
 	}
 }

@@ -12,11 +12,9 @@ public class BushNode extends Node{
 		super(center);
 	}
 	
-	public void getCommand(double[][] vertices) {
+	public void getCommand(double[] vertices) {
 		CommandFactory.getDrawBush(vertices);
 	}
-	
-	public void getCommand(double[] center) {}
 	
 	@Override
 	public boolean isPassable() {return passable;}

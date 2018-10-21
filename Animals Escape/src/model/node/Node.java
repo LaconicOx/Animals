@@ -113,7 +113,6 @@ public abstract class Node {
 	/////////////////////////////// Abstract Methods ////////////////////////////
 	
 	public abstract boolean isPassable();
-	public abstract void getCommand(double[][] vertices);
 	public abstract void getCommand(double[] center);
 	
 	///////////////////////// Overridden Methods ////////////////////////////

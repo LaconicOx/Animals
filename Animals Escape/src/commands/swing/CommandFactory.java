@@ -33,16 +33,16 @@ public class CommandFactory {
 		game.enqueCommand(new DrawGrass(view, center));
 	}
 	
-	public static void getDrawBush(double[][] vertices){
+	public static void getDrawBush(double[] vertices){
 		game.enqueCommand(new DrawBush(view, vertices));
 	}
 	
-	public static void getDrawRock(double[][] vertices){
+	public static void getDrawRock(double[] vertices){
 		game.enqueCommand(new DrawRock(view, vertices));
 	}
 	
-	public static void getDrawOak(double[][] vertices){
-		game.enqueCommand(new DrawOak(view, vertices));
+	public static void getDrawTree(double[] vertices){
+		game.enqueCommand(new DrawTree(view, vertices));
 	}
 	
 	public static void getUpdatePlayer(double x, double y) {

@@ -15,7 +15,6 @@ public class GrassNode extends Node{
 		CommandFactory.getDrawGrass(center);
 	}
 	
-	public void getCommand(double[][] vertices) {}//TODO Remove
 	
 	@Override
 	public boolean isPassable() {return passable;}

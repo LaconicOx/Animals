@@ -40,12 +40,7 @@ class ConcreteCell extends Cell {
 	///////////////////////////  Accessor Methods //////////////////////////////
 	
 	
-	public void getCommand() {
-		if (node.getClass() == GrassNode.class)
-			node.getCommand(getCenter());
-		else
-			node.getCommand(region.getMatrix());
-	}
+	public void getCommand() {node.getCommand(getCenter());}
 	
 	public double getX() {
 		return (parameters.getScreenX() + parameters.getShiftX())+ node.getX() * 1.5 * parameters.getTileRadius();
@@ -119,7 +114,6 @@ class ConcreteCell extends Cell {
 		
 		Hexagon() {
 			updateVertices();
-			
 		}
 		
 		/////////////////////// Helper Method //////////////////////////////////////////

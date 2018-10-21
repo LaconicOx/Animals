@@ -10,11 +10,10 @@ public class RockNode extends Node{
 		super(center);
 	}
 	
-	public void getCommand(double[][] vertices) {
+	public void getCommand(double[] vertices) {
 		CommandFactory.getDrawRock(vertices);
 	}
 	
-	public void getCommand(double[] center) {}
 	
 	@Override
 	public boolean isPassable() {return passable;}

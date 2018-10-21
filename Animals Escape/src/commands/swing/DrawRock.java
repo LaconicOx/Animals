@@ -1,11 +1,15 @@
 package commands.swing;
 
-import java.awt.Color;
+import java.io.File;
 
 import view.ViewFacade;
 
 public class DrawRock extends DrawTile{
-	DrawRock(ViewFacade vf, double[][] vertices){
-		super(vf, vertices,  new Color(159,165,160));
+	DrawRock(ViewFacade vf, double[] center){
+		super(vf, center);
+	}
+	
+	protected File init() {
+		return loader.getRockHex();
 	}
 }
