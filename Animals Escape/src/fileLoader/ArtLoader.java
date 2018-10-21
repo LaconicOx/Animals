@@ -3,7 +3,12 @@ package fileLoader;
 import java.io.File;
 
 public class ArtLoader {
-	private static File baseHex;
+	
+	private static File bushHex;
+	private static File grassHex;
+	private static File rockHex;
+	private static File treeHex;
+	
 	static ArtLoader unique = null;
 	
 	private ArtLoader() {
@@ -17,11 +22,17 @@ public class ArtLoader {
 	}
 	
 	private void init() {
-		baseHex = new File("Base Hex.png");
+		bushHex = new File("BushHex.png");
+		grassHex = new File("GrassHex.png");
+		rockHex = new File("RockHex.png");
+		treeHex = new File("TreeHex.png");
 	}
 	
 	/////////////////////// Accessor Methods ///////////////////////
 	
-	public File getBaseHex() {return baseHex;}
+	public File getBushHex() {return bushHex;}
+	public File getGrassHex() {return grassHex;}
+	public File getRockHex() {return rockHex;}
+	public File getTreeHex() {return treeHex;}
 	
 }
