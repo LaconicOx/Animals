@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import model.ModelParameters;
 import model.ModelUtility.Direction;
-import model.node.GrassNode;
 import model.node.Node;
 
 class ConcreteCell extends Cell {

@@ -1,6 +1,5 @@
 package commands.swing;
 
-import java.io.File;
 
 import view.ViewFacade;
 
@@ -9,7 +8,7 @@ public class DrawRock extends DrawTile{
 		super(vf, center);
 	}
 	
-	protected File init() {
-		return loader.getRockHex();
+	public void execute() {
+		view.addRock(center);
 	}
 }

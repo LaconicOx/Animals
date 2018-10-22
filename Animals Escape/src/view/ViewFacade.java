@@ -1,20 +1,17 @@
 package view;
 
-
-
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.geom.Point2D;
-import java.io.File;
 
 import javax.swing.JLayeredPane;
 
-
 import game.Game;
-import view.images.Tile;
+import view.images.TreeTile;
+import view.images.BushTile;
 import view.images.GameImage;
-import view.images.NewTile;
+import view.images.GrassTile;
 import view.images.Player;
+import view.images.RockTile;
 
 
 public class ViewFacade{
@@ -64,11 +61,11 @@ public class ViewFacade{
 	
 	//////////////////////////// Public Methods /////////////////////////
 	
-	public void draw(double[][] vertices, Color fill) {
-		GameImage image = new Tile(vertices, fill);
-		sur.addImage(image);
-		
-	};
+	public void addBush(double[] center) { sur.addImage(new BushTile(center));}
+	public void addGrass(double[] center) { sur.addImage(new GrassTile(center));}
+	public void addRock(double[] center) { sur.addImage(new RockTile(center));}
+	public void addTree(double[] center) { sur.addImage(new TreeTile(center));}
+	
 	
 	public void update() {
 		
@@ -76,10 +73,6 @@ public class ViewFacade{
 		sur.render();
 	}
 	
-	//Only for testing. Should be removed at a later date.
-	public void testImages(File image, double[] center) {
-		sur.addImage(new NewTile(image, center));
-	}
 	
 	///////////////////////// Debugging Methods ////////////////////////
 	

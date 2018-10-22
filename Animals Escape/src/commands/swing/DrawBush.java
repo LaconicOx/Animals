@@ -1,7 +1,5 @@
 package commands.swing;
 
-import java.io.File;
-
 import view.ViewFacade;
 
 public class DrawBush extends DrawTile{
@@ -9,7 +7,7 @@ public class DrawBush extends DrawTile{
 		super(vf, center);
 	}
 	
-	protected File init() {
-		return loader.getBushHex();
+	public void execute() {
+		view.addBush(center);
 	}
 }

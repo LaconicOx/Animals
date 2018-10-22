@@ -1,6 +1,5 @@
 package commands.swing;
 
-import java.io.File;
 
 import view.ViewFacade;
 
@@ -10,7 +9,7 @@ public class DrawGrass extends DrawTile{
 		super(vf, center);
 	}
 	
-	protected File init() {
-		return loader.getGrassHex();
+	public void execute() {
+		view.addGrass(center);
 	}
 }

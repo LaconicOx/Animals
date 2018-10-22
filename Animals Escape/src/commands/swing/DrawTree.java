@@ -1,7 +1,5 @@
 package commands.swing;
 
-import java.io.File;
-
 import view.ViewFacade;
 
 public class DrawTree extends DrawTile{
@@ -9,8 +7,7 @@ public class DrawTree extends DrawTile{
 		super(vf, center);
 	}
 	
-	protected File init() {
-		
-		return loader.getTreeHex();
+	public void execute() {
+		view.addTree(center);
 	}
 }
