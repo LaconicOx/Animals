@@ -1,24 +1,19 @@
 package model.cell;
 
+
 import java.util.Objects;
 
 
-import model.ModelParameters;
-import model.ModelUtility.Direction;
+
 import model.node.Node;
 
-class ConcreteCell extends Cell {
+public class ConcreteCell extends Cell {
 	
-	Node node;
 	Hexagon region;
-	ModelParameters parameters;
 	
 	/////////////////////// Constructor and Initializer ///////////////////////////////////////
-	ConcreteCell(Node node){
-
-		this.node = node;
-		parameters = ModelParameters.getInstance();
-		node.setCell(this);
+	public ConcreteCell(Node node){
+		super(node);
 		region = new Hexagon();
 	}
 	
@@ -26,54 +21,12 @@ class ConcreteCell extends Cell {
 	
 	public boolean isContained(double x, double y) {return region.contains(x, y);}
 	
-	//////////////////////////// Mutator Methods //////////////////////////////
-	
-	public void clearNode() {
-		/*
-		 * Clears node of callback to this cell.
-		 */
-		node.clearCell();
-	}
-	
-	
-	///////////////////////////  Accessor Methods //////////////////////////////
-	
-	
-	public void getCommand() {node.getCommand(getCenter());}
-	
-	public double getX() {
-		return (parameters.getScreenX() + parameters.getShiftX())+ node.getX() * 1.5 * parameters.getTileRadius();
-		}
-	
-	public double getY() {
-		return (parameters.getScreenY() + parameters.getShiftY())- (node.getY() * parameters.getTileApothem());
-		}
-	
-	public double[] getCenter(){return new double[] {getX(), getY()};}
-	
-	public Cell getCell() {return this;}
-	
-	public Cell getNeighborCell(Direction dir, boolean nullReturn) {
-		/*
-		 * Returns reference to neighboring cell if found.
-		 * Returns null if no neighboring node  exists or.
-		 * if neighboring node contains no cell.
-		 */
-		
-		Node n = node.getNeighbor(dir);
-		Cell c = n.getCell();
-		if (nullReturn || c != null)
-			return c;
-		else
-			return new ConcreteCell(n);
-		
-	}
 	
 	///////////////////////////// Overrides ///////////////////////////////
 	
 	@Override
 	public String toString() {
-		return "Cell (" + getX() + "," + getY() + ") maps to " + node.toString();
+		return "ConcreteCell (" + getX() + "," + getY() + ") maps to " + node.toString();
 		//return "Cell (" + center[0] + "," + center[1] + ")";
 	}
 	
@@ -128,12 +81,12 @@ class ConcreteCell extends Cell {
 		
 		/////////////////////// Checker Methods /////////////////////////////////////////
 		
-			/**
-			 * Method tests point (x, y) lies with a hexagon's region or on its boundary.
-			 * @param x
-			 * @param y
-			 * @return true if point is contained; otherwise returns false.
-			 */
+		/**
+		 * Method tests point (x, y) lies with a hexagon's region or on its boundary.
+		 * @param x
+		 * @param y
+		 * @return true if point is contained; otherwise returns false.
+		 */
 		public boolean contains(double x, double y) {
 			/*
 			 * Since only regular hexagons are being tested, I have simplified my testing.
@@ -192,8 +145,6 @@ class ConcreteCell extends Cell {
 			else 
 				return false;
 		}
-		
-
 		
 		///////////////////////// Accessor Methods /////////////////////////////
 		

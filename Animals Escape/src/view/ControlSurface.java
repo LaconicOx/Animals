@@ -34,9 +34,9 @@ class ControlSurface extends JPanel{
 				break;
 			case KeyEvent.VK_S: CommandFactory.getUpdatePlayer(0.0, -1.0);
 				break;
-			case KeyEvent.VK_I: CommandFactory.getUpdateScale(1.2);
+			case KeyEvent.VK_I: CommandFactory.getUpdateScale(1.2);//Zooms in.
 				break;
-			case KeyEvent.VK_K: CommandFactory.getUpdateScale(0.8);
+			case KeyEvent.VK_K: CommandFactory.getUpdateScale(0.8);//Zoomes out.
 			}
 		}
 	}

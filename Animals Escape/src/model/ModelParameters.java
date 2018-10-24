@@ -1,6 +1,7 @@
 package model;
 
 import game.GameParameters;
+import model.node.Node;
 
 public class ModelParameters extends GameParameters{
 
@@ -51,6 +52,15 @@ public class ModelParameters extends GameParameters{
 	
 	public double getShiftY() {return screenShift[1] * getScale();}
 	
+	public double getExtension() { return getTileRadius()* 2 * EXTENSION; };
+	
+	public double getNodeCellX(Node n) {
+		return (getScreenX() + getShiftX())+ n.getX() * 1.5 * getTileRadius();
+	}
+	
+	public double getNodeCellY(Node n) {
+		return (getScreenY() + getShiftY())- (n.getY() * getTileApothem());
+		}
 	/////////////////////// Mutator Methods //////////////////////
 	
 	

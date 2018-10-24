@@ -88,7 +88,7 @@ public abstract class Node {
 		//Creates node if none exists.
 		if (n == null) {
 			int[] newCenter= dir.getNeighborCoord(getX(), getY());
-			Node newNode = NodeFactory.getNodeInstance(newCenter[0], newCenter[1]);
+			Node newNode = TotalBoard.getNodeInstance(newCenter[0], newCenter[1]);
 			neighbors.put(dir, newNode);
 			return newNode;
 		}
@@ -101,8 +101,6 @@ public abstract class Node {
 	public int getX() {return center.getX();}
 	
 	public int getY() { return center.getY();}
-	
-	
 
 	/////////////////////////// Default Mutator Methods //////////////////////////////
 	

@@ -30,7 +30,12 @@ public abstract class Tile extends GameImage{
 	public abstract void draw(Graphics g);
 		
 	//////////////////////////////////////// Inner Class ///////////////////////////////////////////
-	
+	/**
+	 * 
+	 * @author dvdco
+	 *This inner class is a flyweight containing all hex tile animations.
+	 *
+	 */
 	protected static class BufferedHexes{
 		
 		File[] files = {new File("BushHex.png"), new File("GrassHex.png"), new File("RockHex.png"), new File("TreeHex.png")};

@@ -5,7 +5,6 @@ package model;
 
 import commands.swing.CommandFactory;
 import game.Game;
-import model.node.BoardFactory;
 import model.node.TotalBoard;
 
 public class ModelFacade{
@@ -22,20 +21,9 @@ public class ModelFacade{
 		this.game = game;
 		parameters = ModelParameters.getInstance();
 		total = TotalBoard.getInstance();
-		BoardFactory.setTotal(parameters.getHorzSetps(), parameters.getVerSteps());
 		active = new Screen();
 	}
 	
-	public ModelFacade() {
-		/*
-		 * This constructor is only for testing ModelFacade in isolation. Any methods
-		 * calling game or factory will throw nullpointer exceptions.
-		 */
-		parameters = ModelParameters.getInstance();
-		total = TotalBoard.getInstance();
-		BoardFactory.setTotal(parameters.getHorzSetps(), parameters.getVerSteps());
-		active = new Screen();
-	}
 	
 	///////////////////////// Accessor Methods ///////////////////////////
 	

@@ -1,97 +1,64 @@
 package model.cell;
 
-
-import java.util.ArrayList;
 import java.util.Objects;
 
+import model.ModelParameters;
 import model.ModelUtility.*;
+import model.node.Node;
 
 public abstract class Cell implements Comparable<Cell>{
 	
-	private int wrap = 0;
+	protected Node node;
+	ModelParameters parameters;
 	
-	
-	////////////////////////// Default Methods //////////////////////////
-	boolean isWrappable() {return true;}
-	
-	int getWraps() {return wrap;}
-	
-	public boolean isOffScreen(Direction dir){
-		return false;
-		}
-	
-	Cell wrapCell(Cell c) {return c;}
-	
-	public Cell getNewBorder(Direction dir) {
-		System.err.println("getNewBorder: Unwrapped cell found in border");
-		return this;
+	public Cell(Node node) {
+		this.node = node;
+		node.setCell(this);
+		parameters = ModelParameters.getInstance();
 	}
+	
+	
+	////////////////////////// Accessor Methods //////////////////////////
+	
+	public double getX() { return parameters.getNodeCellX(node); }
+	public double getY() { return parameters.getNodeCellY(node); }
+	
+	/**
+	 * Clears node of callback to this cell.
+	 */
+	public void clearNode() { node.clearCell(); }
+	
+	public double[] getCenter(){return new double[] {getX(), getY()};}
+	
+	public Cell getNeighborCell(Direction dir, boolean nullReturn) {
+		/*
+		 * Returns reference to neighboring cell if found.
+		 * Returns null if no neighboring node  exists or.
+		 * if neighboring node contains no cell.
+		 */
+		
+		Node n = node.getNeighbor(dir);
+		Cell c = n.getCell();
+		if (nullReturn || c != null)
+			return c;
+		else
+			return new ConcreteCell(n);
+		
+	}
+	
+	public Node getNeighborNode(Direction dir){ return node.getNeighbor(dir); }
+	public void getCommand() {node.getCommand(getCenter());}
 	
 	//////////////////////// Abstract Methods ///////////////////////////
 	
-	public abstract Cell getCell();//Returns concrete cell.
-	public abstract Cell getNeighborCell(Direction dir, boolean nullReturn);
-	public abstract double getX();
-	public abstract double getY();
-	public abstract double[] getCenter();
-	public abstract void clearNode();
+	
+	
+	
 	public abstract boolean isContained(double x, double y);
-	public abstract void getCommand();
+
 	
 	
 	////////////////////// Static Methods ///////////////////////////////////
-	
-	public static Cell select(ArrayList<Cell> cells, Edge side) {
-		 final int GREATER = 1;
-		 final int LESS = -1;
-		Cell first = null;
-		Cell second = null;
-		 
-		if(cells.isEmpty()) {
-			System.err.println("borderInit selected no cells.");
-			System.exit(0);
-		}
-		else if((side == Edge.TOP || side == Edge.BOTTOM) && cells.size() >2) {
-			System.err.println("borderInit selected more than two cells for top or bottom.");
-			System.exit(0);
-		}
-		else if  ((side == Edge.RIGHT || side == Edge.LEFT) && cells.size() > 1) {
-			System.err.println("borderInit selected more than one cell for right or left.");
-			System.exit(0);
-		}
-		
-		//Conditional for loading cells
-		if (cells.size() == 1)
-			first = cells.get(0);
-		else {
-			first = cells.get(0);
-			second = cells.get(1);
-		}
-		//Right and left cells require no comparison
-		if(side == Edge.RIGHT || side == Edge.LEFT)
-			return first;
-		else {
-			//First two conditions handle null values in order protect compareTo from nullPointerExceptions.
-			if (first == null)
-				return second;
-			else if(second == null)
-				return first;
-			else if (side == Edge.TOP) {
-				//By the comparison rule for cells, the top cells are less than bottom cells.
-				if(first.compareTo(second) == LESS)
-					return first; 
-				else
-					return second;
-			}
-			else {//else represents BOTTOM.
-				//By the comparison rule for cells, the bottom cells are greater than top cells.
-				if(first.compareTo(second) == GREATER)
-					return first;
-				else
-					return second;
-			}
-		}
-	}
 	
 	
 	public static Direction getCellDirection(Cell c, double[] p) {
@@ -189,7 +156,7 @@ public abstract class Cell implements Comparable<Cell>{
 	@Override
 	public int hashCode() {
 		double[] center = getCenter();
-		return Objects.hash(center, wrap);
+		return Objects.hash(center);
 		
 	}
 	
