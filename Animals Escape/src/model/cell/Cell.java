@@ -42,11 +42,12 @@ public abstract class Cell implements Comparable<Cell>{
 		if (nullReturn || c != null)
 			return c;
 		else
-			return new ConcreteCell(n);
+			return new ScreenCell(n);
 		
 	}
 	
 	public Node getNeighborNode(Direction dir){ return node.getNeighbor(dir); }
+	
 	public void getCommand() {node.getCommand(getCenter());}
 	
 	//////////////////////// Abstract Methods ///////////////////////////

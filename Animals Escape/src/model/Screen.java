@@ -7,7 +7,7 @@ import java.util.Set;
 import model.ModelUtility.Direction;
 import model.cell.BorderCell;
 import model.cell.Cell;
-import model.cell.ConcreteCell;
+import model.cell.ScreenCell;
 import model.node.Node;
 import model.node.TotalBoard;
 
@@ -39,7 +39,7 @@ public class Screen {
 				0 - parameters.getExtension(), 
 				parameters.getPanelHeight() + parameters.getExtension()};
 		
-		center = new ConcreteCell(board.getNodeInstance(0, 0));
+		center = new ScreenCell(board.getNodeInstance(0, 0));
 		screen.add(center);
 		recurInit(center.getNeighborNode(Direction.N), boundaries);
 		
@@ -52,7 +52,7 @@ public class Screen {
 	 * @param boundaries - inclusive boundaries for the screen.
 	 */
 	private void recurInit(Node n, double[] boundaries) {
-		Cell newCell = new ConcreteCell(n);
+		Cell newCell = new ScreenCell(n);
 		screen.add(newCell);
 		
 		for (Direction dir : Direction.values()) {
@@ -102,6 +102,14 @@ public class Screen {
 	void shiftScreen(Direction dir) {
 		
 	}
+	
+	void screenCellAdd(ScreenCell cell) { screen.add(cell); }
+	
+	void screenCellRemove(ScreenCell cell) {
+		cell.clearNode();
+		screen.remove(cell);
+	}
+	
 	/////////////////////////// Checker Methods ////////////////////////////////
 	
 	private boolean checkCenter() {
@@ -123,5 +131,9 @@ public class Screen {
 			sb.append(screenIt.next().toString() + "\n");
 		return sb.toString();		
 	} 
+	
+	//////////////////////// Inner Class //////////////////////////////
+	
+	
 	
 }
