@@ -14,6 +14,7 @@ public class BorderCell extends Cell{
 		super(node);
 	}
 	
+	//Delete
 	public BorderCell(Node node, HashMap<Direction, State> orientation) {
 		super(node);
 		this.orientation = orientation;
