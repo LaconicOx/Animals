@@ -11,7 +11,7 @@ public class ScreenCell extends Cell {
 	
 	Hexagon region;
 	
-	/////////////////////// Constructor and Initializer ///////////////////////////////////////
+	/////////////////////// Constructor ///////////////////////////////////////
 	public ScreenCell(Node node){
 		super(node);
 		region = new Hexagon();
