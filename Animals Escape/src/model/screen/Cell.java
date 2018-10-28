@@ -1,15 +1,15 @@
-package model.cell;
+package model.screen;
 
 import java.util.Objects;
 
 import model.ModelParameters;
 import model.ModelUtility.*;
-import model.node.Node;
+import model.board.Node;
 
 public abstract class Cell implements Comparable<Cell>{
 	
 	protected Node node;
-	ModelParameters parameters;
+	protected ModelParameters parameters;
 	
 	public Cell(Node node) {
 		this.node = node;
@@ -21,12 +21,15 @@ public abstract class Cell implements Comparable<Cell>{
 	////////////////////////// Accessor Methods //////////////////////////
 	
 	public double getX() { return parameters.getNodeCellX(node); }
+	
 	public double getY() { return parameters.getNodeCellY(node); }
 	
 	/**
 	 * Clears node of callback to this cell.
 	 */
 	public void clearNode() { node.clearCell(); }
+	
+	public Node getNode() { return node; }
 	
 	public double[] getCenter(){return new double[] {getX(), getY()};}
 	
@@ -50,9 +53,8 @@ public abstract class Cell implements Comparable<Cell>{
 	
 	public void getCommand() {node.getCommand(getCenter());}
 	
+	
 	//////////////////////// Abstract Methods ///////////////////////////
-	
-	
 	
 	
 	public abstract boolean isContained(double x, double y);

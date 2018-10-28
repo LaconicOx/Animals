@@ -1,10 +1,10 @@
-package model.node;
+package model.board;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import model.ModelUtility.Direction;
-import model.cell.Cell;
+import model.screen.Cell;
 
 
 public abstract class Node {

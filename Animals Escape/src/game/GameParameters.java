@@ -12,7 +12,7 @@ import java.awt.Dimension;
 public class GameParameters {
 	//Default constants for initializing game.
 	private static final double DEFAULT_SCALE =  0.25;
-	private static final Dimension DEFAULT_PANEL =  new Dimension(300, 300);
+	private static final Dimension DEFAULT_PANEL =  new Dimension(100, 100);
 	
 	/*
 	 * All hex image files are saved with the dimensions below. Since the image

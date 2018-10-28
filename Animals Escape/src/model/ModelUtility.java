@@ -34,7 +34,7 @@ public final class ModelUtility {
 		
 		
 		
-		static Direction getOpposite(Direction dir) {
+		public static Direction getOpposite(Direction dir) {
 			Direction output = null;
 			switch(dir) {
 				

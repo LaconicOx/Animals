@@ -1,4 +1,4 @@
-package model.node;
+package model.board;
 
 import java.util.ArrayList;
 import java.util.Collections;

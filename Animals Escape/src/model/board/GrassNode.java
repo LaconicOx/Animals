@@ -1,23 +1,23 @@
-package model.node;
+package model.board;
 
 
 import commands.swing.CommandFactory;
 
-public class BushNode extends Node{
+public class GrassNode extends Node{
 	
 	private final boolean passable = true;
-
 	
-	BushNode(NodeKey center){
+	GrassNode(NodeKey center){
 		super(center);
 	}
 	
-	public void getCommand(double[] vertices) {
-		CommandFactory.getDrawBush(vertices);
+	public void getCommand(double[] center) {
+		CommandFactory.getDrawGrass(center);
 	}
+	
 	
 	@Override
 	public boolean isPassable() {return passable;}
 
-
+	
 }

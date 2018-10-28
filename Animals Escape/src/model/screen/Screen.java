@@ -1,30 +1,37 @@
-package model;
+package model.screen;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import model.ModelParameters;
 import model.ModelUtility.Direction;
-import model.cell.BorderCell;
-import model.cell.Cell;
-import model.cell.ScreenCell;
-import model.node.Node;
-import model.node.TotalBoard;
+import model.board.Node;
+import model.board.TotalBoard;
 
 public class Screen {
-	ModelParameters parameters;
-	Set<Cell> screen;
-	Set<Cell> border;
-	Cell center;
-	TotalBoard board;
+	private ModelParameters parameters;
+	private Set<Cell> screen;
+	private Set<BorderCell> border;
+	private Cell center;
+	private TotalBoard board;
+	private static Screen unique = null;
 	
 	////////////////////////// Constructors and Initializers //////////////////////////
-	Screen(){
+	private Screen(){
 		screen = new HashSet<>();
 		border = new HashSet<>();
 		parameters = ModelParameters.getInstance();
 		board = TotalBoard.getInstance();
 		init();
+	}
+	
+	public static Screen getInstance() {
+		if (unique == null)
+			unique = new Screen();
+		return unique;
 	}
 	
 	private void init() {
@@ -72,7 +79,7 @@ public class Screen {
 	
 	////////////////////////// Accessor Methods /////////////////////////////
 	
-	void getTileCommands(){
+	public void getTileCommands(){
 		screen.forEach(cell -> cell.getCommand());
 	}
 	
@@ -83,7 +90,7 @@ public class Screen {
 	 * @param y
 	 * @return true when player leaves center cell, otherwise false.
 	 */
-	boolean setPlayer(double x, double y) {
+	public boolean setPlayer(double x, double y) {
 		//TODO clean up this method and shiftCoords.
 		parameters.shift(x, y);
 		if (checkCenter()) {
@@ -100,14 +107,34 @@ public class Screen {
 	}
 	
 	void shiftScreen(Direction dir) {
-		
+		ArrayList<Instruction> instructions = new ArrayList<>();
+		border.forEach(cell -> instructions.add(cell.getShiftInstruction(dir)));
+		System.out.println("************ Old Screen ************");
+		displayScreen();
+		System.out.println("************ Old Border ************");
+		displayBorder();
+		instructions.forEach(instruct -> instruct.execute());
+		System.out.println("************ New Screen ************");
+		displayScreen();
+		System.out.println("************ New Border ************");
+		displayBorder();
 	}
 	
-	void screenCellAdd(ScreenCell cell) { screen.add(cell); }
+	void addScreenCell(ScreenCell cell) { screen.add(cell); }
 	
-	void screenCellRemove(ScreenCell cell) {
+	void removeScreenCell(ScreenCell cell) {
+		
 		cell.clearNode();
+		System.out.println(screen.contains(cell));
 		screen.remove(cell);
+	}
+	
+	void addBorderCell(BorderCell cell) { border.add(cell); }
+	
+	void removeBorderCell(BorderCell cell) {
+		System.out.println(border.contains(cell));
+		cell.clearNode();
+		border.remove(cell);
 	}
 	
 	/////////////////////////// Checker Methods ////////////////////////////////
@@ -132,8 +159,22 @@ public class Screen {
 		return sb.toString();		
 	} 
 	
-	//////////////////////// Inner Class //////////////////////////////
+	//////////////////////// Debugging Methods //////////////////////////////
 	
+	public void displayScreen() {
+		StringBuilder sb = new StringBuilder();
+		Iterator<Cell> screenIt = screen.iterator();
+		while(screenIt.hasNext())
+			sb.append(screenIt.next().toString() + ", ");
+		System.out.println(sb.toString());
+	}
 	
+	public void displayBorder() {
+		StringBuilder sb = new StringBuilder();
+		Iterator<BorderCell> borderIt = border.iterator();
+		while(borderIt.hasNext())
+			sb.append(borderIt.next().toString() + ", ");
+		System.out.println(sb.toString());
+	}
 	
-}
+}//End of Screen

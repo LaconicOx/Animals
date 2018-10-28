@@ -1,4 +1,4 @@
-package model.node;
+package model.board;
 
 import commands.swing.CommandFactory;
 

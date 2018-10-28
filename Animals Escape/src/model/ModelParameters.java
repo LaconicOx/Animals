@@ -1,7 +1,7 @@
 package model;
 
 import game.GameParameters;
-import model.node.Node;
+import model.board.Node;
 
 public class ModelParameters extends GameParameters{
 
@@ -64,7 +64,7 @@ public class ModelParameters extends GameParameters{
 	/////////////////////// Mutator Methods //////////////////////
 	
 	
-	void shift(double x, double y) {
+	public void shift(double x, double y) {
 		screenShift[0] += x;
 		screenShift[1] += y;
 	}

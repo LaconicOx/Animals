@@ -1,11 +1,9 @@
 package model;
 
-
-
-
 import commands.swing.CommandFactory;
 import game.Game;
-import model.node.TotalBoard;
+import model.board.TotalBoard;
+import model.screen.Screen;
 
 public class ModelFacade{
 	
@@ -21,7 +19,7 @@ public class ModelFacade{
 		this.game = game;
 		parameters = ModelParameters.getInstance();
 		total = TotalBoard.getInstance();
-		active = new Screen();
+		active = Screen.getInstance();
 	}
 	
 	
