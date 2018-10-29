@@ -109,15 +109,7 @@ public class Screen {
 	void shiftScreen(Direction dir) {
 		ArrayList<Instruction> instructions = new ArrayList<>();
 		border.forEach(cell -> instructions.add(cell.getShiftInstruction(dir)));
-		System.out.println("************ Old Screen ************");
-		displayScreen();
-		System.out.println("************ Old Border ************");
-		displayBorder();
 		instructions.forEach(instruct -> instruct.execute());
-		System.out.println("************ New Screen ************");
-		displayScreen();
-		System.out.println("************ New Border ************");
-		displayBorder();
 	}
 	
 	void addScreenCell(ScreenCell cell) { screen.add(cell); }
@@ -125,14 +117,12 @@ public class Screen {
 	void removeScreenCell(ScreenCell cell) {
 		
 		cell.clearNode();
-		System.out.println(screen.contains(cell));
 		screen.remove(cell);
 	}
 	
 	void addBorderCell(BorderCell cell) { border.add(cell); }
 	
 	void removeBorderCell(BorderCell cell) {
-		System.out.println(border.contains(cell));
 		cell.clearNode();
 		border.remove(cell);
 	}

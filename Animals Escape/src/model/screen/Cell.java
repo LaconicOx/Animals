@@ -12,6 +12,7 @@ public abstract class Cell implements Comparable<Cell>{
 	protected ModelParameters parameters;
 	
 	public Cell(Node node) {
+		assert node != null;
 		this.node = node;
 		node.setCell(this);
 		parameters = ModelParameters.getInstance();
@@ -124,6 +125,8 @@ public abstract class Cell implements Comparable<Cell>{
 		//or to the left of the screen negative. This thwarts the natural comparison of 
 		//the screen via positive numbers. The easiest way to correct for it is to shift
 		//the coordinates enough so that only positive values obtain.
+		
+		
 		final double SHIFT = 10000.0;
 		
 		double currentX = getX() + SHIFT;

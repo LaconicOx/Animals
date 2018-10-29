@@ -27,7 +27,7 @@ public class ScreenCell extends Cell {
 	
 	@Override
 	public String toString() {
-		return "ConcreteCell (" + getX() + "," + getY() + ") maps to " + node.toString();
+		return "ScreenCell (" + getX() + "," + getY() + ") maps to Node " + node.toString();
 		//return "Cell (" + center[0] + "," + center[1] + ")";
 	}
 	
@@ -36,7 +36,7 @@ public class ScreenCell extends Cell {
 		double[] center = getCenter();
 		if (ob.getClass() != this.getClass())
 			return false;
-		Cell obCell = (Cell)ob;
+		ScreenCell obCell = (ScreenCell)ob;
 		if((center[0] == obCell.getX()) && (center[1] == obCell.getY()))
 			return true;
 		else return false;

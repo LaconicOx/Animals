@@ -6,7 +6,7 @@ public class RockNode extends Node{
 	
 	private final boolean passable = false;
 	
-	RockNode(NodeKey center){
+	public RockNode(NodeKey center){
 		super(center);
 	}
 	

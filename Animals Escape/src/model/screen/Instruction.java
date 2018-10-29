@@ -42,7 +42,6 @@ class Instruction {
 	
 	void selfToScreen() {
 		actions.add(new Transform());
-		actions.add(new DeleteSelf());
 	}
 	
 	void keep() {};//The method is here to represent the choice of keeping the cell
@@ -52,45 +51,30 @@ class Instruction {
 	
 	class CreateBorder extends Action{
 		void execute() { 
-			//System.out.println("CreateBorder started");
 			screen.addBorderCell(self.initBorderCell(toward));; 
-			//System.out.println("CreateBorder finished");
-		}
-	}
-	
-	class CreateScreen extends Action{
-		void execute() { 
-			//System.out.println("CreateBorder started");
-			screen.addScreenCell(self.initScreenCell(toward)); 
-			//System.out.println("CreateBorder finished");
 		}
 	}
 	
 	class DeleteSelf extends Action{
 		void execute() { 
-			//System.out.println("DeleteSelf started for" + self);
 			screen.removeBorderCell(self);	
-			//System.out.println("DeleteSelf finished");
 		}
 	}
 	
 	class DeleteScreen extends Action{
 		void execute() { 
-			//System.out.println("DeleteScreen started for " + self);
 			Cell sc = self.getNeighborCell(toward, true);
 			if(sc.getClass() == ScreenCell.class)
 				screen.removeScreenCell((ScreenCell)sc);
-			//System.out.println("DeleteScreen finished");
 			}
 	}
 	
 	class Transform extends Action{
 		void execute() {
-			//System.out.println("Transform started");
 			Node selfNode = self.getNode();
-			screen.removeBorderCell(self);	
+			screen.removeBorderCell(self);
 			screen.addScreenCell(new ScreenCell(selfNode));
-			//System.out.println("Transform finished");
+			System.out.println(selfNode.getCell());
 			}
 	}
 }//End of Instruction

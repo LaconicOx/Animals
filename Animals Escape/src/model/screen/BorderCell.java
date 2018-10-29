@@ -1,6 +1,7 @@
 package model.screen;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 import model.ModelUtility.Direction;
 import model.board.Node;
@@ -8,23 +9,17 @@ import model.board.Node;
 public class BorderCell extends Cell{
 	
 	private enum State{NULL, SCREEN, BORDER};
-	private HashMap<Direction, State> orientation = null;
+	HashMap<Direction, State> orientation = null;
 	
 	public BorderCell(Node node){
 		super(node);
-	}
-	
-	BorderCell(Node node, HashMap<Direction, State> orientation) {
-		super(node);
-		this.orientation = orientation;
-		
 	}
 	
 	///////////////////////////// Mutator Methods //////////////////////////
 	
 	BorderCell initBorderCell(Direction toward) {
 		Node n = getNeighborNode(toward);
-		 return new BorderCell(n, orientation);
+		 return new BorderCell(n);
 	}
 	
 	ScreenCell initScreenCell(Direction toward) {
@@ -36,8 +31,6 @@ public class BorderCell extends Cell{
 	Instruction getShiftInstruction(Direction dir) {
 		Instruction output = new Instruction(this, dir);
 		
-		//Gates for orientation's initializaion.
-		//if (orientation == null)
 		updateOrientation();
 		
 		//Builds instruction for creating a cell at the node in the direction of dir.
@@ -61,6 +54,13 @@ public class BorderCell extends Cell{
 			output.keep();
 		else
 			System.err.println("Error in getInstruction(): unrecognized choice.");
+		
+		if(away == State.NULL && toward == State.NULL) {
+			Node n = getNeighborNode(Direction.getOpposite(dir));
+			System.out.println("Node: " + n + " Reference: " + n.getCell() );
+		}
+			
+		//System.out.println(this + " Toward: " + toward + " Away: " + away);
 		
 		return output;
 	}
@@ -93,9 +93,26 @@ public class BorderCell extends Cell{
 	@Override
 	public String toString() {
 		return "BorderCell (" + getX() + "," + getY() + ") maps to " + node.toString();
-		//return "Cell (" + center[0] + "," + center[1] + ")";
 	}
-
+	
+	@Override
+	public boolean equals(Object ob) {
+		double[] center = getCenter();
+		if (ob.getClass() != this.getClass())
+			return false;
+		BorderCell obCell = (BorderCell)ob;
+		if((center[0] == obCell.getX()) && (center[1] == obCell.getY()))
+			return true;
+		else return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(node);
+	}
+	
+	/////////////////////////////// Debugging ///////////////////////////////////////////////////
+	
 	@Override
 	public void display() {
 		System.out.println("BorderCell (" + getX() + "," + getY() + ") maps to " + node.toString());
