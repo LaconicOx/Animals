@@ -74,7 +74,6 @@ class Instruction {
 			Node selfNode = self.getNode();
 			screen.removeBorderCell(self);
 			screen.addScreenCell(new ScreenCell(selfNode));
-			System.out.println(selfNode.getCell());
 			}
 	}
 }//End of Instruction
