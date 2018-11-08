@@ -4,18 +4,16 @@ import model.ModelFacade;
 
 class UpdatePlayer extends Command{
 	
-	private double x;
-	private double y;
+	private double angle;
 	private ModelFacade model;
 	
-	UpdatePlayer(ModelFacade mf, double x, double y) {
+	UpdatePlayer(ModelFacade mf, double angle) {
 		super();
 		model = mf;
-		this.x = x;
-		this.y = y;
+		this.angle = angle;
 	}
 	
 	public void execute() {
-		model.setPlayer(x, y);
+		model.movePlayer(angle);
 	}
 }

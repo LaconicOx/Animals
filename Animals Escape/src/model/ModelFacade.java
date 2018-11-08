@@ -20,6 +20,7 @@ public class ModelFacade{
 		parameters = ModelParameters.getInstance();
 		total = TotalBoard.getInstance();
 		active = Screen.getInstance();
+		active.init();//Temporary fix. See note in Screen.
 	}
 	
 	
@@ -31,16 +32,19 @@ public class ModelFacade{
 	}
 	/////////////////////////// Mutator Methods //////////////////////////////////
 	
-	public void setPlayer(double x, double y){
-		if(active.setPlayer(x, y))
-			getDrawCommands();
-		else
-			getDrawCommands();//TODO: This must be replaced when I implement the viewSurface's ability to shift the image.
+	public void updateCharacters() {
+		
 	}
 	
-	public void setScale(double factor) {
-		parameters.setScale(factor);
-		getDrawCommands();
+	/**
+	 * Responsible for shifting the screen to move the player and, if necessary
+	 * creates new cells.
+	 * @param x - represents the horizontal component of the player's movement
+	 * @param y - represents the vertical component of the player's movement.
+	 */
+	public void movePlayer(double angle){
+		active.movePlayer(angle);
+		CommandFactory.getPingView();
 	}
 	
 	/////////////////////// Display Methods ////////////////////////////////////////

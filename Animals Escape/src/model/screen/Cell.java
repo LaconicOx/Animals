@@ -3,27 +3,30 @@ package model.screen;
 import java.util.Objects;
 
 import model.ModelParameters;
-import model.ModelUtility.*;
+import model.ModelParameters.Direction;
 import model.board.Node;
 
 public abstract class Cell implements Comparable<Cell>{
 	
 	protected Node node;
 	protected ModelParameters parameters;
+	protected double[] center;
 	
 	public Cell(Node node) {
-		assert node != null;
+		System.err.println(node);
 		this.node = node;
 		node.setCell(this);
 		parameters = ModelParameters.getInstance();
+		center = parameters.nodeToModel(node.getCenter());
+		System.err.println(center);
 	}
 	
 	
 	////////////////////////// Accessor Methods //////////////////////////
 	
-	public double getX() { return parameters.getNodeCellX(node); }
-	
-	public double getY() { return parameters.getNodeCellY(node); }
+	public double[] getCenter() {
+		return center.clone();
+	}
 	
 	/**
 	 * Clears node of callback to this cell.
@@ -31,8 +34,6 @@ public abstract class Cell implements Comparable<Cell>{
 	public void clearNode() { node.clearCell(); }
 	
 	public Node getNode() { return node; }
-	
-	public double[] getCenter(){return new double[] {getX(), getY()};}
 	
 	public Cell getNeighborCell(Direction dir, boolean nullReturn) {
 		/*
@@ -43,6 +44,7 @@ public abstract class Cell implements Comparable<Cell>{
 		
 		Node n = node.getNeighbor(dir);
 		Cell c = n.getCell();
+		//System.err.println(c);
 		if (nullReturn || c != null)
 			return c;
 		else
@@ -58,58 +60,9 @@ public abstract class Cell implements Comparable<Cell>{
 	//////////////////////// Abstract Methods ///////////////////////////
 	
 	
-	public abstract boolean isContained(double x, double y);
+	public abstract boolean isContained(double[] coords);
 
-	
-	
-	////////////////////// Static Methods ///////////////////////////////////
-	
-	
-	public static Direction getCellDirection(Cell c, double[] p) {
-		/*
-		 * This function uses trigonometry to calculate the player's direction
-		 * relative to a cell's center.
-		 * 
-		 */
-		
-		double width = p[0] - c.getX();
-		double height = c.getY() - p[1];//The intervals must be calculated differently because of the screen orientation.
-		
-		//Uses trig to find the angle.
-		double hypot = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
-		double angle;
-		if (height > 0)
-			if ( width != 0)//Protects against division by zero.
-				angle = Math.acos(width / hypot);
-			else 
-				angle = Math.PI/2;
-		else
-			if (width != 0)
-				angle = 2*Math.PI - Math.acos(width / hypot);
-			else
-				angle = 3*Math.PI/2;
-		
-
-		//Calculates the side of the hexagon by dividing by 60 degrees in radians and rounding up.
-		//The sides, counting counter-clockwise, start at 1 for northeast to 6 for southeast.
-		int step = (int)Math.ceil(angle/(Math.PI/3));
-		Direction dir = null;
-		switch(step) {
-			case 1: dir = Direction.NE;
-				break;
-			case 2: dir = Direction.N;
-				break;
-			case 3: dir = Direction.NW;
-				break;
-			case 4: dir = Direction.SW;
-				break;
-			case 5: dir = Direction.S;
-				break;
-			case 6: dir = Direction.SE;
-				break;
-		}
-		return dir;
-	}
+	public abstract boolean isPassable();
 
 
 	/////////////////////// Overrides /////////////////////////////////////
@@ -129,10 +82,13 @@ public abstract class Cell implements Comparable<Cell>{
 		
 		final double SHIFT = 10000.0;
 		
-		double currentX = getX() + SHIFT;
-		double currentY = getY() + SHIFT;
-		double otherX = other.getX() + SHIFT;
-		double otherY = other.getY() + SHIFT;
+		double[] curCenter = getCenter();
+		double currentX = curCenter[0] + SHIFT;
+		double currentY = curCenter[1] + SHIFT;
+		
+		double[] othCenter = other.getCenter();
+		double otherX = othCenter[0] + SHIFT;
+		double otherY = othCenter[1] + SHIFT;
 		
 		if (0 > currentX - otherX)
 			return -1;
@@ -154,7 +110,8 @@ public abstract class Cell implements Comparable<Cell>{
 		if (ob.getClass() != this.getClass())
 			return false;
 		Cell obCell = (Cell)ob;
-		if((center[0] == obCell.getX()) && (center[1] == obCell.getY()))
+		double[] obCenter = obCell.getCenter();
+		if((center[0] == obCenter[0]) && (center[1] == obCenter[1]))
 			return true;
 		else return false;
 	}

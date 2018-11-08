@@ -3,7 +3,7 @@ package model.screen;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.ModelUtility.Direction;
+import model.ModelParameters.Direction;
 import model.board.Node;
 
 class Instruction {
@@ -64,9 +64,14 @@ class Instruction {
 	class DeleteScreen extends Action{
 		void execute() { 
 			Cell sc = self.getNeighborCell(toward, true);
-			if(sc.getClass() == ScreenCell.class)
-				screen.removeScreenCell((ScreenCell)sc);
+			if(sc.getClass() == ScreenCell.class) {
+				screen.removeCharacters(sc);//tests characters for removal
+				screen.removeScreenCell((ScreenCell)sc);//remove screen cell.
 			}
+			else {
+				System.err.println("Error in DeleteScreen: ScreenCell not selected.");
+			}
+		}
 	}
 	
 	class Transform extends Action{

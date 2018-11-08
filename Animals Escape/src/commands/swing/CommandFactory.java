@@ -45,8 +45,8 @@ public class CommandFactory {
 		game.enqueCommand(new DrawTree(view, vertices));
 	}
 	
-	public static void getUpdatePlayer(double x, double y) {
-		game.enqueCommand(new UpdatePlayer(model, x, y));
+	public static void getUpdatePlayer(double angle) {
+		game.enqueCommand(new UpdatePlayer(model, angle));
 	}
 	
 	public static void getPingModel() {
@@ -58,6 +58,6 @@ public class CommandFactory {
 	}
 	
 	public static void getUpdateScale(double factor) {
-		game.enqueCommand(new UpdateScale(model, factor));
+		game.enqueCommand(new UpdateScale(view, factor));
 	}
 }

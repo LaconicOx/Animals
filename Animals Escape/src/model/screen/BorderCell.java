@@ -3,7 +3,7 @@ package model.screen;
 import java.util.HashMap;
 import java.util.Objects;
 
-import model.ModelUtility.Direction;
+import model.ModelParameters.Direction;
 import model.board.Node;
 
 public class BorderCell extends Cell{
@@ -85,23 +85,28 @@ public class BorderCell extends Cell{
 	///////////////////////////////// Overrides ////////////////////////////////
 	
 	@Override
-	public boolean isContained(double x, double y) {
+	public boolean isContained(double[] coords) {
 		System.err.println("Error: checked border for containing player");
 		return false;
 	}
+	
+	@Override
+	public boolean isPassable() { return true; }
 
 	@Override
 	public String toString() {
-		return "BorderCell (" + getX() + "," + getY() + ") maps to " + node.toString();
+		double[] cen = getCenter();
+		return "BorderCell (" + cen[0] + "," + cen[1] + ") maps to " + node.toString();
 	}
 	
 	@Override
 	public boolean equals(Object ob) {
-		double[] center = getCenter();
+		double[] curCenter = getCenter();
 		if (ob.getClass() != this.getClass())
 			return false;
 		BorderCell obCell = (BorderCell)ob;
-		if((center[0] == obCell.getX()) && (center[1] == obCell.getY()))
+		double[] othCenter = obCell.getCenter();
+		if((curCenter[0] == othCenter[0] && (curCenter[1] == othCenter[1])))
 			return true;
 		else return false;
 	}
@@ -115,7 +120,8 @@ public class BorderCell extends Cell{
 	
 	@Override
 	public void display() {
-		System.out.println("BorderCell (" + getX() + "," + getY() + ") maps to " + node.toString());
+		double[] cen = getCenter();
+		System.out.println("BorderCell (" + cen[0] + "," + cen[1] + ") maps to " + node.toString());
 		
 	}
 

@@ -3,21 +3,25 @@ package model.screen;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import model.ModelParameters;
-import model.ModelUtility.Direction;
+import model.ModelParameters.Direction;
 import model.board.Node;
 import model.board.TotalBoard;
+import model.characters.Characters;
+import model.characters.Player;
 
 public class Screen {
+	
+	private Set<Characters> characters;
 	private ModelParameters parameters;
 	private Set<Cell> screen;
 	private Set<BorderCell> border;
-	private Cell center;
+	//private Cell center;
 	private TotalBoard board;
 	private static Screen unique = null;
+	private Player player;
 	
 	////////////////////////// Constructors and Initializers //////////////////////////
 	private Screen(){
@@ -25,7 +29,7 @@ public class Screen {
 		border = new HashSet<>();
 		parameters = ModelParameters.getInstance();
 		board = TotalBoard.getInstance();
-		init();
+		characters = new HashSet<>();
 	}
 	
 	public static Screen getInstance() {
@@ -34,22 +38,26 @@ public class Screen {
 		return unique;
 	}
 	
-	private void init() {
+	//Including init() in the constructor led to circular calls. 
+	//Making it public is a temporary fix
+	//TODO: Fix circular calls.
+	public void init() {
 		/*
 		 * boundaries[0] represents the left boundary.
 		 * boundaries[1] represents the right boundary.
 		 * boundaries[2] represents the top boundary.
 		 * boundaries[3] represents the bottom boundary.
 		 */
-		double[] boundaries = {0 - parameters.getExtension(), 
-				parameters.getPanelWidth() + parameters.getExtension(),
-				0 - parameters.getExtension(), 
-				parameters.getPanelHeight() + parameters.getExtension()};
+		int[] centerCoords = {0,0};
+		double[] boundaries = parameters.getUnitBoundaries(centerCoords);
 		
-		center = new ScreenCell(board.getNodeInstance(0, 0));
+		Cell center = new ScreenCell(board.getNodeInstance(centerCoords));//TODO Eliminate static method.
+		player = new Player(center);
 		screen.add(center);
 		recurInit(center.getNeighborNode(Direction.N), boundaries);
 		
+		//Creates player
+		player = new Player(center);
 	}
 	
 	/**
@@ -65,14 +73,17 @@ public class Screen {
 		for (Direction dir : Direction.values()) {
 			if(newCell.getNeighborCell(dir, true) == null) {
 				Node newNode = newCell.getNeighborNode(dir);
-				double x = parameters.getNodeCellX(newNode);
-				double y = parameters.getNodeCellY(newNode);
+				int[] cen = newNode.getCenter();
+				//System.err.println(cen[0] + ", " + cen[1]);
 				//Calls itself to add a new concrete cell to screen if within boundaries;
 				//otherwise, adds a border cell to border.
-				if ( x >= boundaries[0] && x <= boundaries[1] && y >= boundaries[2] && y <= boundaries[3])
+				if ( cen[0] >= boundaries[0] && cen[0] <= boundaries[1] && cen[1] >= boundaries[2] && cen[1] <= boundaries[3])
 					recurInit(newNode, boundaries);
-				else
+				else {
+					//System.err.println("borderCell created");
 					border.add(new BorderCell(newNode));
+				}
+					
 			}
 		}
 	}
@@ -84,33 +95,32 @@ public class Screen {
 	}
 	
 	////////////////////////// Mutator Methods /////////////////////////////////
+	
 	/**
-	 * 
-	 * @param x
-	 * @param y
-	 * @return true when player leaves center cell, otherwise false.
+	 * @param angle - the direction the the player's movement in radians.
 	 */
-	public boolean setPlayer(double x, double y) {
-		//TODO clean up this method and shiftCoords.
-		parameters.shift(x, y);
-		if (checkCenter()) {
-			return false;
+	public void movePlayer(double angle) {
+		//Shifts the screen if the player moves to a new cell.
+		double[] start = player.getCenter();
+		if(player.move(angle)) {
+			Direction dir = Direction.getDirection(start, player.getCenter());
+			shiftCells(dir);
 		}
-		else {
-			Direction dir = Cell.getCellDirection(center, parameters.getScreenCenter());
-			boolean noNullReturn = true;
-			center = center.getNeighborCell(dir, noNullReturn);
-			shiftScreen(dir);
 			
-			return true;
-		}
 	}
 	
-	void shiftScreen(Direction dir) {
+	void updateCharacters() {
+		//TODO
+	}
+	
+	private void shiftCells(Direction dir) {
 		ArrayList<Instruction> instructions = new ArrayList<>();
 		border.forEach(cell -> instructions.add(cell.getShiftInstruction(dir)));
 		instructions.forEach(instruct -> instruct.execute());
+		getTileCommands();//Sends commands to view to generate a new set of tile images.
 	}
+	
+	public void addCharacters(Characters ch) { characters.add(ch); }
 	
 	void addScreenCell(ScreenCell cell) { screen.add(cell); }
 	
@@ -129,14 +139,15 @@ public class Screen {
 	
 	/////////////////////////// Checker Methods ////////////////////////////////
 	
-	private boolean checkCenter() {
-		/*
-		 * Returns true if the center cell contains the player's coordinates.
-		 */
-		boolean test = center.isContained(parameters.getScreenX(), parameters.getScreenY());
-		return test;
-	}
 	
+	public void removeCharacters(Cell test) {
+		Iterator<Characters> charIt = characters.iterator();
+		while(charIt.hasNext()) {
+			Characters ch = charIt.next();
+			if(ch.offScreen(test))
+				characters.remove(ch);
+		}
+	}
 	
 	////////////////////////// Overrides ////////////////////////////////
 	

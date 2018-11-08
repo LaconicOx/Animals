@@ -16,14 +16,19 @@ public abstract class Tile extends GameImage{
 	
 	private ViewParameters parameters;
 	protected AffineTransform at;
+	private double[] corner;
 	
 	///////////////////////// Constructor and Initializers /////////////////////////////////////
-	public Tile(double[] center) {
+	public Tile(double[] coords) {
 		
 		parameters = ViewParameters.getInstance();
 		at = new AffineTransform();
-		at.setToTranslation(parameters.getCornerX(center[0]), parameters.getCornerY(center[1]));
-		at.scale(parameters.getScale(), parameters.getScale());
+		
+		corner = parameters.getCorner(coords);
+		double dilation = parameters.getDilation();
+		
+		at.setToTranslation(corner[0], corner[1]);
+		at.scale(dilation, dilation);
 	}
 	
 	

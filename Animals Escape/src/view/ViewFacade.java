@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.geom.Point2D;
 
 import javax.swing.JLayeredPane;
@@ -59,17 +60,21 @@ public class ViewFacade{
 		vf.setVisible(true);
 	}
 	
-	//////////////////////////// Public Methods /////////////////////////
+	//////////////////////////// Mutator Methods /////////////////////////
 	
 	public void addBush(double[] center) { sur.addImage(new BushTile(center));}
 	public void addGrass(double[] center) { sur.addImage(new GrassTile(center));}
 	public void addRock(double[] center) { sur.addImage(new RockTile(center));}
 	public void addTree(double[] center) { sur.addImage(new TreeTile(center));}
 	
+	public void setScale(double factor) {
+		parameters.setDilation(factor);
+		update();
+	}
 	
 	public void update() {
-		
-		sur.addImage(new Player(new Point2D.Double(parameters.getPanelWidth() / 2, parameters.getPanelHeight() / 2)));
+		Dimension panel = parameters.getPanel();
+		sur.addImage(new Player(new Point2D.Double(panel.getWidth() / 2, panel.getHeight() / 2)));
 		sur.render();
 	}
 	

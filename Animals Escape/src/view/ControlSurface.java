@@ -25,18 +25,20 @@ class ControlSurface extends JPanel{
 	private class UserKeys extends KeyAdapter{
 		public void keyPressed(KeyEvent e) {
 			int keyCode = e.getKeyCode();
+			double angle = Math.PI / 2.0;
+			
 			switch(keyCode) {
-			case KeyEvent.VK_W: CommandFactory.getUpdatePlayer(0.0, 1.0);
+			case KeyEvent.VK_W: CommandFactory.getUpdatePlayer(angle);//Moves up.
 				break;
-			case KeyEvent.VK_A: CommandFactory.getUpdatePlayer(1.0, 0);
+			case KeyEvent.VK_A: CommandFactory.getUpdatePlayer(2 * angle);//Moves left.
 				break;
-			case KeyEvent.VK_D: CommandFactory.getUpdatePlayer(-1.0, 0.0);
+			case KeyEvent.VK_D: CommandFactory.getUpdatePlayer(0.0);//Moves right
 				break;
-			case KeyEvent.VK_S: CommandFactory.getUpdatePlayer(0.0, -1.0);
+			case KeyEvent.VK_S: CommandFactory.getUpdatePlayer(3 * angle);//Moves down.
 				break;
 			case KeyEvent.VK_I: CommandFactory.getUpdateScale(1.2);//Zooms in.
 				break;
-			case KeyEvent.VK_K: CommandFactory.getUpdateScale(0.8);//Zoomes out.
+			case KeyEvent.VK_K: CommandFactory.getUpdateScale(0.8);//Zooms out.
 			}
 		}
 	}

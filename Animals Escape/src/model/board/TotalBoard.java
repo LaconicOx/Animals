@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-import model.ModelUtility.Direction;
+import model.ModelParameters.Direction;
 
 
 public class TotalBoard {
@@ -63,8 +63,8 @@ public class TotalBoard {
 	}
 	
 	
-	public static Node getNodeInstance(int x, int y) {
-		NodeKey nk = new NodeKey(x, y);
+	public static Node getNodeInstance(int[] coords) {
+		NodeKey nk = new NodeKey(coords);
 		HexType type = initType(nk);
 		Node output = null;
 		
@@ -91,10 +91,10 @@ public class TotalBoard {
 	
 	////////////////////// Helper Methods //////////////////////////////
 	static void putNode(Node n) {
-		if(board.containsKey(n.getCenter()))
+		if(board.containsKey(n.getKey()))
 			System.err.println("Error: model already conatins a node at " + n);
 		else {
-			board.put(n.getCenter(), n);
+			board.put(n.getKey(), n);
 		}
 	}
 	
@@ -104,11 +104,9 @@ public class TotalBoard {
 		 */
 		
 		Set<Node> neighbors = new HashSet<>();
-		int x = key.getX();
-		int y = key.getY();
 		
 		for (Direction dir : EnumSet.allOf(Direction.class)) {
-			neighbors.add(TotalBoard.getNode(new NodeKey(dir.getNeighborCoord(x, y))));
+			neighbors.add(TotalBoard.getNode(new NodeKey(dir.getNeighborKey(key.getCenter()))));
 		}
 		neighbors.remove(null);//Must remove null because it counts as a set element.
 		

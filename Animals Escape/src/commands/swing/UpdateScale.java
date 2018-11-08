@@ -1,19 +1,20 @@
 package commands.swing;
 
-import model.ModelFacade;
+import view.ViewFacade;
 
 public class UpdateScale extends Command{
 	
-	ModelFacade mf;
+	ViewFacade vf;
 	double factor;
 	
-	public UpdateScale(ModelFacade mf, double factor) {
-		this.mf = mf;
+	public UpdateScale(ViewFacade vf, double factor) {
+		this.vf = vf;
 		this.factor = factor;
 	}
 	
-	public void execute() { 
-		mf.setScale(factor);
+	public void execute() {
+		
+		vf.setScale(factor);
 		}
 }
 	

@@ -11,7 +11,7 @@ import java.awt.Dimension;
  */
 public class GameParameters {
 	//Default constants for initializing game.
-	private static final double DEFAULT_SCALE =  0.25;
+	
 	private static final Dimension DEFAULT_PANEL =  new Dimension(300, 300);
 	
 	/*
@@ -19,18 +19,22 @@ public class GameParameters {
 	 * dimensions do not change, it makes sense to use them as game constant.
 	 */
 	
+	private static final double DEFAULT_DILATION = 0.25;
 	private static final double IMAGE_WIDTH = 300.0;
 	private static final double IMAGE_HEIGHT = 261.0;
 	private static final double IMAGE_RADIUS = IMAGE_WIDTH / 2.0;
 	private static final double IMAGE_APOTHEM = (IMAGE_RADIUS / 2.0) * Math.sqrt(3.0);
 	
-	private static double scale;
+	private static double[] screenCenter;
+	private static double dilation;
 	private static Dimension panel;
 	
 	/////////////////////////// Constructor /////////////////////////////////
 	protected GameParameters() {
-		scale = DEFAULT_SCALE;
+
+		dilation = DEFAULT_DILATION;
 		panel = DEFAULT_PANEL;
+		screenCenter = new double[]{panel.getWidth() / 2, panel.getHeight() / 2};
 	}
 	
 	/*
@@ -41,23 +45,28 @@ public class GameParameters {
 	 */
 	
 	////////////////////// Accessor Methods ////////////////////////////
-	public double getTileRadius() {return scale * IMAGE_RADIUS;}
+	protected double getTileRadius() {return dilation * IMAGE_RADIUS;}
 	
-	public double getTileApothem() {return scale * IMAGE_APOTHEM;}
+	protected double getTileApothem() {return dilation * IMAGE_APOTHEM;}
 	
-	public Dimension getPanel() {return (Dimension)panel.clone();}
+	protected double getTileHeight() {return dilation * IMAGE_HEIGHT;}
 	
-	public double  getPanelHeight(){return panel.getHeight();}
+	protected double getTileWidth() {return dilation * IMAGE_WIDTH;}
 	
-	public double getPanelWidth() {return panel.getWidth();}
+	protected Dimension getPanel() {return (Dimension)panel.clone();}
 	
-	public double getScale() {return scale;}
+	protected double  getPanelHeight(){return panel.getHeight();}
 	
-	protected double getImageHeight() {return IMAGE_HEIGHT;}
+	protected double getPanelWidth() {return panel.getWidth();}
 	
-	protected double getImageWidth() {return IMAGE_WIDTH;}
+	protected double getDilation() { return dilation; }
+	
+	protected double[] getScreenCenter() { return screenCenter.clone(); }
+	
+	
+	
 	//////////////////////// Mutator Methods //////////////////////////
 	
-	public void setScale(double factor) {scale *= factor;}
+	public void setDilation(double factor) {dilation *= factor;}
 	
 }

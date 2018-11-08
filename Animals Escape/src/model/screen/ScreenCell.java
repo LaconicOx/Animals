@@ -4,22 +4,30 @@ package model.screen;
 import java.util.Objects;
 
 import model.board.Node;
+import model.characters.CharactersFactory;
 
 public class ScreenCell extends Cell {
 	
 	Hexagon region;
 	
-	/////////////////////// Constructor ///////////////////////////////////////
+	/////////////////////// Constructor and Initializers ////////////////////////////
 	public ScreenCell(Node node){
 		super(node);
 		region = new Hexagon();
+		//  initCharacters(); 
+	}
+	
+	private void initCharacters() {
+		CharactersFactory factory = CharactersFactory.getInstance();
+		if(node.checkDeer())
+			factory.initDeer(this);
 	}
 	
 	////////////////////////// Checker Methods ///////////////////////////////
 	
-	public boolean isContained(double x, double y) {return region.contains(x, y);}
+	public boolean isContained(double[] coords) {return region.contains( coords );}
 	
-	
+	public boolean isPassable() { return node.isPassable(); }
 	/////////////////////////// Mutator Methods ////////////////////////////
 	
 	
@@ -27,17 +35,19 @@ public class ScreenCell extends Cell {
 	
 	@Override
 	public String toString() {
-		return "ScreenCell (" + getX() + "," + getY() + ") maps to Node " + node.toString();
+		double[] center = getCenter();
+		return "ScreenCell (" + center[0] + "," + center[1] + ") maps to Node " + node.toString();
 		//return "Cell (" + center[0] + "," + center[1] + ")";
 	}
 	
 	@Override
 	public boolean equals(Object ob) {
-		double[] center = getCenter();
+		double[] curCenter = getCenter();
 		if (ob.getClass() != this.getClass())
 			return false;
 		ScreenCell obCell = (ScreenCell)ob;
-		if((center[0] == obCell.getX()) && (center[1] == obCell.getY()))
+		double[] othCenter = obCell.getCenter();
+		if((curCenter[0] == othCenter[0]) && (curCenter[1] == othCenter[1]))
 			return true;
 		else return false;
 	}
@@ -59,7 +69,7 @@ public class ScreenCell extends Cell {
 		
 		//Represents the hexagon as six unit vectors.
 		private final double[][] UNIT_MATRIX = {{1.0, 0.5, -0.5, -1.0, -0.5, 0.5},
-													{0.0, Math.sqrt(3.0)/2, Math.sqrt(3.0)/2, 0.0, -Math.sqrt(3.0)/2, -Math.sqrt(3.0)/2}};
+													{0.0, -Math.sqrt(3.0)/2, -Math.sqrt(3.0)/2, 0.0, Math.sqrt(3.0)/2, Math.sqrt(3.0)/2}};
 		
 		private double[][] vertices = new double[2][6];
 		
@@ -72,10 +82,10 @@ public class ScreenCell extends Cell {
 		/////////////////////// Helper Method //////////////////////////////////////////
 		
 		private void updateVertices(){
-			double center[] = {getX(), getY()};
+			double center[] = getCenter();
 				for(int i = 0; i < 2; i++) {
 					for(int j = 0; j < 6; j++) {
-						vertices[i][j] = parameters.getTileRadius() * UNIT_MATRIX[i][j] + center[i];
+						vertices[i][j] = parameters.getUnitRadius() * UNIT_MATRIX[i][j] + center[i];
 					}
 				}
 		}
@@ -88,7 +98,7 @@ public class ScreenCell extends Cell {
 		 * @param y
 		 * @return true if point is contained; otherwise returns false.
 		 */
-		public boolean contains(double x, double y) {
+		public boolean contains(double[] coords) {
 			/*
 			 * Since only regular hexagons are being tested, I have simplified my testing.
 			 * Rather than relying on ray testing or a system of inequalities, I rely on distance
@@ -100,8 +110,9 @@ public class ScreenCell extends Cell {
 			 */
 			
 			//Applies distance formula to find point's distance from center.
-			double width = x - getX();
-			double height = y - getY();
+			double[] cen = getCenter();
+			double width = coords[0] - cen[0];
+			double height = coords[1] - cen[1];
 			double pointDistance = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
 			
 			//Calculates angle in radians.
@@ -130,7 +141,7 @@ public class ScreenCell extends Cell {
 			//Uses law of sines to calculate the distance from the center to the edge for the line containing
 			// the point.
 			angle %= Math.PI/3;//Only a domain of 0 to Pi/3 applies.
-			double regionDistance = (parameters.getTileRadius() * Math.sqrt(3)/2)/Math.sin(2*Math.PI/3 - angle);
+			double regionDistance = (parameters.getUnitRadius() * Math.sqrt(3)/2)/Math.sin(2*Math.PI/3 - angle);
 			
 			//Tricks java into rounding to 5 decimal places.
 			//This is necessary to compensate for truncated values; otherwise, boundary points would be excluded.
