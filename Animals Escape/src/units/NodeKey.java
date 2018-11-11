@@ -1,8 +1,7 @@
-package model.board;
+package units;
 
 import java.util.Objects;
 
-import model.ModelParameters;
 
 /*
  * I wrote this class to replace the Point class in the awt library. I wanted the list immutable 
@@ -13,7 +12,7 @@ public class NodeKey{
 	
 	private int[] center;
 	
-	NodeKey(int[] coords) {
+	public NodeKey(int[] coords) {
 		
 		if (!checkKey(coords)) {
 			System.exit(0);
@@ -43,7 +42,7 @@ public class NodeKey{
 	}
 	
 	/////////////////////// Public Methods //////////////////////////////
-	int[] getCenter() {
+	public int[] getCenter() {
 		return center.clone();
 	}
 	
@@ -66,7 +65,9 @@ public class NodeKey{
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(center);
+		//Must hash on the primitives for different keys with the same 
+		//coordinates to be equal. Hashing on the int array caused a bug.
+		return Objects.hash(center[0], center[1]);
 		
 	}
 	

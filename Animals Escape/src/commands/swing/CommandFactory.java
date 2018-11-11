@@ -3,6 +3,7 @@ package commands.swing;
 
 import game.Game;
 import model.ModelFacade;
+import units.CellKey;
 import view.ViewFacade;
 
 public class CommandFactory {
@@ -29,24 +30,24 @@ public class CommandFactory {
 
 	///////////////////// Getter Methods /////////////////////
 	
-	public static void getDrawGrass(double[] center){
-		game.enqueCommand(new DrawGrass(view, center));
+	public static void getDrawGrass(CellKey key){
+		game.enqueCommand(new DrawGrass(view, key));
 	}
 	
-	public static void getDrawBush(double[] vertices){
-		game.enqueCommand(new DrawBush(view, vertices));
+	public static void getDrawBush(CellKey key){
+		game.enqueCommand(new DrawBush(view, key));
 	}
 	
-	public static void getDrawRock(double[] vertices){
-		game.enqueCommand(new DrawRock(view, vertices));
+	public static void getDrawRock(CellKey key){
+		game.enqueCommand(new DrawRock(view, key));
 	}
 	
-	public static void getDrawTree(double[] vertices){
-		game.enqueCommand(new DrawTree(view, vertices));
+	public static void getDrawTree(CellKey key){
+		game.enqueCommand(new DrawTree(view, key));
 	}
 	
 	public static void getUpdatePlayer(double angle) {
-		game.enqueCommand(new UpdatePlayer(model, angle));
+		game.enqueCommand(new ShiftModel(model, angle));
 	}
 	
 	public static void getPingModel() {
@@ -59,5 +60,13 @@ public class CommandFactory {
 	
 	public static void getUpdateScale(double factor) {
 		game.enqueCommand(new UpdateScale(view, factor));
+	}
+	
+	public static void getMovePlayer(double[] coords) {
+		game.enqueCommand(new MovePlayer(view, coords));
+	}
+	
+	public static void getClearImages() {
+		game.enqueCommand(new ClearImages(view));
 	}
 }

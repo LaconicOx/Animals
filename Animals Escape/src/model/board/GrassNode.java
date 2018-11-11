@@ -3,6 +3,8 @@ package model.board;
 
 
 import commands.swing.CommandFactory;
+import units.CellKey;
+import units.NodeKey;
 
 public class GrassNode extends Node{
 	
@@ -16,13 +18,13 @@ public class GrassNode extends Node{
 	/////////////////////// Accessor Methods //////////////////////
 	
 	@Override
-	public void getCommand(double[] center) {
-		CommandFactory.getDrawGrass(center);
+	public void getCommand(CellKey key) {
+		CommandFactory.getDrawGrass(key);
 	}
 	
 	///////////////////// Checker Methods /////////////////////////
 	@Override
-	public boolean isPassable() {return PASSABLE;}
+	public boolean checkPassable() {return PASSABLE;}
 
 	@Override
 	public boolean checkDeer() {

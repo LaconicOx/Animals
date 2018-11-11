@@ -11,33 +11,18 @@ import java.util.Map;
 import java.util.Set;
 
 
-import model.ModelParameters.Direction;
+import model.Directions.Direction;
+import units.NodeKey;
 
 
 public class TotalBoard {
 	/*
 	 * Singleton class for creating and storing the game board.
 	 */
-	private static enum HexType { 
-		/*
-		 * This enum helps represent node selection on the above methods.
-		 * The cards are used to control the frequencies of node types.
-		 */
-		GRASS(15), OAK(10), ROCK(5), BUSH(10);
-		
-		private int cards;//number of copies to be returned by getCards. 
-		
-		HexType(int cards) {
-			this.cards = cards;
-		}
-		
-		public List<HexType> getCards(){
-			return Collections.nCopies(cards, this);
-		}
-		
-	}
+	
+	
 	private static TotalBoard uniqueInstance;
-	private static Map<NodeKey, Node> board;
+	private Map<NodeKey, Node> board;
 	
 	/////////////////// Singleton Constructor ////////////////////////
 	private TotalBoard() {
@@ -54,7 +39,7 @@ public class TotalBoard {
 
 	///////////////////// Accessor Methods /////////////////////////////
 	
-	public static Node getNode(NodeKey k) {
+	public Node getNode(NodeKey k) {
 		/*
 		 * Returns reference to node for key p.
 		 * Returns a null object if no node is found.
@@ -63,7 +48,7 @@ public class TotalBoard {
 	}
 	
 	
-	public static Node getNodeInstance(int[] coords) {
+	public Node getNodeInstance(int[] coords) {
 		NodeKey nk = new NodeKey(coords);
 		HexType type = initType(nk);
 		Node output = null;
@@ -82,7 +67,7 @@ public class TotalBoard {
 		return output;
 	}
 	
-	public static HashSet<Node> getAllNodes(){
+	public  HashSet<Node> getAllNodes(){
 		HashSet<Node> output = new HashSet<>();
 		output.addAll(board.values());
 		
@@ -90,15 +75,15 @@ public class TotalBoard {
 	}
 	
 	////////////////////// Helper Methods //////////////////////////////
-	static void putNode(Node n) {
-		if(board.containsKey(n.getKey()))
+	void putNode(Node n) {
+		if(board.containsKey(n.getNodeKey()))
 			System.err.println("Error: model already conatins a node at " + n);
 		else {
-			board.put(n.getKey(), n);
+			board.put(n.getNodeKey(), n);
 		}
 	}
 	
-	private static HexType initType(NodeKey key) {
+	private HexType initType(NodeKey key) {
 		/*
 		 * 
 		 */
@@ -106,7 +91,7 @@ public class TotalBoard {
 		Set<Node> neighbors = new HashSet<>();
 		
 		for (Direction dir : EnumSet.allOf(Direction.class)) {
-			neighbors.add(TotalBoard.getNode(new NodeKey(dir.getNeighborKey(key.getCenter()))));
+			neighbors.add(getNode(new NodeKey(dir.getNeighborKey(key.getCenter()))));
 		}
 		neighbors.remove(null);//Must remove null because it counts as a set element.
 		
@@ -152,5 +137,24 @@ public class TotalBoard {
 		return output.toString();
 	}
 	
+	///////////////////////// Inner Class /////////////////////////////
 	
+	private enum HexType { 
+		/*
+		 * This enum helps represent node selection on the above methods.
+		 * The cards are used to control the frequencies of node types.
+		 */
+		GRASS(15), OAK(10), ROCK(5), BUSH(10);
+		
+		private int cards;//number of copies to be returned by getCards. 
+		
+		HexType(int cards) {
+			this.cards = cards;
+		}
+		
+		public List<HexType> getCards(){
+			return Collections.nCopies(cards, this);
+		}
+		
+	}
 }

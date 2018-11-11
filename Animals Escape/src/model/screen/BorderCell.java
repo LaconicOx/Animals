@@ -1,30 +1,24 @@
 package model.screen;
 
 import java.util.HashMap;
-import java.util.Objects;
 
-import model.ModelParameters.Direction;
-import model.board.Node;
+import model.Directions.Direction;
+import units.CellKey;
 
 public class BorderCell extends Cell{
 	
 	private enum State{NULL, SCREEN, BORDER};
 	HashMap<Direction, State> orientation = null;
+	Screen screen;
 	
-	public BorderCell(Node node){
-		super(node);
+	public BorderCell(CellKey key){
+		super(key);
+		screen = Screen.getInstance();
 	}
 	
 	///////////////////////////// Mutator Methods //////////////////////////
 	
-	BorderCell initBorderCell(Direction toward) {
-		Node n = getNeighborNode(toward);
-		 return new BorderCell(n);
-	}
-	
-	ScreenCell initScreenCell(Direction toward) {
-		return new ScreenCell(getNeighborNode(toward));
-	}
+
 	
 	///////////////////////////// Accessor Methods ///////////////////////////
 	
@@ -56,8 +50,7 @@ public class BorderCell extends Cell{
 			System.err.println("Error in getInstruction(): unrecognized choice.");
 		
 		if(away == State.NULL && toward == State.NULL) {
-			Node n = getNeighborNode(Direction.getOpposite(dir));
-			System.out.println("Node: " + n + " Reference: " + n.getCell() );
+			System.err.println("Error in getShiftInstructions(): Null, null orientation" );
 		}
 			
 		//System.out.println(this + " Toward: " + toward + " Away: " + away);
@@ -68,15 +61,14 @@ public class BorderCell extends Cell{
 	private void updateOrientation() {
 		orientation = new HashMap<>();
 		for (Direction dir : Direction.values()) {
-			Cell test = getNeighborCell(dir, true);
-			if (test == null)
-				orientation.put(dir, State.NULL);
-			else if (test.getClass() == ScreenCell.class)
+			CellKey test = getNeighborKey(dir);
+
+			if (screen.checkScreen(test))
 				orientation.put(dir, State.SCREEN);
-			else if (test.getClass() == BorderCell.class)
+			else if (screen.checkBorder(test))
 				orientation.put(dir, State.BORDER);
 			else
-				System.err.println("Error: Unrecognized type in BorderCell.updateOrientation");
+				orientation.put(dir, State.NULL);
 		}
 	}
 	
@@ -91,12 +83,12 @@ public class BorderCell extends Cell{
 	}
 	
 	@Override
-	public boolean isPassable() { return true; }
+	public boolean checkPassable() { return true; }
 
 	@Override
 	public String toString() {
 		double[] cen = getCenter();
-		return "BorderCell (" + cen[0] + "," + cen[1] + ") maps to " + node.toString();
+		return "BorderCell (" + cen[0] + "," + cen[1] + ") maps to " + super.toString();
 	}
 	
 	@Override
@@ -111,17 +103,13 @@ public class BorderCell extends Cell{
 		else return false;
 	}
 	
-	@Override
-	public int hashCode() {
-		return Objects.hash(node);
-	}
 	
 	/////////////////////////////// Debugging ///////////////////////////////////////////////////
 	
 	@Override
 	public void display() {
 		double[] cen = getCenter();
-		System.out.println("BorderCell (" + cen[0] + "," + cen[1] + ") maps to " + node.toString());
+		System.out.println("BorderCell (" + cen[0] + "," + cen[1] + ") maps to " + super.toString());
 		
 	}
 

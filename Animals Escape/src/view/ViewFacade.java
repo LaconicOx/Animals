@@ -7,6 +7,11 @@ import java.awt.geom.Point2D;
 import javax.swing.JLayeredPane;
 
 import game.Game;
+import units.CellKey;
+import units.GameKey;
+import units.ImageKey;
+import units.TileKey;
+import units.ViewKey;
 import view.images.TreeTile;
 import view.images.BushTile;
 import view.images.GameImage;
@@ -22,20 +27,20 @@ public class ViewFacade{
 	ViewSurface sur;
 	ControlSurface con;
 	Game game;
-	ViewParameters parameters;
+	ViewKey key;
 	
 	///////////////////////// Constructor //////////////////////////////
 	
 	public ViewFacade(Game game) {
-		parameters = ViewParameters.getInstance();
+		key = new ViewKey();
 		this.game = game;
-		vf = new ViewFrame(parameters.getPanel());
+		vf = new ViewFrame(key.getPanel());
 		
 		//Initializes a layered content pane
 		Container layered = new JLayeredPane();
-		sur = new ViewSurface(parameters.getPanel());
+		sur = new ViewSurface(key.getPanel());
 		layered.add(sur, 1);
-		con = new ControlSurface(parameters.getPanel());
+		con = new ControlSurface(key.getPanel());
 		layered.add(con, 0);
 		vf.setContentPane(layered);
 		vf.pack();
@@ -46,14 +51,14 @@ public class ViewFacade{
 		/*
 		 * This constructor is only for testing.
 		 */
-		parameters = ViewParameters.getInstance();
-		vf = new ViewFrame(parameters.getPanel());
+		key = new ViewKey();
+		vf = new ViewFrame(key.getPanel());
 		
 		//Initializes a layered content pane
 		Container layered = new JLayeredPane();
-		sur = new ViewSurface(parameters.getPanel());
+		sur = new ViewSurface(key.getPanel());
 		layered.add(sur, 1);
-		con = new ControlSurface(parameters.getPanel());
+		con = new ControlSurface(key.getPanel());
 		layered.add(con, 0);
 		vf.setContentPane(layered);
 		vf.pack();
@@ -62,19 +67,29 @@ public class ViewFacade{
 	
 	//////////////////////////// Mutator Methods /////////////////////////
 	
-	public void addBush(double[] center) { sur.addImage(new BushTile(center));}
-	public void addGrass(double[] center) { sur.addImage(new GrassTile(center));}
-	public void addRock(double[] center) { sur.addImage(new RockTile(center));}
-	public void addTree(double[] center) { sur.addImage(new TreeTile(center));}
+	public void addBush(CellKey key) { sur.addImage(new BushTile(new TileKey(key)));}
+	public void addGrass(CellKey key) { sur.addImage(new GrassTile(new TileKey(key)));}
+	public void addRock(CellKey key) { sur.addImage(new RockTile(new TileKey(key)));}
+	public void addTree(CellKey key) { sur.addImage(new TreeTile(new TileKey(key)));}
 	
 	public void setScale(double factor) {
-		parameters.setDilation(factor);
+		GameKey.updateRatio(factor);
+		//TODO write code to rescale images.
 		update();
 	}
 	
+	public void shift(double[] coords) {
+		ImageKey.updateShift(coords);
+		update();
+	}
+	
+	public void clearImages() {
+		sur.clearImages();
+	}
+	
 	public void update() {
-		Dimension panel = parameters.getPanel();
-		sur.addImage(new Player(new Point2D.Double(panel.getWidth() / 2, panel.getHeight() / 2)));
+		Dimension panel = key.getPanel();
+		sur.addImage(new Player(new Point2D.Double(panel.getWidth() / 2, panel.getHeight() / 2)));//TODO Remove stand in for player.
 		sur.render();
 	}
 	

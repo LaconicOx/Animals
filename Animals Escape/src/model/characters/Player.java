@@ -1,19 +1,25 @@
 package model.characters;
 
-import model.ModelParameters;
-import model.ModelParameters.Direction;
+import commands.swing.CommandFactory;
+import model.Directions.Direction;
 import model.screen.Cell;
+import model.screen.Screen;
+import units.CellKey;
+import units.ImageKey;
 
 public class Player{
+	
+	private static final double SPEED = 0.01;
 	
 	private Cell cell;
 	private Direction facing;//the direction the animation should be facing.
 	private double[] center;//Character's center.
-	ModelParameters parameters;
+	private Screen screen;
 	
 	public Player(Cell cell) {
 		this.cell = cell;
-		this.parameters = ModelParameters.getInstance();
+		this.center = cell.getCenter();
+		screen = Screen.getInstance();
 	}
 	
 	//////////////////// Mutator Methods ////////////////////
@@ -22,20 +28,25 @@ public class Player{
 	 * 
 	 * @return - true if cell were updated, otherwise returns false.
 	 */
-	public boolean move(double angle) {
-		double[] start = getCenter();//clones the center to get the starting point.
-		double speed = parameters.getSpeed();
-		center[0] += speed * Math.cos(angle);
-		center[1] += speed * Math.sin(angle);
+	public void move(double angle) {
+		double[] destination = new double[] {center[0] + SPEED * Math.cos(angle), center[1] - SPEED * Math.sin(angle)};
 		
-		if(cell.isContained(center)) 
-			return false;
-		else{
-			Direction toward = Direction.getDirection(start, center);
-			cell = cell.getNeighborCell(toward, true);
-			return true;
+		if(cell.isContained(destination)) {
+			center = destination;
+			ImageKey.updateShift(getCenter());
+			CommandFactory.getPingView();//TODO - temporary fix to mix player.
 		}
-		//TODO - Send command to update the view.
+		else{
+			Direction toward = Direction.getDirection(cell.getCenter(), destination);
+			CellKey key = cell.getNeighborKey(toward);
+			//Tests whether cell is passable.
+			if(key.checkPassable()) {
+				center = destination;
+				ImageKey.updateShift(getCenter());
+				cell = screen.getNeighborCell(key);
+				screen.shiftCells(toward);
+			}
+		}
 	}
 	
 	public double[] getCenter() {
@@ -45,6 +56,7 @@ public class Player{
 	public void update(){
 		
 	}//TODO
+	
 	
 	
 }//End of Player

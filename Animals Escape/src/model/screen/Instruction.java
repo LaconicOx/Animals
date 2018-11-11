@@ -3,8 +3,8 @@ package model.screen;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.ModelParameters.Direction;
-import model.board.Node;
+import model.Directions.Direction;
+import units.CellKey;
 
 class Instruction {
 	
@@ -51,34 +51,30 @@ class Instruction {
 	
 	class CreateBorder extends Action{
 		void execute() { 
-			screen.addBorderCell(self.initBorderCell(toward));; 
+			CellKey key = self.getNeighborKey(toward);
+			screen.addBorderCell(key);; 
 		}
 	}
 	
 	class DeleteSelf extends Action{
 		void execute() { 
-			screen.removeBorderCell(self);	
+			screen.removeBorderCell(self.getKey());	
 		}
 	}
 	
 	class DeleteScreen extends Action{
 		void execute() { 
-			Cell sc = self.getNeighborCell(toward, true);
-			if(sc.getClass() == ScreenCell.class) {
-				screen.removeCharacters(sc);//tests characters for removal
-				screen.removeScreenCell((ScreenCell)sc);//remove screen cell.
-			}
-			else {
-				System.err.println("Error in DeleteScreen: ScreenCell not selected.");
-			}
+			CellKey key = self.getNeighborKey(toward);
+			screen.removeCharacters(key);//tests characters for removal
+			screen.removeScreenCell(key);//remove screen cell.
 		}
 	}
 	
 	class Transform extends Action{
 		void execute() {
-			Node selfNode = self.getNode();
-			screen.removeBorderCell(self);
-			screen.addScreenCell(new ScreenCell(selfNode));
+			CellKey key = self.getKey();
+			screen.removeBorderCell(key);
+			screen.addScreenCell(key);
 			}
 	}
 }//End of Instruction

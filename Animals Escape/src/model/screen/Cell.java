@@ -2,67 +2,43 @@ package model.screen;
 
 import java.util.Objects;
 
-import model.ModelParameters;
-import model.ModelParameters.Direction;
-import model.board.Node;
+import model.Directions.Direction;
+import units.CellKey;
 
 public abstract class Cell implements Comparable<Cell>{
 	
-	protected Node node;
-	protected ModelParameters parameters;
-	protected double[] center;
+	private CellKey key;
 	
-	public Cell(Node node) {
-		System.err.println(node);
-		this.node = node;
-		node.setCell(this);
-		parameters = ModelParameters.getInstance();
-		center = parameters.nodeToModel(node.getCenter());
-		System.err.println(center);
+	public Cell(CellKey key) {
+		this.key = key;
 	}
 	
 	
 	////////////////////////// Accessor Methods //////////////////////////
 	
 	public double[] getCenter() {
-		return center.clone();
+		return key.getCenter();
 	}
-	
-	/**
-	 * Clears node of callback to this cell.
-	 */
-	public void clearNode() { node.clearCell(); }
-	
-	public Node getNode() { return node; }
-	
-	public Cell getNeighborCell(Direction dir, boolean nullReturn) {
-		/*
-		 * Returns reference to neighboring cell if found.
-		 * Returns null if no neighboring node  exists or.
-		 * if neighboring node contains no cell.
-		 */
-		
-		Node n = node.getNeighbor(dir);
-		Cell c = n.getCell();
-		//System.err.println(c);
-		if (nullReturn || c != null)
-			return c;
-		else
-			return new ScreenCell(n);
-		
-	}
-	
-	public Node getNeighborNode(Direction dir){ return node.getNeighbor(dir); }
-	
-	public void getCommand() {node.getCommand(getCenter());}
-	
-	
-	//////////////////////// Abstract Methods ///////////////////////////
-	
-	
-	public abstract boolean isContained(double[] coords);
 
-	public abstract boolean isPassable();
+	
+	//public Node getNode() { return node; }
+	
+	public CellKey getNeighborKey(Direction dir){ return key.getNeighborKey(dir); }
+	
+	public void getCommand() {key.getCommand();}
+	
+	public boolean isContained(double[] coords) {
+		return key.containsPoint(coords);
+	};
+	
+	public CellKey getKey() {
+		return key;
+	}
+	
+	//////////////////////////Checker Methods ///////////////////////////////
+	
+	public boolean checkPassable() { return key.checkPassable(); }
+	protected boolean checkDeer() { return key.checkDeer();}
 
 
 	/////////////////////// Overrides /////////////////////////////////////

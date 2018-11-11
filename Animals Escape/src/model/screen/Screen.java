@@ -1,33 +1,34 @@
 package model.screen;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
-import model.ModelParameters;
-import model.ModelParameters.Direction;
-import model.board.Node;
+import commands.swing.CommandFactory;
+import model.Directions.Direction;
 import model.board.TotalBoard;
 import model.characters.Characters;
 import model.characters.Player;
+import units.CellKey;
+import units.ModelKey;
 
 public class Screen {
 	
 	private Set<Characters> characters;
-	private ModelParameters parameters;
-	private Set<Cell> screen;
-	private Set<BorderCell> border;
-	//private Cell center;
+	private ModelKey key;
+	private Map<CellKey, Cell> screen;
+	private Map<CellKey, BorderCell> border;
 	private TotalBoard board;
 	private static Screen unique = null;
 	private Player player;
 	
 	////////////////////////// Constructors and Initializers //////////////////////////
 	private Screen(){
-		screen = new HashSet<>();
-		border = new HashSet<>();
-		parameters = ModelParameters.getInstance();
+		screen = new HashMap<>();
+		border = new HashMap<>();
+		key = new ModelKey();
 		board = TotalBoard.getInstance();
 		characters = new HashSet<>();
 	}
@@ -48,13 +49,12 @@ public class Screen {
 		 * boundaries[2] represents the top boundary.
 		 * boundaries[3] represents the bottom boundary.
 		 */
-		int[] centerCoords = {0,0};
-		double[] boundaries = parameters.getUnitBoundaries(centerCoords);
-		
-		Cell center = new ScreenCell(board.getNodeInstance(centerCoords));//TODO Eliminate static method.
+		double[] boundaries = key.getModelBoundaries(new double[] {0.0, 0.0});
+		CellKey cenKey = new CellKey(board.getNodeInstance(new int[] {0,0}));
+		Cell center = new ScreenCell(cenKey);
 		player = new Player(center);
-		screen.add(center);
-		recurInit(center.getNeighborNode(Direction.N), boundaries);
+		screen.put(cenKey, center);
+		recurInit(center.getNeighborKey(Direction.N), boundaries);
 		
 		//Creates player
 		player = new Player(center);
@@ -66,22 +66,20 @@ public class Screen {
 	 * @param n - node for the new cell to be created and added to screen.
 	 * @param boundaries - inclusive boundaries for the screen.
 	 */
-	private void recurInit(Node n, double[] boundaries) {
-		Cell newCell = new ScreenCell(n);
-		screen.add(newCell);
+	private void recurInit(CellKey key, double[] boundaries) {
+		Cell newCell = new ScreenCell(key);
+		screen.put(key, newCell);
 		
 		for (Direction dir : Direction.values()) {
-			if(newCell.getNeighborCell(dir, true) == null) {
-				Node newNode = newCell.getNeighborNode(dir);
-				int[] cen = newNode.getCenter();
-				//System.err.println(cen[0] + ", " + cen[1]);
+			CellKey dirKey = newCell.getNeighborKey(dir);
+			if(!screen.containsKey(dirKey) && !border.containsKey(dirKey)) {
+				double[] cen = dirKey.getCenter();
 				//Calls itself to add a new concrete cell to screen if within boundaries;
 				//otherwise, adds a border cell to border.
 				if ( cen[0] >= boundaries[0] && cen[0] <= boundaries[1] && cen[1] >= boundaries[2] && cen[1] <= boundaries[3])
-					recurInit(newNode, boundaries);
+					recurInit(dirKey, boundaries);
 				else {
-					//System.err.println("borderCell created");
-					border.add(new BorderCell(newNode));
+					border.put(dirKey, new BorderCell(dirKey));
 				}
 					
 			}
@@ -91,91 +89,68 @@ public class Screen {
 	////////////////////////// Accessor Methods /////////////////////////////
 	
 	public void getTileCommands(){
-		screen.forEach(cell -> cell.getCommand());
+		CommandFactory.getClearImages();
+		screen.forEach((key, cell) -> cell.getCommand());
+	}
+	
+	public Cell getNeighborCell(CellKey key) {
+		if (screen.containsKey(key))
+			return screen.get(key);
+		else if(border.containsKey(key))
+			return border.get(key);
+		else
+			return null;
 	}
 	
 	////////////////////////// Mutator Methods /////////////////////////////////
 	
 	/**
+	 * Forwarding Method.
 	 * @param angle - the direction the the player's movement in radians.
 	 */
 	public void movePlayer(double angle) {
-		//Shifts the screen if the player moves to a new cell.
-		double[] start = player.getCenter();
-		if(player.move(angle)) {
-			Direction dir = Direction.getDirection(start, player.getCenter());
-			shiftCells(dir);
-		}
-			
+		player.move(angle);
 	}
 	
 	void updateCharacters() {
 		//TODO
 	}
 	
-	private void shiftCells(Direction dir) {
+	public void shiftCells(Direction dir) {
 		ArrayList<Instruction> instructions = new ArrayList<>();
-		border.forEach(cell -> instructions.add(cell.getShiftInstruction(dir)));
+		border.forEach((key,cell) -> instructions.add(cell.getShiftInstruction(dir)));
 		instructions.forEach(instruct -> instruct.execute());
 		getTileCommands();//Sends commands to view to generate a new set of tile images.
 	}
 	
 	public void addCharacters(Characters ch) { characters.add(ch); }
 	
-	void addScreenCell(ScreenCell cell) { screen.add(cell); }
+	void addScreenCell(CellKey key) { screen.put(key, new ScreenCell(key)); }
 	
-	void removeScreenCell(ScreenCell cell) {
+	void removeScreenCell(CellKey key) {
 		
-		cell.clearNode();
-		screen.remove(cell);
+		screen.remove(key);
 	}
 	
-	void addBorderCell(BorderCell cell) { border.add(cell); }
+	void addBorderCell(CellKey key) { border.put(key, new BorderCell(key)); }
 	
-	void removeBorderCell(BorderCell cell) {
-		cell.clearNode();
-		border.remove(cell);
+	void removeBorderCell(CellKey key) {
+		border.remove(key);
 	}
 	
-	/////////////////////////// Checker Methods ////////////////////////////////
-	
-	
-	public void removeCharacters(Cell test) {
-		Iterator<Characters> charIt = characters.iterator();
-		while(charIt.hasNext()) {
-			Characters ch = charIt.next();
-			if(ch.offScreen(test))
-				characters.remove(ch);
-		}
+	public void removeCharacters(CellKey key) {
+		//TODO
 	}
 	
-	////////////////////////// Overrides ////////////////////////////////
+	////////////////////////// Checker Methods ////////////////////////////////
 	
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		Iterator<Cell> screenIt = screen.iterator();
-		while(screenIt.hasNext())
-			sb.append(screenIt.next().toString() + "\n");
-		return sb.toString();		
-	} 
-	
-	//////////////////////// Debugging Methods //////////////////////////////
-	
-	public void displayScreen() {
-		StringBuilder sb = new StringBuilder();
-		Iterator<Cell> screenIt = screen.iterator();
-		while(screenIt.hasNext())
-			sb.append(screenIt.next().toString() + ", ");
-		System.out.println(sb.toString());
+	public boolean checkScreen(CellKey key) {
+		return screen.containsKey(key);
 	}
 	
-	public void displayBorder() {
-		StringBuilder sb = new StringBuilder();
-		Iterator<BorderCell> borderIt = border.iterator();
-		while(borderIt.hasNext())
-			sb.append(borderIt.next().toString() + ", ");
-		System.out.println(sb.toString());
+	public boolean checkBorder(CellKey key) {
+		return border.containsKey(key);
 	}
+	
 	
 }//End of Screen

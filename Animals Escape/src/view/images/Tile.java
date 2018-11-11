@@ -8,29 +8,24 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import view.ViewParameters;
+import units.TileKey;
 
 public abstract class Tile extends GameImage{
 	
 	protected static final BufferedHexes bf = BufferedHexes.getInstance();
 	
-	private ViewParameters parameters;
-	protected AffineTransform at;
-	private double[] corner;
+	private TileKey key;
 	
 	///////////////////////// Constructor and Initializers /////////////////////////////////////
-	public Tile(double[] coords) {
+	public Tile(TileKey key) {
+		this.key = key;
 		
-		parameters = ViewParameters.getInstance();
-		at = new AffineTransform();
-		
-		corner = parameters.getCorner(coords);
-		double dilation = parameters.getDilation();
-		
-		at.setToTranslation(corner[0], corner[1]);
-		at.scale(dilation, dilation);
 	}
 	
+	////////////////////////// Accessor Methods ////////////////////////////////
+	protected AffineTransform getAffine() {
+		return key.getTransformation();
+	}
 	
 	public abstract void draw(Graphics g);
 		

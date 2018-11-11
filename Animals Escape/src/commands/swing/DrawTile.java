@@ -1,17 +1,17 @@
 package commands.swing;
 
-import java.io.File;
 
+
+import units.CellKey;
 import view.ViewFacade;
 
 public abstract class DrawTile extends Command{
 	
-	protected File tile;
-	protected double[] center;
+	protected CellKey key;
 	protected ViewFacade view;
 	
-	DrawTile(ViewFacade view, double[] center){
-		this.center = center;
+	DrawTile(ViewFacade view, CellKey key){
+		this.key = key;
 		this.view = view;
 	}
 	

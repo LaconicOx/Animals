@@ -11,13 +11,12 @@ public class ModelFacade{
 	TotalBoard total;
 	Screen active;
 	Game game;
-	ModelParameters parameters;
+
 	
 	////////////////////////////// Constructor //////////////////////////////////
 	
 	public ModelFacade(Game game){
 		this.game = game;
-		parameters = ModelParameters.getInstance();
 		total = TotalBoard.getInstance();
 		active = Screen.getInstance();
 		active.init();//Temporary fix. See note in Screen.

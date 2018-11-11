@@ -45,6 +45,10 @@ class ViewSurface extends JPanel{
 		images.add(gi);
 	}
 	
+	void clearImages() {
+		images.clear();
+	}
+	
 	void render() {
 		//Creates double-buffer.
 		if (dbImage == null) {
@@ -64,7 +68,6 @@ class ViewSurface extends JPanel{
 			image.draw(dbg);
 		
 		repaint();// should be deleted once paintscreen is debugged.
-		images.clear();
 	}
 	
 	//Should be deleted once paintscreen is debugged.

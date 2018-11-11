@@ -1,6 +1,8 @@
 package model.board;
 
 import commands.swing.CommandFactory;
+import units.CellKey;
+import units.NodeKey;
 
 public class TreeNode extends Node{
 	
@@ -12,8 +14,8 @@ public class TreeNode extends Node{
 	
 	///////////////////////// Accessor Methods //////////////////////
 	
-	public void getCommand(double[] center) {
-		CommandFactory.getDrawTree(center);
+	public void getCommand(CellKey key) {
+		CommandFactory.getDrawTree(key);
 	}
 	
 	//////////////////////// Checker Methods ///////////////////////
@@ -24,7 +26,7 @@ public class TreeNode extends Node{
 	}
 	
 	@Override
-	public boolean isPassable() {return PASSABLE;}
+	public boolean checkPassable() {return PASSABLE;}
 
 
 }

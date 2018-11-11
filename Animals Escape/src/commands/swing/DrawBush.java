@@ -1,13 +1,14 @@
 package commands.swing;
 
+import units.CellKey;
 import view.ViewFacade;
 
 public class DrawBush extends DrawTile{
-	DrawBush(ViewFacade vf, double[] center){
-		super(vf, center);
+	DrawBush(ViewFacade vf, CellKey key){
+		super(vf, key);
 	}
 	
 	public void execute() {
-		view.addBush(center);
+		view.addBush(key);
 	}
 }

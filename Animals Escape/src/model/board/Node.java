@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-import model.ModelParameters.Direction;
+import model.Directions.Direction;
 import model.screen.Cell;
+import units.CellKey;
+import units.NodeKey;
 
 
 public abstract class Node {
@@ -14,10 +16,12 @@ public abstract class Node {
 	private Map<Direction, Node> neighbors;
 	private boolean neighborsComplete = false;
 	private Cell cell = null;
+	private TotalBoard board;
 	
 	/////////////////// Constructor and Initializers /////////////////////////
 	Node(NodeKey center) {
 		this.key = center;
+		board = TotalBoard.getInstance();
 		neighbors = new HashMap<Direction, Node>();
 		initNeighbors();
 	}
@@ -60,7 +64,7 @@ public abstract class Node {
 		 * side effect of setting neighborsComplete to false if it returns any null values.
 		 */
 		
-		Node n = TotalBoard.getNode(new NodeKey(dir.getNeighborKey(key.getCenter())));
+		Node n = board.getNode(new NodeKey(dir.getNeighborKey(key.getCenter())));
 		if (n == null && neighborsComplete == true)
 			neighborsComplete = false;
 		return n;
@@ -76,7 +80,6 @@ public abstract class Node {
 		/*
 		 * Returns cell or null.
 		 */
-		//System.out.println(this + ", " + cell[0]);
 		return cell;
 	}
 	
@@ -89,7 +92,7 @@ public abstract class Node {
 		//Creates node if none exists.
 		if (n == null) {
 			int[] newCenter= dir.getNeighborKey(key.getCenter());
-			Node newNode = TotalBoard.getNodeInstance(newCenter);
+			Node newNode = board.getNodeInstance(newCenter);
 			neighbors.put(dir, newNode);
 			return newNode;
 		}
@@ -97,7 +100,7 @@ public abstract class Node {
 			return n;
 	}
 	
-	public NodeKey getKey() {return this.key;}
+	public NodeKey getNodeKey() {return this.key;}
 	
 	/**
 	 * Forwarding method. 
@@ -108,20 +111,12 @@ public abstract class Node {
 	
 	/////////////////////////// Mutator Methods //////////////////////////////
 	
-	public void setCell(Cell c) { 
-		cell = c;
-		System.err.println(cell);
-		}
 	
-	public void clearCell() {
-		System.err.println("clearCell called");
-		cell = null;
-		}
 	
 	/////////////////////////////// Abstract Methods ////////////////////////////
 	
-	public abstract boolean isPassable();
-	public abstract void getCommand(double[] center);
+	public abstract boolean checkPassable();
+	public abstract void getCommand(CellKey key);
 	public abstract boolean checkDeer();
 	
 	///////////////////////// Overridden Methods ////////////////////////////

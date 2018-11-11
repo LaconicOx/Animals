@@ -1,6 +1,8 @@
 package model.board;
 
 import commands.swing.CommandFactory;
+import units.CellKey;
+import units.NodeKey;
 
 public class BushNode extends Node{
 	
@@ -14,13 +16,13 @@ public class BushNode extends Node{
 	//////////////////// Accessor Methods ///////////////////////
 	
 	@Override
-	public void getCommand(double[] vertices) {
-		CommandFactory.getDrawBush(vertices);
+	public void getCommand(CellKey key) {
+		CommandFactory.getDrawBush(key);
 	}
 	
 	/////////////////// Checker Methods //////////////////////
 	@Override
-	public boolean isPassable() {return PASSABLE;}
+	public boolean checkPassable() {return PASSABLE;}
 
 	@Override
 	public boolean checkDeer() {

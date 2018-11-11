@@ -2,12 +2,12 @@ package commands.swing;
 
 import model.ModelFacade;
 
-class UpdatePlayer extends Command{
+class ShiftModel extends Command{
 	
 	private double angle;
 	private ModelFacade model;
 	
-	UpdatePlayer(ModelFacade mf, double angle) {
+	ShiftModel(ModelFacade mf, double angle) {
 		super();
 		model = mf;
 		this.angle = angle;
