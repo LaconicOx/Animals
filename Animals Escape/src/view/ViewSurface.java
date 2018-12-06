@@ -17,7 +17,9 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import view.images.Bob;
 import view.images.GameImage;
+import view.images.Tile;
 
 
 class ViewSurface extends JPanel{
@@ -28,7 +30,8 @@ class ViewSurface extends JPanel{
 	private Image dbImage = null;
 	private Graphics dbg;
 	
-	ArrayList<GameImage> images;
+	ArrayList<Tile> images;
+	ArrayList<GameImage> characters;
 	
 	//////////////////////////// Constructor ////////////////////////////////////////
 	ViewSurface(Dimension dim){
@@ -37,13 +40,20 @@ class ViewSurface extends JPanel{
 		setBackground(Color.white);//JComponent method for setting background color.
 		setOpaque(true);
 		images = new ArrayList<>();
+		characters = new ArrayList<>();
 	}
 	
 	///////////////////////////// Animation Methods ///////////////////////////////////
 	
-	void addImage(GameImage gi) {
-		images.add(gi);
+	void addImage(Tile tile) {
+		images.add(tile);
 	}
+	
+	void addCharacter(Bob bob) {
+		System.out.println(bob);
+		characters.add(bob);
+	}
+	
 	
 	void clearImages() {
 		images.clear();
@@ -66,6 +76,9 @@ class ViewSurface extends JPanel{
 		//Draws tiles
 		for (GameImage image : images)
 			image.draw(dbg);
+		
+		for(GameImage chr : characters)
+			chr.draw(dbg);
 		
 		repaint();// should be deleted once paintscreen is debugged.
 	}

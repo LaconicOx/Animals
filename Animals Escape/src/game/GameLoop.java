@@ -9,6 +9,8 @@ import view.ViewFacade;
 
 public class GameLoop implements Runnable{
 	
+	private static final long SLEEP_TIME= 2L;
+	
 	private PriorityQueue<Command> queue;
 	private ViewFacade view;
 	private ModelFacade model;
@@ -23,9 +25,10 @@ public class GameLoop implements Runnable{
 		private volatile boolean running = false;
 		
 	GameLoop(Game game){
-		model = new ModelFacade(game);
 		view = new ViewFacade(game);
+		model = new ModelFacade(game);
 		CommandFactory.init(game, model, view);
+		model.init();//TODO: Temporary fix to circular call.
 		queue = game.getQueue();
 		
 
@@ -44,7 +47,16 @@ public class GameLoop implements Runnable{
 		model.getDrawCommands();
 		while(running) {
 			process();
+			model.update();
+			view.update();
 			//updates++;
+			try {
+				Thread.sleep(SLEEP_TIME);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//System.out.println("GameLoop running");
 		}
 		//System.out.println(updates);
 	}

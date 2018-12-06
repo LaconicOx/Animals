@@ -4,6 +4,7 @@ package commands.swing;
 import game.Game;
 import model.ModelFacade;
 import units.CellKey;
+import units.PlayerKey;
 import view.ViewFacade;
 
 public class CommandFactory {
@@ -46,16 +47,14 @@ public class CommandFactory {
 		game.enqueCommand(new DrawTree(view, key));
 	}
 	
+	public static void getDrawBob(PlayerKey key){
+		System.out.println(view);
+		Command bob = (new DrawBob(view, key));
+		game.enqueCommand(bob);
+	}
+	
 	public static void getUpdatePlayer(double angle) {
 		game.enqueCommand(new ShiftModel(model, angle));
-	}
-	
-	public static void getPingModel() {
-		game.enqueCommand(new PingModel(model));
-	}
-	
-	public static void getPingView() {
-		game.enqueCommand(new PingView(view));
 	}
 	
 	public static void getUpdateScale(double factor) {

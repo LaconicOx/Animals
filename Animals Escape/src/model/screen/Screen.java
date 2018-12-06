@@ -23,6 +23,7 @@ public class Screen {
 	private TotalBoard board;
 	private static Screen unique = null;
 	private Player player;
+	private boolean playerMoved;
 	
 	////////////////////////// Constructors and Initializers //////////////////////////
 	private Screen(){
@@ -31,6 +32,7 @@ public class Screen {
 		key = new ModelKey();
 		board = TotalBoard.getInstance();
 		characters = new HashSet<>();
+		playerMoved = false;
 	}
 	
 	public static Screen getInstance() {
@@ -52,7 +54,6 @@ public class Screen {
 		double[] boundaries = key.getModelBoundaries(new double[] {0.0, 0.0});
 		CellKey cenKey = new CellKey(board.getNodeInstance(new int[] {0,0}));
 		Cell center = new ScreenCell(cenKey);
-		player = new Player(center);
 		screen.put(cenKey, center);
 		recurInit(center.getNeighborKey(Direction.N), boundaries);
 		
@@ -110,10 +111,14 @@ public class Screen {
 	 */
 	public void movePlayer(double angle) {
 		player.move(angle);
+		playerMoved = true;
 	}
 	
-	void updateCharacters() {
-		//TODO
+	public void updateCharacters() {
+		System.out.println(playerMoved);
+		if (!playerMoved)
+			player.update();
+		playerMoved = false;
 	}
 	
 	public void shiftCells(Direction dir) {

@@ -1,16 +1,17 @@
 package view.images;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+
 
 import units.TileKey;
 
 public class RockTile extends Tile{
+	
+	private static final String path = "RockHex";
+	private static final int frames = 1;
+	private static final Animation rock = new Animation(path, frames);
+	
 	public RockTile(TileKey key) {
-		super(key);
+		super(key, rock);
 	}
 	
-	public void draw(Graphics g) {
-		Graphics2D g2 = (Graphics2D)g;
-		g2.drawImage(bf.getRock(), getAffine(), null);		
-	}
+	
 }

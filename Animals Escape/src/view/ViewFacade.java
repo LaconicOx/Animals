@@ -1,22 +1,22 @@
 package view;
 
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.geom.Point2D;
+
 
 import javax.swing.JLayeredPane;
 
 import game.Game;
+import units.BobKey;
 import units.CellKey;
 import units.GameKey;
 import units.ImageKey;
+import units.PlayerKey;
 import units.TileKey;
 import units.ViewKey;
 import view.images.TreeTile;
 import view.images.BushTile;
-import view.images.GameImage;
 import view.images.GrassTile;
-import view.images.Player;
+import view.images.Bob;
 import view.images.RockTile;
 
 
@@ -71,6 +71,7 @@ public class ViewFacade{
 	public void addGrass(CellKey key) { sur.addImage(new GrassTile(new TileKey(key)));}
 	public void addRock(CellKey key) { sur.addImage(new RockTile(new TileKey(key)));}
 	public void addTree(CellKey key) { sur.addImage(new TreeTile(new TileKey(key)));}
+	public void addBob(PlayerKey key) {sur.addCharacter(new Bob(new BobKey(key)));}
 	
 	public void setScale(double factor) {
 		GameKey.updateRatio(factor);
@@ -88,16 +89,9 @@ public class ViewFacade{
 	}
 	
 	public void update() {
-		Dimension panel = key.getPanel();
-		sur.addImage(new Player(new Point2D.Double(panel.getWidth() / 2, panel.getHeight() / 2)));//TODO Remove stand in for player.
 		sur.render();
 	}
 	
 	
-	///////////////////////// Debugging Methods ////////////////////////
 	
-	public void degbugImage(GameImage gi) {
-		sur.addImage(gi);
-		sur.render();
-	}
 }

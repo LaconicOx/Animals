@@ -19,9 +19,6 @@ public abstract class Cell implements Comparable<Cell>{
 	public double[] getCenter() {
 		return key.getCenter();
 	}
-
-	
-	//public Node getNode() { return node; }
 	
 	public CellKey getNeighborKey(Direction dir){ return key.getNeighborKey(dir); }
 	

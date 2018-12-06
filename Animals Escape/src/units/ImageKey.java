@@ -5,28 +5,27 @@ import java.awt.geom.AffineTransform;
 public abstract class ImageKey extends ViewKey{
 	
 	private static double[] shift = {0.0, 0.0};//stored as model units.
-	
 	private final double[] imageDimensions;
 	private final double[] modelDimensions;
-	private final double[] coords;
 	
-	public ImageKey(double[] coords, double[] imageDimensions, double[] modelDimensions) {
+	public ImageKey(double[] imageDimensions, double[] modelDimensions) {
 		this.imageDimensions = imageDimensions;
 		this.modelDimensions = modelDimensions;
-		this.coords = coords;
 	}
 	
 	//////////////////////////// Helper Methods /////////////////////////////////
 	/**
+	 * Helper method for getTransformation
 	 * Calculates the corner of a hex tile in order to draw from the corner of a png file.
 	 * @param coords - model units
 	 * @return - screen coordinations of the corner of a hex image.
 	 */
-	private double[] getCorner() {
+	private double[] findCorner() {
 		double[] corner = new double[2];
+		double[] coords = getCoords();
 		double[] panelDim = getScreenDim();
-		double[] dilation = getDilation();
 		double[] shift = getShift();
+		double[] dilation = findDilation();
 		
 		//Divides panel's dimensions to find screen's center.
 		double[] screenCenter = new double[]{panelDim[0] / 2.0, panelDim[1] / 2.0};
@@ -41,15 +40,18 @@ public abstract class ImageKey extends ViewKey{
 		return corner;
 	}
 	
+	private double[] findDilation() {
+		return new double[]{unitsToPixels(modelDimensions[0]) / imageDimensions[0], unitsToPixels(modelDimensions[1]) / imageDimensions[1]};
+	}
+	
 	private double unitsToPixels(double units) {
 		return units * getRatio();
 	}
 	
-	private double[] getDilation() {
-		return new double[] {unitsToPixels(modelDimensions[0]) / imageDimensions[0], unitsToPixels(modelDimensions[1]) / imageDimensions[1] };
-	}
 	
 	//////////////////////////// Accessor Methods //////////////////////////////
+	
+	protected abstract double[] getCoords();
 	
 	protected double[] getShift() {
 		return shift;
@@ -57,8 +59,8 @@ public abstract class ImageKey extends ViewKey{
 	
 	public AffineTransform getTransformation() {
 		AffineTransform at = new AffineTransform();
-		double[] corner = getCorner();
-		double[] dilation = getDilation();
+		double[] corner = findCorner();
+		double[] dilation = findDilation();
 		
 		at.setToTranslation(corner[0], corner[1]);
 		at.scale(dilation[0], dilation[1]);

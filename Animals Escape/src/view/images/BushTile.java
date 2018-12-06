@@ -1,18 +1,18 @@
 package view.images;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 
 import units.TileKey;
 
 public class BushTile extends Tile{
+	
+	private static final String path = "BushHex";
+	private static final int frames = 1;
+	private static final Animation bush = new Animation(path, frames);
+	
+	
 	public BushTile(TileKey key) {
-		super(key);
+		super(key, bush);
 	}
 	
-	public void draw(Graphics g) {
-		Graphics2D g2 = (Graphics2D)g;
-		g2.drawImage(bf.getBush(), getAffine(), null);		
-	}
 	
 }

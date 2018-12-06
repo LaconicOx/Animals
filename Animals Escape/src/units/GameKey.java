@@ -1,5 +1,12 @@
 package units;
 
+/**
+ * 
+ * @author dvdco
+ *Top level class for handling game parameters. It contains the ratio between model units and pixels and the screen's dimensions.
+ *Its children are ModelKey and ImageKey.
+ *
+ */
 public class GameKey {
 	
 	private static double[] panelDim = {300.0, 300.0};
