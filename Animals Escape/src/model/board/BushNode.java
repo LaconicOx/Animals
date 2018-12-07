@@ -14,7 +14,7 @@ public class BushNode extends Node{
 	}
 	
 	//////////////////// Accessor Methods ///////////////////////
-	
+	//
 	@Override
 	public void getCommand(CellKey key) {
 		CommandFactory.getDrawBush(key);
