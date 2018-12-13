@@ -1,39 +1,42 @@
 package game;
 
-
-import java.util.PriorityQueue;
-
-import commands.swing.Command;
+import model.ModelFacade;
+import view.SwingFacade;
+import view.ViewInterface;
 
 public class Game {
 	
-	//Game Fields
-	
-	
 	//Game Components
-	PriorityQueue<Command> queue;
 	GameLoop loop;
+	ViewInterface view;
+	ModelFacade model;
 	
 	/////////////////////////////// Constructor ///////////////////////////////////
-	public Game() {
-		queue = new PriorityQueue<>();
-		loop = new GameLoop(this);
+	public Game(String mode) {
+		
+		if (mode.equals("swing")) {
+			view = new SwingFacade(this);
+		}
+		else {
+			System.err.println("Unrecognized mode");
+			System.exit(0);
+		}
+		
+		model = new ModelFacade(this, view);
+		model.init();//TODO: Temporary fix to circular call.
+		loop = new GameLoop(this, view, model);
 	}
 	
+	////////////////////////////// Mutator Methods //////////////////////////////
 	
-	/////////////////////////// Public Methods ///////////////////////////////////////
-	
-	public void enqueCommand(Command cmd) {
-		queue.add(cmd);
+	public void updatePlayer(double angle) {
+		
 	}
-	
-	/////////////////////////// Getter Methods /////////////////////////////////////
-	public PriorityQueue<Command> getQueue() {
-		return queue;
-	}
+
 	
 	////////////////////////////// Main Function //////////////////////////////////
 	public static void main(String[] args) {
-		new Game();
+		String mode = "swing";
+		new Game(mode);
 	}
 }

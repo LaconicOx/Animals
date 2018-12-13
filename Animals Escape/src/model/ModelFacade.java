@@ -4,6 +4,7 @@ package model;
 import game.Game;
 import model.board.TotalBoard;
 import model.screen.Screen;
+import view.ViewInterface;
 
 public class ModelFacade{
 	
@@ -11,14 +12,15 @@ public class ModelFacade{
 	TotalBoard total;
 	Screen active;
 	Game game;
-
+	ViewInterface view;
 	
 	////////////////////////////// Constructor //////////////////////////////////
 	
-	public ModelFacade(Game game){
+	public ModelFacade(Game game, ViewInterface view){
 		this.game = game;
-		total = TotalBoard.getInstance();
-		active = Screen.getInstance();
+		this.view = view;
+		total = TotalBoard.getInstance(view);
+		active = new Screen(view);
 		
 	}
 	
@@ -28,11 +30,11 @@ public class ModelFacade{
 	
 	///////////////////////// Accessor Methods ///////////////////////////
 	
-	public void getDrawCommands() {
-		active.getTileCommands();
-	}
 	/////////////////////////// Mutator Methods //////////////////////////////////
 	
+	public void primeAnimation() {
+		active.pumpAnimation();
+	}
 	
 	/**
 	 * Responsible for shifting the screen to move the player and, if necessary

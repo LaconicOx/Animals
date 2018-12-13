@@ -1,23 +1,28 @@
 package model.board;
 
-import commands.swing.CommandFactory;
-import units.CellKey;
-import units.NodeKey;
+import image_library.Tile;
+import model.keys.NodeKey;
+import view.ViewInterface;
 
 public class BushNode extends Node{
 	
+	//Class Fields and Constants
 	private final static boolean PASSABLE = true;
 	private final static int DEER_ODDS = 5;
 	
-	BushNode(NodeKey center){
+	//Instance Fields
+	private final ViewInterface view;
+	
+	BushNode(NodeKey center, ViewInterface view){
 		super(center);
+		this.view = view;
 	}
 	
 	//////////////////// Accessor Methods ///////////////////////
-	//
+	
 	@Override
-	public void getCommand(CellKey key) {
-		CommandFactory.getDrawBush(key);
+	public final Tile getTile(double[] coords, double[] dimensions) {
+		return view.getBush(coords, dimensions);
 	}
 	
 	/////////////////// Checker Methods //////////////////////

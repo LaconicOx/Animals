@@ -1,7 +1,7 @@
 package model.characters;
 
 
-import model.Directions.Direction;
+import game.Directions.Direction;
 import model.screen.Cell;
 
 public abstract class Characters implements Comparable<Characters>{

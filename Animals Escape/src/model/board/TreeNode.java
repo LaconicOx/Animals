@@ -1,21 +1,24 @@
 package model.board;
 
-import commands.swing.CommandFactory;
-import units.CellKey;
-import units.NodeKey;
+import image_library.Tile;
+import model.keys.NodeKey;
+import view.ViewInterface;
 
 public class TreeNode extends Node{
 	
 	private final static boolean PASSABLE = false;
 	
-	TreeNode(NodeKey nk){
-		super(nk);
+	private ViewInterface view;
+	
+	TreeNode(NodeKey center, ViewInterface view){
+		super(center);
+		this.view = view;
 	}
 	
 	///////////////////////// Accessor Methods //////////////////////
 	
-	public void getCommand(CellKey key) {
-		CommandFactory.getDrawTree(key);
+	public final Tile getTile(double[] coords, double[] dimensions) {
+		return view.getTree(coords, dimensions);
 	}
 	
 	//////////////////////// Checker Methods ///////////////////////

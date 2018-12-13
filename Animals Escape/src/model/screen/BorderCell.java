@@ -1,78 +1,20 @@
 package model.screen;
 
-import java.util.HashMap;
-
-import model.Directions.Direction;
-import units.CellKey;
+import model.keys.CellKey;
 
 public class BorderCell extends Cell{
 	
-	private enum State{NULL, SCREEN, BORDER};
-	HashMap<Direction, State> orientation = null;
-	Screen screen;
-	
 	public BorderCell(CellKey key){
 		super(key);
-		screen = Screen.getInstance();
 	}
 	
 	///////////////////////////// Mutator Methods //////////////////////////
 	
-
+	public void draw() {
+		
+	}
 	
 	///////////////////////////// Accessor Methods ///////////////////////////
-	
-	Instruction getShiftInstruction(Direction dir) {
-		Instruction output = new Instruction(this, dir);
-		
-		updateOrientation();
-		
-		//Builds instruction for creating a cell at the node in the direction of dir.
-		State toward = orientation.get(dir);
-		if (toward == State.NULL)
-			output.nullToBorder();
-		else if (toward == State.SCREEN)
-			output.screenToBorder();
-		else if (toward == State.BORDER)
-			output.keep();
-		else
-			System.err.println("Error in getInstruction(): unrecognized choice.");
-		
-		//Builds instruction for creating a cell at the node for this cell.
-		State away = orientation.get(Direction.getOpposite(dir));
-		if (away == State.NULL)
-			output.selfToNull();
-		else if (away == State.SCREEN)
-			output.selfToScreen();
-		else if (away == State.BORDER)
-			output.keep();
-		else
-			System.err.println("Error in getInstruction(): unrecognized choice.");
-		
-		if(away == State.NULL && toward == State.NULL) {
-			System.err.println("Error in getShiftInstructions(): Null, null orientation" );
-		}
-			
-		//System.out.println(this + " Toward: " + toward + " Away: " + away);
-		
-		return output;
-	}
-	
-	private void updateOrientation() {
-		orientation = new HashMap<>();
-		for (Direction dir : Direction.values()) {
-			CellKey test = getNeighborKey(dir);
-
-			if (screen.checkScreen(test))
-				orientation.put(dir, State.SCREEN);
-			else if (screen.checkBorder(test))
-				orientation.put(dir, State.BORDER);
-			else
-				orientation.put(dir, State.NULL);
-		}
-	}
-	
-	
 	
 	///////////////////////////////// Overrides ////////////////////////////////
 	

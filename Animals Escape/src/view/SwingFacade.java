@@ -1,95 +1,99 @@
 package view;
 
 import java.awt.Container;
-
+import java.awt.Dimension;
 
 import javax.swing.JLayeredPane;
 
 import game.Game;
-import units.BobKey;
-import units.CellKey;
-import units.GameKey;
-import units.ImageKey;
-import units.PlayerKey;
-import units.TileKey;
-import units.ViewKey;
-import view.images.TreeTile;
-import view.images.BushTile;
-import view.images.GrassTile;
-import view.images.Bob;
-import view.images.RockTile;
+import image_library.SwingBush;
+import image_library.SwingGrass;
+import image_library.SwingRock;
+import image_library.SwingTree;
+import image_library.Tile;
 
 
-public class ViewFacade{
+public class SwingFacade implements ViewInterface{
 	
 	//Components
-	ViewFrame vf;
-	ViewSurface sur;
-	ControlSurface con;
-	Game game;
-	ViewKey key;
+	private final ViewFrame vf;
+	private final ViewSurface sur;
+	private final ControlSurface con;
+	private final Game game;
+	
+	//Animation Parameters 
+	private double[] dimensions = {300.0, 300.0};//screen dimensions
+	private double pixelsToUnit = 30.0; //Unit ratio of pixels to one model unit.
+	private double[] shift = {0.0, 0.0};//stored as model units.
 	
 	///////////////////////// Constructor //////////////////////////////
 	
-	public ViewFacade(Game game) {
-		key = new ViewKey();
+	public SwingFacade(Game game) {
 		this.game = game;
-		vf = new ViewFrame(key.getPanel());
+		Dimension dim = new Dimension((int)dimensions[0], (int)dimensions[1]);
+		vf = new ViewFrame(dim);
 		
 		//Initializes a layered content pane
 		Container layered = new JLayeredPane();
-		sur = new ViewSurface(key.getPanel());
+		sur = new ViewSurface(dim);
 		layered.add(sur, 1);
-		con = new ControlSurface(key.getPanel());
+		con = new ControlSurface(game, this, dim);
 		layered.add(con, 0);
 		vf.setContentPane(layered);
 		vf.pack();
 		vf.setVisible(true);
+		sur.init();
 	}
 	
-	ViewFacade() {
-		/*
-		 * This constructor is only for testing.
-		 */
-		key = new ViewKey();
-		vf = new ViewFrame(key.getPanel());
-		
-		//Initializes a layered content pane
-		Container layered = new JLayeredPane();
-		sur = new ViewSurface(key.getPanel());
-		layered.add(sur, 1);
-		con = new ControlSurface(key.getPanel());
-		layered.add(con, 0);
-		vf.setContentPane(layered);
-		vf.pack();
-		vf.setVisible(true);
+	//////////////////////////// Accessor Methods //////////////////////
+	
+	public double[] getScreenDim() {
+		return dimensions.clone();
+	}
+	
+	public double[] getShift() {
+		return shift.clone();
+	}
+	
+	public double getScale() {
+		return pixelsToUnit;
+	}
+	
+	public Tile getBush(double[] coords, double[] dimensions) {
+		return new SwingBush(this, coords, dimensions);
+	}
+	
+	public Tile getGrass(double[] coords, double[] dimensions) {
+		return new SwingGrass(this, coords, dimensions);
+	}
+	
+	public Tile getRock(double[] coords, double[] dimensions) {
+		return new SwingRock(this, coords, dimensions);
+	}
+	
+	public Tile getTree(double[] coords, double[] dimensions) {
+		return new SwingTree(this, coords, dimensions);
 	}
 	
 	//////////////////////////// Mutator Methods /////////////////////////
 	
-	public void addBush(CellKey key) { sur.addImage(new BushTile(new TileKey(key)));}
-	public void addGrass(CellKey key) { sur.addImage(new GrassTile(new TileKey(key)));}
-	public void addRock(CellKey key) { sur.addImage(new RockTile(new TileKey(key)));}
-	public void addTree(CellKey key) { sur.addImage(new TreeTile(new TileKey(key)));}
-	public void addBob(PlayerKey key) {sur.addCharacter(new Bob(new BobKey(key)));}
-	
-	public void setScale(double factor) {
-		GameKey.updateRatio(factor);
-		//TODO write code to rescale images.
-		update();
+	public void updateScale(double factor) {
+		pixelsToUnit *= factor;
 	}
 	
-	public void shift(double[] coords) {
-		ImageKey.updateShift(coords);
-		update();
+	public void updateShift(double[] coords) {
+		shift[0] += coords[0];
+		shift[1] += coords[1];
 	}
 	
-	public void clearImages() {
-		sur.clearImages();
-	}
-	
-	public void update() {
+	public void render() {
 		sur.render();
+	}
+
+	
+	@Override
+	public void recieve(Tile tile) {
+		sur.recieve(tile);
 	}
 	
 	

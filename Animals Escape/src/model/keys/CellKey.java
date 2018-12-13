@@ -1,58 +1,62 @@
-package units;
+package model.keys;
 
 
 import java.util.Objects;
 
-import model.Directions.Direction;
+import game.Directions.Direction;
+import image_library.Tile;
 import model.board.Node;
+import model.screen.Screen;
 
-public class CellKey extends ModelKey{
+public class CellKey {
 	
+	//Class Fields
+	private static final double [] MODEL_VECTOR = Screen.getUnit();
+	private static final double UNIT_APOTHEM = Screen.getApothem();
+	private static final double UNIT_RADIUS = Screen.getRadius();
+	private static final double[] DIM = {2.0* UNIT_RADIUS, 2.0*UNIT_APOTHEM};//Rectangular length and width
+	
+	
+	//Instance Fields
 	private final double[] center;
 	private final Node node;
 	private final Hexagon region;
 	
 	public CellKey(Node node) {
 		this.node = node;
-		center = nodeToModel(node.getCenter());
+		int[] nodeCenter = node.getCenter();
+		center = new double[]{MODEL_VECTOR[0] * nodeCenter[0], MODEL_VECTOR[1] * nodeCenter[1]};
 		region = new Hexagon();
 	}
 	
-	private double[] nodeToModel(int[] key) {
-		double vector[] = getVector();
-		return new double[] {vector[0] * key[0], vector[1] * key[1]};
-	}
 	
 	//////////////////////////// Accessor Methods /////////////////////////////////
 	public double[] getCenter() {
 		return center.clone();
 	}
 	
-	public double[] getDimension() {
-		return new double[] {getRadius() * 2, getApothem() * 2};
-	}
-	
-	public boolean containsPoint(double[] point) {
-		return region.contains(point);
+	public Tile getTile() {
+		return node.getTile(center, DIM);
 	}
 	
 	public CellKey getNeighborKey(Direction dir) {
 		return new CellKey(node.getNeighbor(dir));
 	}
 	
-	public void getCommand() {
-		node.getCommand(this);
+	//////////////////////////Checker Methods ///////////////////////////////
+	
+	public boolean containsPoint(double[] point) {
+		return region.contains(point);
 	}
-	
-	//////////////////////////// Checker Methods /////////////////////////////////
-	
+
 	public boolean checkPassable() {
 		return node.checkPassable();
 	}
-	
+
 	public boolean checkDeer() {
 		return node.checkDeer();
 	}
+	
 	
 	//////////////////////////// Override ///////////////////////////////////
 	
@@ -81,7 +85,7 @@ public class CellKey extends ModelKey{
 	
 	//////////////////////////// Inner Class /////////////////////////////////////
 	
-	private class Hexagon {
+private class Hexagon {
 		
 		//Represents the hexagon as six unit vectors.
 		private final double[][] UNIT_MATRIX = {{1.0, 0.5, -0.5, -1.0, -0.5, 0.5},
@@ -101,7 +105,7 @@ public class CellKey extends ModelKey{
 			double center[] = getCenter();
 				for(int i = 0; i < 2; i++) {
 					for(int j = 0; j < 6; j++) {
-						vertices[i][j] = getRadius() * UNIT_MATRIX[i][j] + center[i];
+						vertices[i][j] = UNIT_RADIUS * UNIT_MATRIX[i][j] + center[i];
 					}
 				}
 		}
@@ -157,7 +161,7 @@ public class CellKey extends ModelKey{
 			//Uses law of sines to calculate the distance from the center to the edge for the line containing
 			// the point.
 			angle %= Math.PI/3;//Only a domain of 0 to Pi/3 applies.
-			double regionDistance = (getRadius() * Math.sqrt(3)/2)/Math.sin(2*Math.PI/3 - angle);
+			double regionDistance = (UNIT_RADIUS * Math.sqrt(3)/2)/Math.sin(2*Math.PI/3 - angle);
 			
 			//Tricks java into rounding to 5 decimal places.
 			//This is necessary to compensate for truncated values; otherwise, boundary points would be excluded.
@@ -194,4 +198,5 @@ public class CellKey extends ModelKey{
 		}
 		
 	}//End of Hexagon
+ 
 }//End of CellKey

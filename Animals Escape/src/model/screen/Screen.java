@@ -3,43 +3,70 @@ package model.screen;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import commands.swing.CommandFactory;
-import model.Directions.Direction;
+import game.Directions.Direction;
 import model.board.TotalBoard;
 import model.characters.Characters;
-import model.characters.Player;
-import units.CellKey;
-import units.ModelKey;
+import model.keys.CellKey;
+import view.ViewInterface;
 
 public class Screen {
 	
+	//Class fields
+	private static final int EXTENSION = 1;//Extends cell beyond edge of screen to prevent flickering
+	private static final double UNIT_APOTHEM = 1.0;
+	private static final double UNIT_RADIUS = (2 * Math.sqrt(3)) / 3.0;
+	private static final double[] UNIT_VECTOR = {1.5 * UNIT_RADIUS, UNIT_APOTHEM};//Vector for converting node units to model units.
+	
+	
+	//Instance Fields
+	private final ViewInterface view;
 	private Set<Characters> characters;
-	private ModelKey key;
 	private Map<CellKey, Cell> screen;
 	private Map<CellKey, BorderCell> border;
-	private TotalBoard board;
-	private static Screen unique = null;
-	private Player player;
 	private boolean playerMoved;
 	
+	
 	////////////////////////// Constructors and Initializers //////////////////////////
-	private Screen(){
+	public Screen(ViewInterface view){
+		this.view = view;
 		screen = new HashMap<>();
 		border = new HashMap<>();
-		key = new ModelKey();
-		board = TotalBoard.getInstance();
 		characters = new HashSet<>();
 		playerMoved = false;
 	}
 	
-	public static Screen getInstance() {
-		if (unique == null)
-			unique = new Screen();
-		return unique;
+	private double[] getModelBoundaries(double[] center) {
+		/*
+		 * boundaries[0] represents the left boundary.
+		 * boundaries[1] represents the right boundary.
+		 * boundaries[2] represents the top boundary.
+		 * boundaries[3] represents the bottom boundary.
+		 */
+		
+		//Converts screendimensions form pixels to model units.
+		double[] screenDim = view.getScreenDim();//Screen dimensions in pixels
+		double scale = view.getScale();//number of pixels per model unit
+		double[] dim = new double[] {screenDim[0] / scale, screenDim[1] / scale};//Dimensions in model units
+		
+		double[] boundaries = new double[4];
+		
+		//Distance from the center to the top or bottom boundaries of the panel.
+		double vertical = dim[0] / 2.0 + UNIT_VECTOR[0] * EXTENSION;
+		//Distance from the center to the left of right boundaries of the panel.
+		double horizontal = dim[1] / 2.0 + UNIT_VECTOR[1] * EXTENSION;
+		
+		boundaries[0] = center[0] - horizontal;
+		boundaries[1] = center[0] + horizontal;
+		boundaries[2] = center[1] - vertical;
+		boundaries[3] = center[1] + vertical;
+		
+		return boundaries;	
 	}
+	
 	
 	//Including init() in the constructor led to circular calls. 
 	//Making it public is a temporary fix
@@ -51,14 +78,12 @@ public class Screen {
 		 * boundaries[2] represents the top boundary.
 		 * boundaries[3] represents the bottom boundary.
 		 */
-		double[] boundaries = key.getModelBoundaries(new double[] {0.0, 0.0});
-		CellKey cenKey = new CellKey(board.getNodeInstance(new int[] {0,0}));
+		double[] boundaries = getModelBoundaries(new double[] {0.0, 0.0});
+		CellKey cenKey = new CellKey(TotalBoard.getNodeInstance(new int[] {0,0}));
 		Cell center = new ScreenCell(cenKey);
 		screen.put(cenKey, center);
 		recurInit(center.getNeighborKey(Direction.N), boundaries);
 		
-		//Creates player
-		player = new Player(center);
 	}
 	
 	/**
@@ -89,10 +114,6 @@ public class Screen {
 	
 	////////////////////////// Accessor Methods /////////////////////////////
 	
-	public void getTileCommands(){
-		CommandFactory.getClearImages();
-		screen.forEach((key, cell) -> cell.getCommand());
-	}
 	
 	public Cell getNeighborCell(CellKey key) {
 		if (screen.containsKey(key))
@@ -103,29 +124,44 @@ public class Screen {
 			return null;
 	}
 	
+	public static double getApothem() {
+		return UNIT_APOTHEM;
+	}
+	
+	public static double getRadius() {
+		return UNIT_RADIUS;
+	}
+	
+	public static double[] getUnit() {
+		return UNIT_VECTOR;
+	}
+	
 	////////////////////////// Mutator Methods /////////////////////////////////
+	
+	public void pumpAnimation() {
+		screen.forEach((key, cell) -> cell.draw());
+	}
 	
 	/**
 	 * Forwarding Method.
 	 * @param angle - the direction the the player's movement in radians.
 	 */
 	public void movePlayer(double angle) {
-		player.move(angle);
+		//player.move(angle);
 		playerMoved = true;
 	}
 	
 	public void updateCharacters() {
 		System.out.println(playerMoved);
 		if (!playerMoved)
-			player.update();
+			//player.update();
 		playerMoved = false;
 	}
 	
 	public void shiftCells(Direction dir) {
 		ArrayList<Instruction> instructions = new ArrayList<>();
-		border.forEach((key,cell) -> instructions.add(cell.getShiftInstruction(dir)));
+		border.forEach((key,cell) -> instructions.add(new Instruction(cell, dir)));
 		instructions.forEach(instruct -> instruct.execute());
-		getTileCommands();//Sends commands to view to generate a new set of tile images.
 	}
 	
 	public void addCharacters(Characters ch) { characters.add(ch); }
@@ -157,5 +193,128 @@ public class Screen {
 		return border.containsKey(key);
 	}
 	
+	///////////////////////// Inner Class /////////////////////////////////////
+	private enum State{NULL, SCREEN, BORDER};
 	
+	class Instruction {
+		
+		private BorderCell cell;
+		private List<Action> actions;
+		private Direction toward;
+		private HashMap<Direction, State> orientation = null;
+		
+		//////////////// Constructor and initializers ///////////////////////
+		
+		Instruction(BorderCell cell, Direction toward){
+			this.cell = cell;
+			this.toward = toward;
+			actions = new ArrayList<>();
+			initOrientation();
+			getShiftInstruction(toward);
+		}
+		
+		private void getShiftInstruction(Direction dir) {
+			
+			//Builds instruction for creating a cell at the node in the direction of dir.
+			State toward = orientation.get(dir);
+			if (toward == State.NULL)
+				nullToBorder();
+			else if (toward == State.SCREEN)
+				screenToBorder();
+			else if (toward == State.BORDER)
+				keep();
+			else
+				System.err.println("Error in getInstruction(): unrecognized choice.");
+			
+			//Builds instruction for creating a cell at the node for this cell.
+			State away = orientation.get(Direction.getOpposite(dir));
+			if (away == State.NULL)
+				selfToNull();
+			else if (away == State.SCREEN)
+				selfToScreen();
+			else if (away == State.BORDER)
+				keep();
+			else
+				System.err.println("Error in getInstruction(): unrecognized choice.");
+			
+			if(away == State.NULL && toward == State.NULL) {
+				System.err.println("Error in getShiftInstructions(): Null, null orientation" );
+			}
+		}
+		
+		/**
+		 * Determines where the cell is relative to other screen objects.
+		 */
+		private void initOrientation() {
+			orientation = new HashMap<>();
+			for (Direction dir : Direction.values()) {
+				CellKey test = cell.getNeighborKey(dir);
+
+				if (checkScreen(test))
+					orientation.put(dir, State.SCREEN);
+				else if (checkBorder(test))
+					orientation.put(dir, State.BORDER);
+				else
+					orientation.put(dir, State.NULL);
+			}
+		}
+		
+		///////////////////// Accessor Method ////////////////////
+		
+		void execute() {
+			actions.forEach(action -> action.execute());
+		}
+		
+		///////////////////// Builder Methods ////////////////////
+		void screenToBorder() {
+			actions.add(new DeleteScreen());
+			actions.add(new CreateBorder());
+		}
+		
+		void nullToBorder() {
+			actions.add(new CreateBorder());
+		}
+		
+		void selfToNull(){
+			actions.add(new DeleteSelf());
+		}
+		
+		void selfToScreen() {
+			actions.add(new Transform());
+		}
+		
+		void keep() {};//The method is here to represent the choice of keeping the cell
+		
+		/////////////////////// Inner Classes /////////////////////
+		abstract class Action { abstract void execute(); }
+		
+		class CreateBorder extends Action{
+			void execute() { 
+				CellKey key = cell.getNeighborKey(toward);
+				addBorderCell(key);; 
+			}
+		}
+		
+		class DeleteSelf extends Action{
+			void execute() { 
+				removeBorderCell(cell.getKey());	
+			}
+		}
+		
+		class DeleteScreen extends Action{
+			void execute() { 
+				CellKey key = cell.getNeighborKey(toward);
+				removeCharacters(key);//tests characters for removal
+				removeScreenCell(key);//remove screen cell.
+			}
+		}
+		
+		class Transform extends Action{
+			void execute() {
+				CellKey key = cell.getKey();
+				removeBorderCell(key);
+				addScreenCell(key);
+				}
+		}
+	}//End of Instruction
 }//End of Screen

@@ -3,27 +3,25 @@ package model.screen;
 
 import java.util.Objects;
 
-import model.characters.CharactersFactory;
-import units.CellKey;
+import image_library.Tile;
+import model.keys.CellKey;
 
 public class ScreenCell extends Cell {
+	
+	private final Tile tile;
 	
 	/////////////////////// Constructor and Initializers ////////////////////////////
 	public ScreenCell(CellKey key){
 		super(key);
+		tile = key.getTile();
 		//  initCharacters(); 
 	}
 	
-	private void initCharacters() {
-		CharactersFactory factory = CharactersFactory.getInstance();
-		if(checkDeer())
-			factory.initDeer(this);
-	}
-	
-	
-	
 	/////////////////////////// Mutator Methods ////////////////////////////
 	
+	public void draw() {
+		tile.send();
+	}
 	
 	///////////////////////////// Overrides ///////////////////////////////
 	
@@ -56,7 +54,5 @@ public class ScreenCell extends Cell {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
 
 }

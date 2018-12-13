@@ -4,24 +4,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-import model.Directions.Direction;
+import game.Directions.Direction;
+import image_library.Tile;
+import model.keys.NodeKey;
 import model.screen.Cell;
-import units.CellKey;
-import units.NodeKey;
 
 
 public abstract class Node {
-	//////////////// Instance Variables /////////////////////
-	private NodeKey key;
+	//Class Fields
+	
+	
+	//Instance Fields
+	private final NodeKey key;
 	private Map<Direction, Node> neighbors;
 	private boolean neighborsComplete = false;
 	private Cell cell = null;
-	private TotalBoard board;
 	
 	/////////////////// Constructor and Initializers /////////////////////////
 	Node(NodeKey center) {
 		this.key = center;
-		board = TotalBoard.getInstance();
 		neighbors = new HashMap<Direction, Node>();
 		initNeighbors();
 	}
@@ -47,34 +48,15 @@ public abstract class Node {
 		}
 	}
 
-	//////////////////// Helper Methods ///////////////////////////////////
+	////////////////////// Accessor Methods /////////////////////////////////
 	
-	private void updateNeighbors() {
-		if (neighborsComplete ==  false) {
-			neighborsComplete = true;
-			for (Direction dir : neighbors.keySet())
-				neighbors.computeIfAbsent(dir, x -> findNeighbor(x));
-		}
-	}
 	
-	private Node findNeighbor(Direction dir) {
-		/*
-		 * Helper function for setNeighbors and updateNeighbors. It is particularly
-		 * necessary for the completeIfAbsent function used in updateNeighbors. It has the
-		 * side effect of setting neighborsComplete to false if it returns any null values.
-		 */
-		
-		Node n = board.getNode(new NodeKey(dir.getNeighborKey(key.getCenter())));
-		if (n == null && neighborsComplete == true)
-			neighborsComplete = false;
-		return n;
-	}
 	
 	protected int getRanInt() {
 		return ThreadLocalRandom.current().nextInt(1, 101);//Uppperbound is exclusive.
 	}
 	
-	////////////////////// Accessor Methods /////////////////////////////////
+	public abstract Tile getTile(double[] coords, double[] dimension);
 	
 	public Cell getCell() {
 		/*
@@ -92,7 +74,7 @@ public abstract class Node {
 		//Creates node if none exists.
 		if (n == null) {
 			int[] newCenter= dir.getNeighborKey(key.getCenter());
-			Node newNode = board.getNodeInstance(newCenter);
+			Node newNode = TotalBoard.getNodeInstance(newCenter);
 			neighbors.put(dir, newNode);
 			return newNode;
 		}
@@ -106,17 +88,36 @@ public abstract class Node {
 	 * Forwarding method. 
 	 * @return Array representing the unit vector for the node.
 	 */
-	public int[] getCenter() {return key.getCenter();}
-	
+	public int[] getCenter() {
+		return key.getCenter();
+		}
 	
 	/////////////////////////// Mutator Methods //////////////////////////////
 	
+	private void updateNeighbors() {
+		if (neighborsComplete ==  false) {
+			neighborsComplete = true;
+			for (Direction dir : neighbors.keySet())
+				neighbors.computeIfAbsent(dir, x -> findNeighbor(x));
+		}
+	}
 	
+	private Node findNeighbor(Direction dir) {
+		/*
+		 * Helper function for setNeighbors and updateNeighbors. It is particularly
+		 * necessary for the completeIfAbsent function used in updateNeighbors. It has the
+		 * side effect of setting neighborsComplete to false if it returns any null values.
+		 */
+		
+		Node n = TotalBoard.getNode(new NodeKey(dir.getNeighborKey(key.getCenter())));
+		if (n == null && neighborsComplete == true)
+			neighborsComplete = false;
+		return n;
+	}
 	
-	/////////////////////////////// Abstract Methods ////////////////////////////
+	/////////////////////////////// Checker Methods ////////////////////////////
 	
 	public abstract boolean checkPassable();
-	public abstract void getCommand(CellKey key);
 	public abstract boolean checkDeer();
 	
 	///////////////////////// Overridden Methods ////////////////////////////

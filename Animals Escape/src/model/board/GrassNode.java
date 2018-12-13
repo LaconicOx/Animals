@@ -2,24 +2,27 @@
 package model.board;
 
 
-import commands.swing.CommandFactory;
-import units.CellKey;
-import units.NodeKey;
+import image_library.Tile;
+import model.keys.NodeKey;
+import view.ViewInterface;
 
 public class GrassNode extends Node{
 	
 	private final static boolean PASSABLE = true;
 	private final static int DEER_ODDS = 10;
 	
-	public GrassNode(NodeKey center){
+	private ViewInterface view;
+	
+	public GrassNode(NodeKey center, ViewInterface view){
 		super(center);
+		this.view = view;
 	}
 	
 	/////////////////////// Accessor Methods //////////////////////
 	
 	@Override
-	public void getCommand(CellKey key) {
-		CommandFactory.getDrawGrass(key);
+	public Tile getTile(double[] coords, double[] dimensions) {
+		return view.getGrass(coords, dimensions);
 	}
 	
 	///////////////////// Checker Methods /////////////////////////

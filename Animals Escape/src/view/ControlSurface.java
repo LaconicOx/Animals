@@ -7,14 +7,19 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JPanel;
 
-import commands.swing.CommandFactory;
+import game.Game;
 
 class ControlSurface extends JPanel{
 	private static final long serialVersionUID = -8270240225014168071L;
-	private Dimension dim;
 	
-	ControlSurface(Dimension dim){
+	private Dimension dim;
+	private Game game;
+	private SwingFacade sf;
+	
+	ControlSurface(Game game, SwingFacade sf, Dimension dim){
 		this.dim = dim;
+		this.game = game;
+		this.sf = sf;
 		setSize(this.dim);
 		setOpaque(false);
 		setFocusable(true);
@@ -28,17 +33,17 @@ class ControlSurface extends JPanel{
 			double angle = Math.PI / 2.0;
 			
 			switch(keyCode) {
-			case KeyEvent.VK_W: CommandFactory.getUpdatePlayer(angle);//Moves up.
+			case KeyEvent.VK_W: game.updatePlayer(angle);//Moves up.
 				break;
-			case KeyEvent.VK_A: CommandFactory.getUpdatePlayer(2 * angle);//Moves left.
+			case KeyEvent.VK_A: game.updatePlayer(2 * angle);//Moves left.
 				break;
-			case KeyEvent.VK_D: CommandFactory.getUpdatePlayer(0.0);//Moves right
+			case KeyEvent.VK_D: game.updatePlayer(0.0);//Moves right
 				break;
-			case KeyEvent.VK_S: CommandFactory.getUpdatePlayer(3 * angle);//Moves down.
+			case KeyEvent.VK_S: game.updatePlayer(3 * angle);//Moves down.
 				break;
-			case KeyEvent.VK_I: CommandFactory.getUpdateScale(1.2);//Zooms in.
+			case KeyEvent.VK_I: sf.updateScale(1.2);//Zooms in.
 				break;
-			case KeyEvent.VK_K: CommandFactory.getUpdateScale(0.8);//Zooms out.
+			case KeyEvent.VK_K: sf.updateScale(0.8);//Zooms out.
 			}
 		}
 	}

@@ -1,18 +1,13 @@
 package game;
 
-import java.util.PriorityQueue;
-
-import commands.swing.Command;
-import commands.swing.CommandFactory;
 import model.ModelFacade;
-import view.ViewFacade;
+import view.ViewInterface;
 
 public class GameLoop implements Runnable{
 	
 	private static final long SLEEP_TIME= 2L;
 	
-	private PriorityQueue<Command> queue;
-	private ViewFacade view;
+	private ViewInterface view;
 	private ModelFacade model;
 	private Thread loop;
 	
@@ -24,14 +19,9 @@ public class GameLoop implements Runnable{
 		//memory of the GUI thread or animation thread.
 		private volatile boolean running = false;
 		
-	GameLoop(Game game){
-		view = new ViewFacade(game);
-		model = new ModelFacade(game);
-		CommandFactory.init(game, model, view);
-		model.init();//TODO: Temporary fix to circular call.
-		queue = game.getQueue();
-		
-
+	GameLoop(Game game, ViewInterface view, ModelFacade model){
+		this.view = view;
+		this.model = model;
 		startLoop();
 	}
 	
@@ -44,11 +34,13 @@ public class GameLoop implements Runnable{
 	public void run() {
 		//startTime = System.nanoTime();
 		running = true;
-		model.getDrawCommands();
+		 
+		model.primeAnimation();
+		view.render();
 		while(running) {
-			process();
-			model.update();
-			view.update();
+			//model.primeAnimation();
+			//model.update();
+			//view.render();
 			//updates++;
 			try {
 				Thread.sleep(SLEEP_TIME);
@@ -62,9 +54,4 @@ public class GameLoop implements Runnable{
 	}
 	
 	
-	private void process() {
-		while(!queue.isEmpty()) {
-			queue.poll().execute();
-		}
-	}
 }

@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
-import model.Directions.Direction;
-import units.NodeKey;
+import game.Directions.Direction;
+import model.keys.NodeKey;
+import view.ViewInterface;
 
 
 public class TotalBoard {
@@ -20,26 +20,28 @@ public class TotalBoard {
 	 * Singleton class for creating and storing the game board.
 	 */
 	
-	
+	private static ViewInterface view;
 	private static TotalBoard uniqueInstance;
-	private Map<NodeKey, Node> board;
+	private static Map<NodeKey, Node> board;
 	
 	/////////////////// Singleton Constructor ////////////////////////
-	private TotalBoard() {
+	private TotalBoard(ViewInterface view) {
+		this.view = view;
 		board = new HashMap<NodeKey, Node>();
 	}
 	
-	public static TotalBoard getInstance() {
+	public static TotalBoard getInstance(ViewInterface view) {
 		if (uniqueInstance == null) {
-			uniqueInstance = new TotalBoard();
+			uniqueInstance = new TotalBoard(view);
 			}
 		return uniqueInstance;
 	}
 	
+	
 
 	///////////////////// Accessor Methods /////////////////////////////
 	
-	public Node getNode(NodeKey k) {
+	public static Node getNode(NodeKey k) {
 		/*
 		 * Returns reference to node for key p.
 		 * Returns a null object if no node is found.
@@ -48,26 +50,26 @@ public class TotalBoard {
 	}
 	
 	
-	public Node getNodeInstance(int[] coords) {
+	public static Node getNodeInstance(int[] coords) {
 		NodeKey nk = new NodeKey(coords);
 		HexType type = initType(nk);
 		Node output = null;
 		
 		switch(type) {
-		case GRASS: output = new GrassNode(nk);
+		case GRASS: output = new GrassNode(nk, view);
 			break;
-		case BUSH: output = new BushNode(nk);
+		case BUSH: output = new BushNode(nk, view);
 			break;
-		case OAK: output = new TreeNode(nk);
+		case OAK: output = new TreeNode(nk, view);
 			break;
-		case ROCK: output = new RockNode(nk);
+		case ROCK: output = new RockNode(nk, view);
 			break;
 		}
 		putNode(output);//Assures all nodes have been entered into the TotalBoard
 		return output;
 	}
 	
-	public  HashSet<Node> getAllNodes(){
+	public static HashSet<Node> getAllNodes(){
 		HashSet<Node> output = new HashSet<>();
 		output.addAll(board.values());
 		
@@ -75,7 +77,7 @@ public class TotalBoard {
 	}
 	
 	////////////////////// Helper Methods //////////////////////////////
-	void putNode(Node n) {
+	static void putNode(Node n) {
 		if(board.containsKey(n.getNodeKey()))
 			System.err.println("Error: model already conatins a node at " + n);
 		else {
@@ -83,7 +85,7 @@ public class TotalBoard {
 		}
 	}
 	
-	private HexType initType(NodeKey key) {
+	private static HexType initType(NodeKey key) {
 		/*
 		 * 
 		 */

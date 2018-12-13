@@ -1,16 +1,23 @@
-package units;
+package image_library;
 
+import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 
-public abstract class ImageKey extends ViewKey{
+/**
+ * @author dvdco
+ * Top level class for images.
+ */
+public abstract class Images {
 	
-	private static double[] shift = {0.0, 0.0};//stored as model units.
 	private final double[] imageDimensions;
 	private final double[] modelDimensions;
 	
-	public ImageKey(double[] imageDimensions, double[] modelDimensions) {
+	private int advances;
+	
+	public Images(double[] imageDimensions, double[] modelDimensions) {
 		this.imageDimensions = imageDimensions;
 		this.modelDimensions = modelDimensions;
+		advances = 0;
 	}
 	
 	//////////////////////////// Helper Methods /////////////////////////////////
@@ -24,6 +31,7 @@ public abstract class ImageKey extends ViewKey{
 		double[] corner = new double[2];
 		double[] coords = getCoords();
 		double[] panelDim = getScreenDim();
+		double scale = getScale();
 		double[] shift = getShift();
 		double[] dilation = findDilation();
 		
@@ -32,7 +40,7 @@ public abstract class ImageKey extends ViewKey{
 		//Divides tile's dimensions to find shift to image's corner.
 		double[] tileCorner = new double[] {(imageDimensions[0] * dilation[0]) / 2.0, (imageDimensions[1] * dilation[1]) / 2.0};
 		//Shifts the coordinates relative to the player's position and then converts model units to pixels.
-		double[] convertedUnits = new double[] {unitsToPixels(coords[0] - shift[0]), unitsToPixels(coords[1] - shift[1])};
+		double[] convertedUnits = new double[] {scale * coords[0] - shift[0], scale * (coords[1] - shift[1])};
 		
 		// corner = screen's center + converted units - half of tile dimensions
 		corner[0] =  convertedUnits[0] + screenCenter[0] - tileCorner[0];
@@ -41,20 +49,20 @@ public abstract class ImageKey extends ViewKey{
 	}
 	
 	private double[] findDilation() {
-		return new double[]{unitsToPixels(modelDimensions[0]) / imageDimensions[0], unitsToPixels(modelDimensions[1]) / imageDimensions[1]};
+		double scale = getScale();
+		return new double[]{(scale * modelDimensions[0]) / imageDimensions[0], (scale * modelDimensions[1]) / imageDimensions[1]};
 	}
-	
-	private double unitsToPixels(double units) {
-		return units * getRatio();
-	}
-	
 	
 	//////////////////////////// Accessor Methods //////////////////////////////
 	
 	protected abstract double[] getCoords();
+	protected abstract double[] getShift();
+	protected abstract double getScale();
+	protected abstract int getTotalFrames();
+	protected abstract double[] getScreenDim();
 	
-	protected double[] getShift() {
-		return shift;
+	protected int getFrameIndex() {
+		return advances % getTotalFrames();
 	}
 	
 	public AffineTransform getTransformation() {
@@ -68,14 +76,27 @@ public abstract class ImageKey extends ViewKey{
 		return at;
 	}
 	
-	/////////////////////////// Static Methods ////////////////////////////////////
-	public static void updateShift(double[] coords) {
-		shift[0] = coords[0];
-		shift[1] = coords[1];
+	///////////////////////////  Mutator Methods ////////////////////////////////
+	
+	public void reset() {
+		advances = 0;
 	}
 	
+	public void advance() {
+		advances++;
+	}
 	
+	public abstract void send();
 	
+	public abstract void draw(Graphics g);
 	
+	/////////////////////////// Checker Methods /////////////////////////////
+	
+	public boolean checkResting() {
+		if (advances % getTotalFrames() == 0)
+			return true;
+		else
+			return false;
+	}
 	
 }

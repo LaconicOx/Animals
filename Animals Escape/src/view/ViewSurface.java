@@ -13,13 +13,10 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import view.images.Bob;
-import view.images.GameImage;
-import view.images.Tile;
+import image_library.Tile;
 
 
 class ViewSurface extends JPanel{
@@ -27,60 +24,38 @@ class ViewSurface extends JPanel{
 	private Dimension dim;
 	
 	//Fields for double buffering.
-	private Image dbImage = null;
-	private Graphics dbg;
+	private Image dbImage;
+	private Graphics read;
 	
-	ArrayList<Tile> images;
-	ArrayList<GameImage> characters;
-	
+		
 	//////////////////////////// Constructor ////////////////////////////////////////
 	ViewSurface(Dimension dim){
 		this.dim = dim;
 		setSize(this.dim);
 		setBackground(Color.white);//JComponent method for setting background color.
 		setOpaque(true);
-		images = new ArrayList<>();
-		characters = new ArrayList<>();
+		
+	}
+	
+	public void init() {
+		dbImage = createImage(dim.width, dim.height);
+		read = dbImage.getGraphics();
+		read.setColor(Color.white);
+		read.fillRect(0,0, dim.width, dim.height);
 	}
 	
 	///////////////////////////// Animation Methods ///////////////////////////////////
 	
-	void addImage(Tile tile) {
-		images.add(tile);
-	}
-	
-	void addCharacter(Bob bob) {
-		System.out.println(bob);
-		characters.add(bob);
-	}
-	
-	
-	void clearImages() {
-		images.clear();
+	void recieve(Tile tile) {
+		tile.draw(read);
 	}
 	
 	void render() {
-		//Creates double-buffer.
-		if (dbImage == null) {
-			dbImage = createImage(dim.width, dim.height);
-			if (dbImage == null)
-				System.out.println("dbImage is null.");
-			else
-				dbg = dbImage.getGraphics();
-		}
+		repaint();// should be deleted once paintscreen is debugged.
 		
 		//Clear previous images by drawing a white background.
-		dbg.setColor(Color.white);
-		dbg.fillRect(0,0, dim.width, dim.height);
-		
-		//Draws tiles
-		for (GameImage image : images)
-			image.draw(dbg);
-		
-		for(GameImage chr : characters)
-			chr.draw(dbg);
-		
-		repaint();// should be deleted once paintscreen is debugged.
+		//read.setColor(Color.white);
+		//read.fillRect(0,0, dim.width, dim.height);
 	}
 	
 	//Should be deleted once paintscreen is debugged.

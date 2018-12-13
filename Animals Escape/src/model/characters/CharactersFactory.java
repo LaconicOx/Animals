@@ -5,16 +5,9 @@ import model.screen.Screen;
 
 public class CharactersFactory {
 	private Screen screen;
-	private static CharactersFactory unique = null;
 	
-	private CharactersFactory() {
-		screen = Screen.getInstance();
-	}
-	
-	public static CharactersFactory getInstance() {
-		if (unique == null)
-			unique = new CharactersFactory();
-		return unique;
+	private CharactersFactory(Screen screen) {
+		this.screen = screen;
 	}
 	
 	public void initDeer(Cell cell) {

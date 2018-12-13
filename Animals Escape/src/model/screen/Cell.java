@@ -2,17 +2,20 @@ package model.screen;
 
 import java.util.Objects;
 
-import model.Directions.Direction;
-import units.CellKey;
+import game.Directions.Direction;
+import model.keys.CellKey;
 
 public abstract class Cell implements Comparable<Cell>{
 	
-	private CellKey key;
+	private final CellKey key;
 	
 	public Cell(CellKey key) {
 		this.key = key;
 	}
 	
+	////////////////////////// Mutator Methods ///////////////////////
+	
+	public abstract void draw();
 	
 	////////////////////////// Accessor Methods //////////////////////////
 	
@@ -20,23 +23,29 @@ public abstract class Cell implements Comparable<Cell>{
 		return key.getCenter();
 	}
 	
-	public CellKey getNeighborKey(Direction dir){ return key.getNeighborKey(dir); }
+	public CellKey getKey() {
+		return key;
+	}
 	
-	public void getCommand() {key.getCommand();}
+	public CellKey getNeighborKey(Direction dir){ return key.getNeighborKey(dir); }
 	
 	public boolean isContained(double[] coords) {
 		return key.containsPoint(coords);
 	};
 	
-	public CellKey getKey() {
-		return key;
+	/////////////////////////// Checker Methods //////////////////////////
+	
+	public boolean checkDeer() {
+		return key.checkDeer();
 	}
 	
-	//////////////////////////Checker Methods ///////////////////////////////
+	public boolean checkPassable() {
+		return key.checkPassable();
+	}
 	
-	public boolean checkPassable() { return key.checkPassable(); }
-	protected boolean checkDeer() { return key.checkDeer();}
-
+	public boolean containsPoint(double[] point) {
+		return key.containsPoint(point);
+	}
 
 	/////////////////////// Overrides /////////////////////////////////////
 	
@@ -99,4 +108,6 @@ public abstract class Cell implements Comparable<Cell>{
 	///////////////////////// Debugging ////////////////////////////////
 	
 	public abstract void display();
-}
+
+	
+}//End of Cell

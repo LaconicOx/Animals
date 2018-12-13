@@ -1,21 +1,24 @@
 package model.board;
 
-import commands.swing.CommandFactory;
-import units.CellKey;
-import units.NodeKey;
+import image_library.Tile;
+import model.keys.NodeKey;
+import view.ViewInterface;
 
 public class RockNode extends Node{
 	
 	private final static boolean PASSABLE = false;
 	
-	public RockNode(NodeKey center){
+	private ViewInterface view;
+	
+	public RockNode(NodeKey center, ViewInterface view){
 		super(center);
+		this.view = view;
 	}
 	
 	/////////////////// Accessor Methods ////////////////////
 	
-	public void getCommand(CellKey key) {
-		CommandFactory.getDrawRock(key);
+	public Tile getTile(double[] coords, double[] dimensions) {
+		return view.getRock(coords, dimensions);
 	}
 	
 	///////////////// Checker Methods //////////////////////
