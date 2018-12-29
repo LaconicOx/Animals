@@ -3,16 +3,20 @@ package model;
 
 import game.Game;
 import model.board.TotalBoard;
+import model.characters.CharacterFactory;
+import model.characters.Player;
 import model.screen.Screen;
 import view.ViewInterface;
 
 public class ModelFacade{
 	
 	//Game Components
-	TotalBoard total;
-	Screen active;
-	Game game;
-	ViewInterface view;
+	private TotalBoard total;
+	private Screen active;
+	private Game game;
+	private ViewInterface view;
+	private Player player;
+	private CharacterFactory factory;
 	
 	////////////////////////////// Constructor //////////////////////////////////
 	
@@ -21,20 +25,15 @@ public class ModelFacade{
 		this.view = view;
 		total = TotalBoard.getInstance(view);
 		active = new Screen(view);
-		
-	}
-	
-	public void init() {
-		active.init();//Temporary fix. See note in Screen.
+		factory = CharacterFactory.getInstance(active, this, view);
+		player = new Player(active, view);
 	}
 	
 	///////////////////////// Accessor Methods ///////////////////////////
 	
+	
 	/////////////////////////// Mutator Methods //////////////////////////////////
 	
-	public void primeAnimation() {
-		active.pumpAnimation();
-	}
 	
 	/**
 	 * Responsible for shifting the screen to move the player and, if necessary
@@ -43,11 +42,16 @@ public class ModelFacade{
 	 * @param y - represents the vertical component of the player's movement.
 	 */
 	public void movePlayer(double angle){
-		active.movePlayer(angle);
+		player.move(angle);
+	}
+	
+	public void stopPlayer() {
+		player.stop();
 	}
 	
 	public void update() {
-		active.updateCharacters();
+		player.update();
+		active.updateCells();
 	}
 	
 	/////////////////////// Display Methods ////////////////////////////////////////

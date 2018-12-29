@@ -3,21 +3,18 @@ package image_library;
 import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 
+import game.Directions.Direction;
+
 /**
  * @author dvdco
  * Top level class for images.
  */
 public abstract class Images {
 	
-	private final double[] imageDimensions;
 	private final double[] modelDimensions;
 	
-	private int advances;
-	
-	public Images(double[] imageDimensions, double[] modelDimensions) {
-		this.imageDimensions = imageDimensions;
+	public Images(double[] modelDimensions) {
 		this.modelDimensions = modelDimensions;
-		advances = 0;
 	}
 	
 	//////////////////////////// Helper Methods /////////////////////////////////
@@ -31,6 +28,7 @@ public abstract class Images {
 		double[] corner = new double[2];
 		double[] coords = getCoords();
 		double[] panelDim = getScreenDim();
+		double[] imageDimensions = getImageDim();
 		double scale = getScale();
 		double[] shift = getShift();
 		double[] dilation = findDilation();
@@ -40,7 +38,7 @@ public abstract class Images {
 		//Divides tile's dimensions to find shift to image's corner.
 		double[] tileCorner = new double[] {(imageDimensions[0] * dilation[0]) / 2.0, (imageDimensions[1] * dilation[1]) / 2.0};
 		//Shifts the coordinates relative to the player's position and then converts model units to pixels.
-		double[] convertedUnits = new double[] {scale * coords[0] - shift[0], scale * (coords[1] - shift[1])};
+		double[] convertedUnits = new double[] {scale * (coords[0] - shift[0]), scale * (coords[1] - shift[1])};
 		
 		// corner = screen's center + converted units - half of tile dimensions
 		corner[0] =  convertedUnits[0] + screenCenter[0] - tileCorner[0];
@@ -48,8 +46,10 @@ public abstract class Images {
 		return corner;
 	}
 	
-	private double[] findDilation() {
+	protected double[] findDilation() {
 		double scale = getScale();
+		double[] imageDimensions = getImageDim();
+		
 		return new double[]{(scale * modelDimensions[0]) / imageDimensions[0], (scale * modelDimensions[1]) / imageDimensions[1]};
 	}
 	
@@ -58,14 +58,12 @@ public abstract class Images {
 	protected abstract double[] getCoords();
 	protected abstract double[] getShift();
 	protected abstract double getScale();
-	protected abstract int getTotalFrames();
+	protected abstract int getTotalFrames(Direction dir);
 	protected abstract double[] getScreenDim();
+	protected abstract double[] getImageDim();
 	
-	protected int getFrameIndex() {
-		return advances % getTotalFrames();
-	}
 	
-	public AffineTransform getTransformation() {
+	protected AffineTransform getTransformation() {
 		AffineTransform at = new AffineTransform();
 		double[] corner = findCorner();
 		double[] dilation = findDilation();
@@ -78,25 +76,11 @@ public abstract class Images {
 	
 	///////////////////////////  Mutator Methods ////////////////////////////////
 	
-	public void reset() {
-		advances = 0;
-	}
-	
-	public void advance() {
-		advances++;
-	}
-	
-	public abstract void send();
 	
 	public abstract void draw(Graphics g);
 	
-	/////////////////////////// Checker Methods /////////////////////////////
+
 	
-	public boolean checkResting() {
-		if (advances % getTotalFrames() == 0)
-			return true;
-		else
-			return false;
-	}
+
 	
 }

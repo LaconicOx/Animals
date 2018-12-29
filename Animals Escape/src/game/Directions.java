@@ -2,33 +2,12 @@ package game;
 
 
 /**
- * The model relies on the apothem of the hex tiles as its base unit.
- * Whatever the apothem of any hex tile drawn to the screen is equivalent
- * to one.
- *
+ * Represents the cardinal and primary intercardinal directions.
  */
 public class Directions{
 	
 	public enum Direction{
-		NE (1, -1),
-		N (0, -2),
-		NW(-1, -1),
-		SW(-1, 1),
-		S(0, 2),
-		SE(1, 1);
-		
-		private int x;
-		private int y;
-		
-		Direction(int x, int y){
-			this.x = x;
-			this.y = y;
-		}
-		
-		
-		public int[] getNeighborKey(int[] key) {
-			return new int[]{key[0] + this.x, key[1] + this.y};
-		}
+		E, NE, N, NW, W, SW, S, SE;
 		
 		public static Direction getDirection(double[] start, double[] end) {
 			/*
@@ -79,12 +58,15 @@ public class Directions{
 		public static Direction getOpposite(Direction dir) {
 			Direction output = null;
 			switch(dir) {
-				
+				case E: output = Direction.W;
+					break;
 				case NE: output = Direction.SW;
 					break;
 				case N: output = Direction.S;
 					break;
 				case NW: output = Direction.SE;
+					break;
+				case W: output = Direction.W;
 					break;
 				case SW: output = Direction.NE;
 					break;
@@ -97,5 +79,4 @@ public class Directions{
 		}
 	}//End of Direction
 
-
-}//End of ModelParameters
+}

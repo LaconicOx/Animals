@@ -19,9 +19,5 @@ public class Deer extends Characters{
 	//////////////////////// Checker Methods ////////////////////////////
 	
 	
-	@Override
-	public int compareTo(Characters o) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	
 }

@@ -3,7 +3,7 @@ package model.board;
 
 
 import image_library.Tile;
-import model.keys.NodeKey;
+import model.keys.ModelKey;
 import view.ViewInterface;
 
 public class GrassNode extends Node{
@@ -13,7 +13,7 @@ public class GrassNode extends Node{
 	
 	private ViewInterface view;
 	
-	public GrassNode(NodeKey center, ViewInterface view){
+	public GrassNode(ModelKey center, ViewInterface view){
 		super(center);
 		this.view = view;
 	}
@@ -21,8 +21,8 @@ public class GrassNode extends Node{
 	/////////////////////// Accessor Methods //////////////////////
 	
 	@Override
-	public Tile getTile(double[] coords, double[] dimensions) {
-		return view.getGrass(coords, dimensions);
+	public Tile getTile() {
+		return view.getGrass(getCenter(), ModelKey.getDimensions());
 	}
 	
 	///////////////////// Checker Methods /////////////////////////

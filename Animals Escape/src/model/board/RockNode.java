@@ -1,7 +1,7 @@
 package model.board;
 
 import image_library.Tile;
-import model.keys.NodeKey;
+import model.keys.ModelKey;
 import view.ViewInterface;
 
 public class RockNode extends Node{
@@ -10,15 +10,15 @@ public class RockNode extends Node{
 	
 	private ViewInterface view;
 	
-	public RockNode(NodeKey center, ViewInterface view){
+	public RockNode(ModelKey center, ViewInterface view){
 		super(center);
 		this.view = view;
 	}
 	
 	/////////////////// Accessor Methods ////////////////////
 	
-	public Tile getTile(double[] coords, double[] dimensions) {
-		return view.getRock(coords, dimensions);
+	public Tile getTile() {
+		return view.getRock(getCenter(), ModelKey.getDimensions());
 	}
 	
 	///////////////// Checker Methods //////////////////////

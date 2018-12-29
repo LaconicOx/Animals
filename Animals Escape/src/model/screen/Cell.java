@@ -3,50 +3,51 @@ package model.screen;
 import java.util.Objects;
 
 import game.Directions.Direction;
-import model.keys.CellKey;
+import model.board.Node;
+import model.keys.ModelKey;
 
 public abstract class Cell implements Comparable<Cell>{
 	
-	private final CellKey key;
+	private final Node node;
 	
-	public Cell(CellKey key) {
-		this.key = key;
+	public Cell(Node node) {
+		this.node = node;
 	}
 	
 	////////////////////////// Mutator Methods ///////////////////////
 	
-	public abstract void draw();
+	public abstract void update();
 	
 	////////////////////////// Accessor Methods //////////////////////////
 	
 	public double[] getCenter() {
-		return key.getCenter();
+		return node.getCenter();
 	}
 	
-	public CellKey getKey() {
-		return key;
+	public ModelKey getKey() {
+		return node.getNodeKey();
 	}
 	
-	public CellKey getNeighborKey(Direction dir){ return key.getNeighborKey(dir); }
-	
-	public boolean isContained(double[] coords) {
-		return key.containsPoint(coords);
-	};
+	public ModelKey getNeighborKey(Direction dir){ 
+		return node.getNeighborKey(dir); 
+	}
 	
 	/////////////////////////// Checker Methods //////////////////////////
 	
 	public boolean checkDeer() {
-		return key.checkDeer();
+		return node.checkDeer();
 	}
 	
 	public boolean checkPassable() {
-		return key.checkPassable();
+		return node.checkPassable();
 	}
 	
-	public boolean containsPoint(double[] point) {
-		return key.containsPoint(point);
-	}
-
+	public boolean checkPoint(double[] point) {
+		return node.checkPoint(point);
+	};
+	
+	
+	
 	/////////////////////// Overrides /////////////////////////////////////
 	
 	@Override
@@ -104,10 +105,10 @@ public abstract class Cell implements Comparable<Cell>{
 		return Objects.hash(center);
 		
 	}
-	
-	///////////////////////// Debugging ////////////////////////////////
-	
-	public abstract void display();
 
+	@Override
+	public String toString() {
+		return node.toString();
+	}
 	
 }//End of Cell

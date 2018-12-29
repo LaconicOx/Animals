@@ -1,7 +1,7 @@
 package model.board;
 
 import image_library.Tile;
-import model.keys.NodeKey;
+import model.keys.ModelKey;
 import view.ViewInterface;
 
 public class TreeNode extends Node{
@@ -10,15 +10,15 @@ public class TreeNode extends Node{
 	
 	private ViewInterface view;
 	
-	TreeNode(NodeKey center, ViewInterface view){
+	TreeNode(ModelKey center, ViewInterface view){
 		super(center);
 		this.view = view;
 	}
 	
 	///////////////////////// Accessor Methods //////////////////////
 	
-	public final Tile getTile(double[] coords, double[] dimensions) {
-		return view.getTree(coords, dimensions);
+	public final Tile getTile() {
+		return view.getTree(getCenter(), ModelKey.getDimensions());
 	}
 	
 	//////////////////////// Checker Methods ///////////////////////

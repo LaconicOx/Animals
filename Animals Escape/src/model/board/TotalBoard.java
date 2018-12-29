@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import game.Directions.Direction;
-import model.keys.NodeKey;
+import model.keys.ModelKey;
 import view.ViewInterface;
 
 
@@ -22,12 +22,12 @@ public class TotalBoard {
 	
 	private static ViewInterface view;
 	private static TotalBoard uniqueInstance;
-	private static Map<NodeKey, Node> board;
+	private static Map<ModelKey, Node> board;
 	
 	/////////////////// Singleton Constructor ////////////////////////
 	private TotalBoard(ViewInterface view) {
-		this.view = view;
-		board = new HashMap<NodeKey, Node>();
+		TotalBoard.view = view;
+		board = new HashMap<ModelKey, Node>();
 	}
 	
 	public static TotalBoard getInstance(ViewInterface view) {
@@ -41,32 +41,41 @@ public class TotalBoard {
 
 	///////////////////// Accessor Methods /////////////////////////////
 	
-	public static Node getNode(NodeKey k) {
-		/*
-		 * Returns reference to node for key p.
-		 * Returns a null object if no node is found.
-		 */
-		return board.get(k);
-	}
-	
-	
-	public static Node getNodeInstance(int[] coords) {
-		NodeKey nk = new NodeKey(coords);
-		HexType type = initType(nk);
-		Node output = null;
+	/**
+	 * Gets node from board. 
+	 * @param key
+	 * @param nullReturn - true allows for null returns. False will create new node
+	 * 	 instead of node.
+	 * @return
+	 */
+	public static Node getNode(ModelKey key, boolean nullReturn) {
 		
-		switch(type) {
-		case GRASS: output = new GrassNode(nk, view);
-			break;
-		case BUSH: output = new BushNode(nk, view);
-			break;
-		case OAK: output = new TreeNode(nk, view);
-			break;
-		case ROCK: output = new RockNode(nk, view);
-			break;
+		//Gate for nullReturn
+		if(nullReturn)
+			return board.get(key);
+		else {
+			Node n = board.get(key);
+			if(n != null) {
+				return n;
+			}
+			else {
+				HexType type = initType(key);
+				Node output = null;
+				
+				switch(type) {
+				case GRASS: output = new GrassNode(key, view);
+					break;
+				case BUSH: output = new BushNode(key, view);
+					break;
+				case OAK: output = new TreeNode(key, view);
+					break;
+				case ROCK: output = new RockNode(key, view);
+					break;
+				}
+				putNode(output);//Assures all nodes have been entered into the TotalBoard
+				return output;
+			}
 		}
-		putNode(output);//Assures all nodes have been entered into the TotalBoard
-		return output;
 	}
 	
 	public static HashSet<Node> getAllNodes(){
@@ -79,21 +88,18 @@ public class TotalBoard {
 	////////////////////// Helper Methods //////////////////////////////
 	static void putNode(Node n) {
 		if(board.containsKey(n.getNodeKey()))
-			System.err.println("Error: model already conatins a node at " + n);
+			System.err.println("Error in TotalBoard.putNode(): model already conatins a node at " + n);
 		else {
 			board.put(n.getNodeKey(), n);
 		}
 	}
 	
-	private static HexType initType(NodeKey key) {
-		/*
-		 * 
-		 */
-		
+	private static HexType initType(ModelKey key) {
+		Direction[] directions = {Direction.NE, Direction.N, Direction.NW, Direction.SW, Direction.S, Direction.SE};
 		Set<Node> neighbors = new HashSet<>();
 		
-		for (Direction dir : EnumSet.allOf(Direction.class)) {
-			neighbors.add(getNode(new NodeKey(dir.getNeighborKey(key.getCenter()))));
+		for (Direction dir : directions) {
+			neighbors.add(getNode(key.getNeighborKey(dir), true));
 		}
 		neighbors.remove(null);//Must remove null because it counts as a set element.
 		
@@ -131,7 +137,7 @@ public class TotalBoard {
 	public String toString() {
 		
 		StringBuilder output = new StringBuilder();
-		for (NodeKey key : board.keySet()) {
+		for (ModelKey key : board.keySet()) {
 			
 			output.append("Key " + key.toString() + " maps to node " + board.get(key).toString() + ".\n");
 		}

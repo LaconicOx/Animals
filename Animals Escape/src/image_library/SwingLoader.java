@@ -12,38 +12,45 @@ import java.io.IOException;
 public class SwingLoader {
 	
 	//Path Names
-	private static final String BUSH_PATH = "BushHex";
-	private static final String GRASS_PATH = "GrassHex";
-	private static final String ROCK_PATH = "RockHex";
-	private static final String TREE_PATH = "TreeHex";
+	private static final String GRASS_NORTH_PATH = "Grass/Grass_North/Grass_North";
+	private static final String ROCK_PATH = "Rock/Rock";
+	private static final String TREE_PATH = "Tree/Tree_North/Tree_North";
+	private static final String PLAYER_EAST_PATH = "Player_East/Player_East";
 	
 	//Frame Counts
-	private static final int BUSH_FRAMES = 1;
-	private static final int GRASS_FRAMES = 1;
-	private static final int ROCK_FRAMES = 1;
-	private static final int TREE_FRAMES = 1;
+	private static final int BUSH_NORTH_FRAMES = 62;
 	
-	//Image Dimensions in Pixels
-	private static final double[] TILES = {300.0, 261.0};
+	private static final int ROCK_FRAMES = 1;
+	private static final int TREE_FRAMES = 62;
+	private static final int PLAYER_EAST_FRAMES = 25;
 	
 	//Stores file information to initialize IMAGES.
 	private static HashMap<String, Integer> INFO;
 	static {
 		INFO = new HashMap<>();
-		INFO.put(BUSH_PATH, BUSH_FRAMES);
-		INFO.put(GRASS_PATH, GRASS_FRAMES);
+		INFO.put(BUSH_NORTH_PATH, BUSH_NORTH_FRAMES);
+		INFO.put(GRASS_NORTH_PATH, GRASS_FRAMES);
 		INFO.put(ROCK_PATH, ROCK_FRAMES);
 		INFO.put(TREE_PATH, TREE_FRAMES);
+		INFO.put(PLAYER_EAST_PATH, PLAYER_EAST_FRAMES);
 	}
 	
+	//Image Dimensions in Pixels
+		private static final double[] BUSH_DIM = {311.0, 270.0};
+		
+		private static final double[] TREE_NORTH_DIM = {311.0, 270.0};
+		private static final double[] ROCK_DIM = {311.0, 270.0};
+		private static final double[] PLAYER_EAST = {435.0, 762.0};
+		
 	//Stores image dimensions.
 	private static HashMap<String, double[]> DIMENSIONS;
 	static {
 		DIMENSIONS = new HashMap<>();
-		DIMENSIONS.put(BUSH_PATH, TILES);
-		DIMENSIONS.put(GRASS_PATH, TILES);
-		DIMENSIONS.put(ROCK_PATH, TILES);
-		DIMENSIONS.put(TREE_PATH, TILES);
+		DIMENSIONS.put(BUSH_NORTH_PATH, BUSH_DIM);
+		DIMENSIONS.put(GRASS_NORTH_PATH, GRASS_NORTH_DIM);
+		DIMENSIONS.put(ROCK_PATH, ROCK_DIM);
+		DIMENSIONS.put(TREE_PATH, TREE_NORTH_DIM);
+		DIMENSIONS.put(PLAYER_EAST_PATH, PLAYER_EAST);
 	}
 	
 	//Stores image files.
@@ -88,20 +95,7 @@ public class SwingLoader {
 	
 	//////////////////////// Static Methods /////////////////////
 	
-	public static SwingAnimation getBush() {
-		return ANIMATIONS.get(BUSH_PATH);
+	public static SwingAnimation getAnimation() {
+		
 	}
-	
-	public static SwingAnimation getGrass() {
-		return ANIMATIONS.get(GRASS_PATH);
-	}
-	
-	public static SwingAnimation getRock() {
-		return ANIMATIONS.get(ROCK_PATH);
-	}
-	
-	public static SwingAnimation getTree() {
-		return ANIMATIONS.get(TREE_PATH);
-	}
-	
 }

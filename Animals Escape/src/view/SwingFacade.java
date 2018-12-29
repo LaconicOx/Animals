@@ -6,8 +6,10 @@ import java.awt.Dimension;
 import javax.swing.JLayeredPane;
 
 import game.Game;
+import image_library.PlayerImage;
 import image_library.SwingBush;
 import image_library.SwingGrass;
+import image_library.SwingPlayer;
 import image_library.SwingRock;
 import image_library.SwingTree;
 import image_library.Tile;
@@ -75,6 +77,10 @@ public class SwingFacade implements ViewInterface{
 		return new SwingTree(this, coords, dimensions);
 	}
 	
+	public PlayerImage getPlayer(double[] coords, double[] dimensions) {
+		return new SwingPlayer(this, coords, dimensions);
+	}
+	
 	//////////////////////////// Mutator Methods /////////////////////////
 	
 	public void updateScale(double factor) {
@@ -82,8 +88,8 @@ public class SwingFacade implements ViewInterface{
 	}
 	
 	public void updateShift(double[] coords) {
-		shift[0] += coords[0];
-		shift[1] += coords[1];
+		shift[0] = coords[0];
+		shift[1] = coords[1];
 	}
 	
 	public void render() {
@@ -96,6 +102,9 @@ public class SwingFacade implements ViewInterface{
 		sur.recieve(tile);
 	}
 	
-	
+	@Override
+	public void recieve(PlayerImage player) {
+		sur.recieve(player);
+	}
 	
 }

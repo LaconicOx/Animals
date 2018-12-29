@@ -1,7 +1,7 @@
 package model.board;
 
 import image_library.Tile;
-import model.keys.NodeKey;
+import model.keys.ModelKey;
 import view.ViewInterface;
 
 public class BushNode extends Node{
@@ -13,7 +13,7 @@ public class BushNode extends Node{
 	//Instance Fields
 	private final ViewInterface view;
 	
-	BushNode(NodeKey center, ViewInterface view){
+	BushNode(ModelKey center, ViewInterface view){
 		super(center);
 		this.view = view;
 	}
@@ -21,8 +21,8 @@ public class BushNode extends Node{
 	//////////////////// Accessor Methods ///////////////////////
 	
 	@Override
-	public final Tile getTile(double[] coords, double[] dimensions) {
-		return view.getBush(coords, dimensions);
+	public final Tile getTile() {
+		return view.getBush(getCenter(), ModelKey.getDimensions());
 	}
 	
 	/////////////////// Checker Methods //////////////////////

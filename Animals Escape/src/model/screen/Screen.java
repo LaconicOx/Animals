@@ -2,32 +2,24 @@ package model.screen;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import game.Directions.Direction;
+import model.board.Node;
 import model.board.TotalBoard;
-import model.characters.Characters;
-import model.keys.CellKey;
+import model.keys.ModelKey;
 import view.ViewInterface;
 
 public class Screen {
 	
 	//Class fields
 	private static final int EXTENSION = 1;//Extends cell beyond edge of screen to prevent flickering
-	private static final double UNIT_APOTHEM = 1.0;
-	private static final double UNIT_RADIUS = (2 * Math.sqrt(3)) / 3.0;
-	private static final double[] UNIT_VECTOR = {1.5 * UNIT_RADIUS, UNIT_APOTHEM};//Vector for converting node units to model units.
-	
 	
 	//Instance Fields
 	private final ViewInterface view;
-	private Set<Characters> characters;
-	private Map<CellKey, Cell> screen;
-	private Map<CellKey, BorderCell> border;
-	private boolean playerMoved;
+	private Map<ModelKey, Cell> screen;
+	private Map<ModelKey, BorderCell> border;
 	
 	
 	////////////////////////// Constructors and Initializers //////////////////////////
@@ -35,8 +27,14 @@ public class Screen {
 		this.view = view;
 		screen = new HashMap<>();
 		border = new HashMap<>();
-		characters = new HashSet<>();
-		playerMoved = false;
+		
+		//Initializes screen and border.
+		double[] boundaries = getModelBoundaries(new double[] {0.0, 0.0});
+		ModelKey cenKey = new ModelKey(new int[] {0,0});
+		Node node = TotalBoard.getNode(cenKey, false);
+		Cell center = new ScreenCell(node);
+		screen.put(cenKey, center);
+		recurInit(center.getNeighborKey(Direction.N), boundaries);
 	}
 	
 	private double[] getModelBoundaries(double[] center) {
@@ -51,13 +49,14 @@ public class Screen {
 		double[] screenDim = view.getScreenDim();//Screen dimensions in pixels
 		double scale = view.getScale();//number of pixels per model unit
 		double[] dim = new double[] {screenDim[0] / scale, screenDim[1] / scale};//Dimensions in model units
+		double[] vector = ModelKey.getDimensions();//Vector representing dimensions of a hexagon.
 		
 		double[] boundaries = new double[4];
 		
 		//Distance from the center to the top or bottom boundaries of the panel.
-		double vertical = dim[0] / 2.0 + UNIT_VECTOR[0] * EXTENSION;
+		double vertical = dim[0] / 2.0 + vector[0] * EXTENSION;
 		//Distance from the center to the left of right boundaries of the panel.
-		double horizontal = dim[1] / 2.0 + UNIT_VECTOR[1] * EXTENSION;
+		double horizontal = dim[1] / 2.0 + vector[1] * EXTENSION;
 		
 		boundaries[0] = center[0] - horizontal;
 		boundaries[1] = center[0] + horizontal;
@@ -67,37 +66,20 @@ public class Screen {
 		return boundaries;	
 	}
 	
-	
-	//Including init() in the constructor led to circular calls. 
-	//Making it public is a temporary fix
-	//TODO: Fix circular calls.
-	public void init() {
-		/*
-		 * boundaries[0] represents the left boundary.
-		 * boundaries[1] represents the right boundary.
-		 * boundaries[2] represents the top boundary.
-		 * boundaries[3] represents the bottom boundary.
-		 */
-		double[] boundaries = getModelBoundaries(new double[] {0.0, 0.0});
-		CellKey cenKey = new CellKey(TotalBoard.getNodeInstance(new int[] {0,0}));
-		Cell center = new ScreenCell(cenKey);
-		screen.put(cenKey, center);
-		recurInit(center.getNeighborKey(Direction.N), boundaries);
-		
-	}
-	
 	/**
 	 * A helper method for init. It builds the screen recursively by traversing the 
 	 * node trees.
 	 * @param n - node for the new cell to be created and added to screen.
 	 * @param boundaries - inclusive boundaries for the screen.
 	 */
-	private void recurInit(CellKey key, double[] boundaries) {
-		Cell newCell = new ScreenCell(key);
+	private void recurInit(ModelKey key, double[] boundaries) {
+		Node node = TotalBoard.getNode(key, false);
+		Cell newCell = new ScreenCell(node);
 		screen.put(key, newCell);
 		
-		for (Direction dir : Direction.values()) {
-			CellKey dirKey = newCell.getNeighborKey(dir);
+		Direction[] directions = {Direction.NE, Direction.N, Direction.NW, Direction.SW, Direction.S, Direction.SE};
+		for (Direction dir : directions) {
+			ModelKey dirKey = newCell.getNeighborKey(dir);
 			if(!screen.containsKey(dirKey) && !border.containsKey(dirKey)) {
 				double[] cen = dirKey.getCenter();
 				//Calls itself to add a new concrete cell to screen if within boundaries;
@@ -105,7 +87,8 @@ public class Screen {
 				if ( cen[0] >= boundaries[0] && cen[0] <= boundaries[1] && cen[1] >= boundaries[2] && cen[1] <= boundaries[3])
 					recurInit(dirKey, boundaries);
 				else {
-					border.put(dirKey, new BorderCell(dirKey));
+					Node borderNode = TotalBoard.getNode(dirKey, false);
+					border.put(dirKey, new BorderCell(borderNode));
 				}
 					
 			}
@@ -114,8 +97,16 @@ public class Screen {
 	
 	////////////////////////// Accessor Methods /////////////////////////////
 	
+	public Cell getCell(ModelKey key) {
+		Cell cell = screen.get(key);
+		if (cell == null) {
+			System.err.println("Error in getCell(): cell not found");
+			System.exit(0);
+		}
+		return cell;
+	}
 	
-	public Cell getNeighborCell(CellKey key) {
+	public Cell getNeighborCell(ModelKey key) {
 		if (screen.containsKey(key))
 			return screen.get(key);
 		else if(border.containsKey(key))
@@ -124,38 +115,10 @@ public class Screen {
 			return null;
 	}
 	
-	public static double getApothem() {
-		return UNIT_APOTHEM;
-	}
-	
-	public static double getRadius() {
-		return UNIT_RADIUS;
-	}
-	
-	public static double[] getUnit() {
-		return UNIT_VECTOR;
-	}
-	
 	////////////////////////// Mutator Methods /////////////////////////////////
 	
-	public void pumpAnimation() {
-		screen.forEach((key, cell) -> cell.draw());
-	}
-	
-	/**
-	 * Forwarding Method.
-	 * @param angle - the direction the the player's movement in radians.
-	 */
-	public void movePlayer(double angle) {
-		//player.move(angle);
-		playerMoved = true;
-	}
-	
-	public void updateCharacters() {
-		System.out.println(playerMoved);
-		if (!playerMoved)
-			//player.update();
-		playerMoved = false;
+	public void updateCells() {
+		screen.forEach((key, cell) -> cell.update());
 	}
 	
 	public void shiftCells(Direction dir) {
@@ -164,32 +127,30 @@ public class Screen {
 		instructions.forEach(instruct -> instruct.execute());
 	}
 	
-	public void addCharacters(Characters ch) { characters.add(ch); }
+	void addScreenCell(ModelKey key) { 
+		Node node = TotalBoard.getNode(key, false);
+		screen.put(key, new ScreenCell(node)); 
+		}
 	
-	void addScreenCell(CellKey key) { screen.put(key, new ScreenCell(key)); }
-	
-	void removeScreenCell(CellKey key) {
-		
+	void removeScreenCell(ModelKey key) {
 		screen.remove(key);
 	}
 	
-	void addBorderCell(CellKey key) { border.put(key, new BorderCell(key)); }
+	void addBorderCell(ModelKey key) { 
+		Node node = TotalBoard.getNode(key, false);
+		border.put(key, new BorderCell(node)); }
 	
-	void removeBorderCell(CellKey key) {
+	void removeBorderCell(ModelKey key) {
 		border.remove(key);
-	}
-	
-	public void removeCharacters(CellKey key) {
-		//TODO
 	}
 	
 	////////////////////////// Checker Methods ////////////////////////////////
 	
-	public boolean checkScreen(CellKey key) {
+	public boolean checkScreen(ModelKey key) {
 		return screen.containsKey(key);
 	}
 	
-	public boolean checkBorder(CellKey key) {
+	public boolean checkBorder(ModelKey key) {
 		return border.containsKey(key);
 	}
 	
@@ -247,8 +208,9 @@ public class Screen {
 		 */
 		private void initOrientation() {
 			orientation = new HashMap<>();
-			for (Direction dir : Direction.values()) {
-				CellKey test = cell.getNeighborKey(dir);
+			Direction[] directions = {Direction.NE, Direction.N, Direction.NW, Direction.SW, Direction.S, Direction.SE};
+			for (Direction dir : directions) {
+				ModelKey test = cell.getNeighborKey(dir);
 
 				if (checkScreen(test))
 					orientation.put(dir, State.SCREEN);
@@ -290,7 +252,7 @@ public class Screen {
 		
 		class CreateBorder extends Action{
 			void execute() { 
-				CellKey key = cell.getNeighborKey(toward);
+				ModelKey key = cell.getNeighborKey(toward);
 				addBorderCell(key);; 
 			}
 		}
@@ -303,15 +265,14 @@ public class Screen {
 		
 		class DeleteScreen extends Action{
 			void execute() { 
-				CellKey key = cell.getNeighborKey(toward);
-				removeCharacters(key);//tests characters for removal
+				ModelKey key = cell.getNeighborKey(toward);
 				removeScreenCell(key);//remove screen cell.
 			}
 		}
 		
 		class Transform extends Action{
 			void execute() {
-				CellKey key = cell.getKey();
+				ModelKey key = cell.getKey();
 				removeBorderCell(key);
 				addScreenCell(key);
 				}

@@ -4,22 +4,24 @@ package model.screen;
 import java.util.Objects;
 
 import image_library.Tile;
-import model.keys.CellKey;
+import model.board.Node;
 
 public class ScreenCell extends Cell {
 	
 	private final Tile tile;
 	
 	/////////////////////// Constructor and Initializers ////////////////////////////
-	public ScreenCell(CellKey key){
-		super(key);
-		tile = key.getTile();
+	public ScreenCell(Node node){
+		super(node);
+		tile = node.getTile();
 		//  initCharacters(); 
 	}
 	
 	/////////////////////////// Mutator Methods ////////////////////////////
 	
-	public void draw() {
+	@Override
+	public void update() {
+		tile.advance();
 		tile.send();
 	}
 	
@@ -29,7 +31,6 @@ public class ScreenCell extends Cell {
 	public String toString() {
 		double[] center = getCenter();
 		return "ScreenCell (" + center[0] + "," + center[1] + ") maps to Node " + super.toString();
-		//return "Cell (" + center[0] + "," + center[1] + ")";
 	}
 	
 	@Override
@@ -47,12 +48,6 @@ public class ScreenCell extends Cell {
 	@Override
 	public int hashCode() {
 		return Objects.hash(getCenter());
-	}
-
-	@Override
-	public void display() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

@@ -33,17 +33,33 @@ class ControlSurface extends JPanel{
 			double angle = Math.PI / 2.0;
 			
 			switch(keyCode) {
-			case KeyEvent.VK_W: game.updatePlayer(angle);//Moves up.
+			case KeyEvent.VK_W: game.movePlayer(angle);//Moves up.
 				break;
-			case KeyEvent.VK_A: game.updatePlayer(2 * angle);//Moves left.
+			case KeyEvent.VK_A: game.movePlayer(2 * angle);//Moves left.
 				break;
-			case KeyEvent.VK_D: game.updatePlayer(0.0);//Moves right
+			case KeyEvent.VK_D: game.movePlayer(0.0);//Moves right
 				break;
-			case KeyEvent.VK_S: game.updatePlayer(3 * angle);//Moves down.
+			case KeyEvent.VK_S: game.movePlayer(3 * angle);//Moves down.
 				break;
 			case KeyEvent.VK_I: sf.updateScale(1.2);//Zooms in.
 				break;
 			case KeyEvent.VK_K: sf.updateScale(0.8);//Zooms out.
+				break;
+			}
+		}
+		
+		public void keyReleased(KeyEvent e) {
+			int keyCode = e.getKeyCode();
+			
+			switch(keyCode) {
+			case KeyEvent.VK_W: game.stopPlayer();
+				break;
+			case KeyEvent.VK_A: game.stopPlayer();
+				break;
+			case KeyEvent.VK_D: game.stopPlayer();
+				break;
+			case KeyEvent.VK_S: game.stopPlayer();
+				break;
 			}
 		}
 	}

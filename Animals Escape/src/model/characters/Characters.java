@@ -4,13 +4,11 @@ package model.characters;
 import game.Directions.Direction;
 import model.screen.Cell;
 
-public abstract class Characters implements Comparable<Characters>{
-	
-	private static final double speed = 0.1;
+public abstract class Characters {
 	
 	protected Cell cell;//cell containing the character.
-	protected Direction facing;//the direction the animation should be facing.
-	protected double[] center;//Character's center.
+	protected Direction facing;//the direction the animation should be facing/moving.
+	protected double[] center;//Character's center in model units.
 	protected double[]  moveVector;//unit vector for movement.
 	
 	public Characters(Cell cell) {
@@ -21,7 +19,7 @@ public abstract class Characters implements Comparable<Characters>{
 	//////////////////// Mutator Methods ////////////////////////
 	
 	
-	
+	public abstract void update();
 	
 	//////////////////// Checker Methods ////////////////////////
 	
@@ -34,5 +32,5 @@ public abstract class Characters implements Comparable<Characters>{
 			return false;
 	}
 	
-	public abstract void update();
+	
 }

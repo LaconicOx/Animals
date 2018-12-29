@@ -13,9 +13,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import image_library.PlayerImage;
 import image_library.Tile;
 
 
@@ -26,36 +28,47 @@ class ViewSurface extends JPanel{
 	//Fields for double buffering.
 	private Image dbImage;
 	private Graphics read;
+	private ArrayList<Tile> tiles;
+	private PlayerImage player;
 	
-		
 	//////////////////////////// Constructor ////////////////////////////////////////
 	ViewSurface(Dimension dim){
 		this.dim = dim;
 		setSize(this.dim);
-		setBackground(Color.white);//JComponent method for setting background color.
+		setBackground(Color.black);//JComponent method for setting background color.
 		setOpaque(true);
-		
+		tiles = new ArrayList<>();
 	}
 	
 	public void init() {
 		dbImage = createImage(dim.width, dim.height);
 		read = dbImage.getGraphics();
-		read.setColor(Color.white);
+		read.setColor(Color.black);
 		read.fillRect(0,0, dim.width, dim.height);
 	}
 	
 	///////////////////////////// Animation Methods ///////////////////////////////////
 	
 	void recieve(Tile tile) {
-		tile.draw(read);
+		tiles.add(tile);
+	}
+	
+	void recieve(PlayerImage player) {
+		this.player = player;
 	}
 	
 	void render() {
-		repaint();// should be deleted once paintscreen is debugged.
 		
 		//Clear previous images by drawing a white background.
-		//read.setColor(Color.white);
-		//read.fillRect(0,0, dim.width, dim.height);
+		read.setColor(Color.black);
+		read.fillRect(0,0, dim.width, dim.height);
+		
+		tiles.forEach(tile -> tile.draw(read));
+		player.draw(read);
+		
+		repaint();// should be deleted once paintscreen is debugged.
+		tiles.clear();//Clears tiles
+		
 	}
 	
 	//Should be deleted once paintscreen is debugged.

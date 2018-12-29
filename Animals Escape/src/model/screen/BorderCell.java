@@ -1,25 +1,24 @@
 package model.screen;
 
-import model.keys.CellKey;
+import model.board.Node;
 
 public class BorderCell extends Cell{
 	
-	public BorderCell(CellKey key){
-		super(key);
+	public BorderCell(Node node){
+		super(node);
 	}
 	
 	///////////////////////////// Mutator Methods //////////////////////////
 	
-	public void draw() {
-		
-	}
+	@Override
+	public void update() {};
 	
 	///////////////////////////// Accessor Methods ///////////////////////////
 	
 	///////////////////////////////// Overrides ////////////////////////////////
 	
 	@Override
-	public boolean isContained(double[] coords) {
+	public boolean checkPoint(double[] coords) {
 		System.err.println("Error: checked border for containing player");
 		return false;
 	}
@@ -48,11 +47,5 @@ public class BorderCell extends Cell{
 	
 	/////////////////////////////// Debugging ///////////////////////////////////////////////////
 	
-	@Override
-	public void display() {
-		double[] cen = getCenter();
-		System.out.println("BorderCell (" + cen[0] + "," + cen[1] + ") maps to " + super.toString());
-		
-	}
 
 }//End of BorderCell

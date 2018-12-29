@@ -6,23 +6,19 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import game.Directions.Direction;
 import image_library.Tile;
-import model.keys.NodeKey;
-import model.screen.Cell;
+import model.keys.ModelKey;
 
 
 public abstract class Node {
-	//Class Fields
-	
 	
 	//Instance Fields
-	private final NodeKey key;
+	private final ModelKey key;
 	private Map<Direction, Node> neighbors;
 	private boolean neighborsComplete = false;
-	private Cell cell = null;
 	
 	/////////////////// Constructor and Initializers /////////////////////////
-	Node(NodeKey center) {
-		this.key = center;
+	Node(ModelKey key) {
+		this.key = key;
 		neighbors = new HashMap<Direction, Node>();
 		initNeighbors();
 	}
@@ -50,20 +46,11 @@ public abstract class Node {
 
 	////////////////////// Accessor Methods /////////////////////////////////
 	
-	
-	
 	protected int getRanInt() {
 		return ThreadLocalRandom.current().nextInt(1, 101);//Uppperbound is exclusive.
 	}
 	
-	public abstract Tile getTile(double[] coords, double[] dimension);
-	
-	public Cell getCell() {
-		/*
-		 * Returns cell or null.
-		 */
-		return cell;
-	}
+	public abstract Tile getTile();
 	
 	public Node getNeighbor(Direction dir) {
 		/*
@@ -73,8 +60,7 @@ public abstract class Node {
 		Node n = neighbors.get(dir);
 		//Creates node if none exists.
 		if (n == null) {
-			int[] newCenter= dir.getNeighborKey(key.getCenter());
-			Node newNode = TotalBoard.getNodeInstance(newCenter);
+			Node newNode = TotalBoard.getNode(key.getNeighborKey(dir), false);
 			neighbors.put(dir, newNode);
 			return newNode;
 		}
@@ -82,15 +68,21 @@ public abstract class Node {
 			return n;
 	}
 	
-	public NodeKey getNodeKey() {return this.key;}
+	public ModelKey getNodeKey() {
+		return this.key;
+		}
 	
 	/**
 	 * Forwarding method. 
 	 * @return Array representing the unit vector for the node.
 	 */
-	public int[] getCenter() {
+	public double[] getCenter() {
 		return key.getCenter();
 		}
+	
+	public ModelKey getNeighborKey(Direction dir) {
+		return key.getNeighborKey(dir);
+	}
 	
 	/////////////////////////// Mutator Methods //////////////////////////////
 	
@@ -109,13 +101,17 @@ public abstract class Node {
 		 * side effect of setting neighborsComplete to false if it returns any null values.
 		 */
 		
-		Node n = TotalBoard.getNode(new NodeKey(dir.getNeighborKey(key.getCenter())));
+		Node n = TotalBoard.getNode(key.getNeighborKey(dir), true);
 		if (n == null && neighborsComplete == true)
 			neighborsComplete = false;
 		return n;
 	}
 	
 	/////////////////////////////// Checker Methods ////////////////////////////
+	
+	public boolean checkPoint(double[] point) {
+		return key.checkPoint(point);
+	}
 	
 	public abstract boolean checkPassable();
 	public abstract boolean checkDeer();
@@ -140,6 +136,5 @@ public abstract class Node {
 		System.out.println(message.toString());
 	}
 	
-	void displayCell() {System.out.println(cell);}
 	 
 }

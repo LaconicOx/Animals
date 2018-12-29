@@ -4,23 +4,31 @@ package image_library;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
+import game.Directions.Direction;
 import view.SwingFacade;
 
 public abstract class SwingTile extends Images implements Tile{
 	
 	private final SwingFacade view;
 	private final double[] coords;
+	private final HashMap<Direction, SwingAnimation> animations;
+	private int advance;
+	private Direction facing;
 	
-	protected SwingTile(SwingFacade view, double[] coords, double[] modelDimensions, double[] imageDimensions) {
-		super(imageDimensions, modelDimensions);
+	protected SwingTile(SwingFacade view, double[] coords, double[] modelDimensions, HashMap<Direction, SwingAnimation> animations) {
+		super(modelDimensions);
+		this.animations = animations;
 		this.coords = coords;
 		this.view = view;
+		advance = 0;
+		facing = Direction.NE;
 	}
 	
 	////////////////////// Accessors //////////////////////////////////
 	
-	protected abstract BufferedImage getFrame(int frame);
+	protected abstract BufferedImage getFrame(Direction dir, int frame);
 	
 	@Override
 	protected final double[] getCoords() {
@@ -40,7 +48,10 @@ public abstract class SwingTile extends Images implements Tile{
 		return view.getScreenDim();
 	}
 	
+
+	
 	//////////////////////// Mutators //////////////////////////////
+	
 	@Override
 	public final void send() {
 		view.recieve(this);

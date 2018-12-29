@@ -23,16 +23,18 @@ public class Game {
 		}
 		
 		model = new ModelFacade(this, view);
-		model.init();//TODO: Temporary fix to circular call.
 		loop = new GameLoop(this, view, model);
 	}
 	
 	////////////////////////////// Mutator Methods //////////////////////////////
 	
-	public void updatePlayer(double angle) {
-		
+	public void movePlayer(double angle) {
+		model.movePlayer(angle);
 	}
-
+	
+	public void stopPlayer() {
+		model.stopPlayer();
+	}
 	
 	////////////////////////////// Main Function //////////////////////////////////
 	public static void main(String[] args) {
