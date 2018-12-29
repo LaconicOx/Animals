@@ -28,8 +28,6 @@ public abstract class SwingTile extends Images implements Tile{
 	
 	////////////////////// Accessors //////////////////////////////////
 	
-	protected abstract BufferedImage getFrame(Direction dir, int frame);
-	
 	@Override
 	protected final double[] getCoords() {
 		return coords.clone();
@@ -48,9 +46,31 @@ public abstract class SwingTile extends Images implements Tile{
 		return view.getScreenDim();
 	}
 	
-
+	private final int getFrameIndex() {
+		return advance % animations.get(facing).getTotal();
+	}
+	
+	private final BufferedImage getFrame(int index) {
+		return animations.get(facing).getImage(index);
+	}
+	
+	@Override
+	protected double[] getImageDim() {
+		return animations.get(facing).getDimensions();
+	}
 	
 	//////////////////////// Mutators //////////////////////////////
+	
+	@Override
+	public final void advance(Direction dir) {
+		if (dir == facing) {
+			advance++;
+		}
+		else {
+			facing = dir;
+			advance = 1;
+		}
+	}
 	
 	@Override
 	public final void send() {
@@ -62,4 +82,14 @@ public abstract class SwingTile extends Images implements Tile{
 		Graphics2D g2 = (Graphics2D)g;
 		g2.drawImage(getFrame(getFrameIndex()), getTransformation(), null);		
 	}
+	
+	////////////////////////// Checker ////////////////////////////////
+	
+	@Override
+	public final boolean checkResting() {
+		if (getFrameIndex() == 0)
+			return true;
+		else
+			return false;
+	} 
 }

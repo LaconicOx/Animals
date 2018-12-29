@@ -3,8 +3,6 @@ package image_library;
 import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 
-import game.Directions.Direction;
-
 /**
  * @author dvdco
  * Top level class for images.
@@ -58,7 +56,6 @@ public abstract class Images {
 	protected abstract double[] getCoords();
 	protected abstract double[] getShift();
 	protected abstract double getScale();
-	protected abstract int getTotalFrames(Direction dir);
 	protected abstract double[] getScreenDim();
 	protected abstract double[] getImageDim();
 	

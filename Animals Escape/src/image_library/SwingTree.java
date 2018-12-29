@@ -1,28 +1,35 @@
 package image_library;
 
-import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
+import game.Directions.Direction;
 import view.SwingFacade;
 
 public class SwingTree extends SwingTile{
-	private static final SwingAnimation ANIMATION = SwingLoader.getTree();
-	private static final int TOTAL_FRAMES = ANIMATION.getTotal();
-	private static final double[] DIMENSIONS = ANIMATION.getDimensions();
+	
+	//Class Fields
+	private static final String[] PATHS = {"Tree/Tree_Northeast/Tree_Northeast", 
+											"Tree/Tree_North/Tree_North", 
+											"Tree/Tree_Northwest/Tree_Northwest", 
+											"Tree/Tree_Southwest/Tree_Southwest", 
+											"Tree/Tree_South/Tree_South",
+											"Tree/Tree_Southeast/Tree_Southeast"};
+	private static final int TREE_FRAMES = 62;
+	private static final double[] TREE_DIM = {311.0, 270.0};
+	private static final HashMap<Direction, SwingAnimation> ANIMATIONS;
+	static {
+		ANIMATIONS = new HashMap<>();
+		//keys must match PATHS in length and order.
+		Direction[] keys = {Direction.NE, Direction.N, Direction.NW, Direction.SW, Direction.S, Direction.SE};
+		for(int i = 0; i < keys.length; i++) {
+			ANIMATIONS.put(keys[i], new SwingAnimation(PATHS[i], TREE_FRAMES, TREE_DIM));
+		}
+	}
+	
+	///////////////////////////// Constructor /////////////////////////////////
 	
 	public SwingTree(SwingFacade sf, double[] coords, double[] modelDimensions){
-		super(sf, coords, modelDimensions, DIMENSIONS);
-	}
-	
-	////////////////////////// Acessors //////////////////////////////
-	
-	@Override
-	protected final int getTotalFrames() {
-		return TOTAL_FRAMES;
-	}
-	
-	@Override
-	protected final BufferedImage getFrame(int index) {
-		return ANIMATION.getImage(index);
+		super(sf, coords, modelDimensions, ANIMATIONS);
 	}
 
 }

@@ -3,25 +3,27 @@ package model.screen;
 
 import java.util.Objects;
 
+import game.Directions.Direction;
 import image_library.Tile;
 import model.board.Node;
 
 public class ScreenCell extends Cell {
 	
 	private final Tile tile;
+	private Direction facing;
 	
 	/////////////////////// Constructor and Initializers ////////////////////////////
 	public ScreenCell(Node node){
 		super(node);
 		tile = node.getTile();
-		//  initCharacters(); 
+		facing = Direction.N;
 	}
 	
 	/////////////////////////// Mutator Methods ////////////////////////////
 	
 	@Override
 	public void update() {
-		tile.advance();
+		tile.advance(facing);
 		tile.send();
 	}
 	

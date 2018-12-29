@@ -84,7 +84,7 @@ public class Player {
 		if (cell.checkPoint(destination)) {
 			view.updateShift(destination);
 			center = destination;
-			image.advance();
+			image.advance(facing);
 		}
 		else {
 			Direction dir = Direction.getDirection(cell.getCenter(), destination);
@@ -95,7 +95,7 @@ public class Player {
 				view.updateShift(destination);
 				center = destination;
 				screen.shiftCells(dir);
-				image.advance();
+				image.advance(facing);
 			}
 		}
 	}
@@ -104,7 +104,7 @@ public class Player {
 		//Checks whether animation is in the resting position.
 		//If not, advances the animation.
 		if(!image.checkResting())
-			image.advance();
+			image.advance(facing);
 	}
 	
 	public void update() {
