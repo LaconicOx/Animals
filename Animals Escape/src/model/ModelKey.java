@@ -1,4 +1,4 @@
-package model.keys;
+package model;
 
 import java.util.Objects;
 

@@ -1,13 +1,16 @@
 package model.board;
 
 import image_library.Tile;
-import model.keys.ModelKey;
+import model.ModelKey;
 import view.ViewInterface;
 
 public class RockNode extends Node{
 	
+	//Class Fields
 	private final static boolean PASSABLE = false;
+	private final static double WIND_FACTOR = 0.0;
 	
+	//Instance Fields
 	private ViewInterface view;
 	
 	public RockNode(ModelKey center, ViewInterface view){
@@ -17,8 +20,14 @@ public class RockNode extends Node{
 	
 	/////////////////// Accessor Methods ////////////////////
 	
-	public Tile getTile() {
+	@Override
+	public final Tile getTile() {
 		return view.getRock(getCenter(), ModelKey.getDimensions());
+	}
+	
+	@Override
+	protected final double  getWindFactor() {
+		return WIND_FACTOR;
 	}
 	
 	///////////////// Checker Methods //////////////////////

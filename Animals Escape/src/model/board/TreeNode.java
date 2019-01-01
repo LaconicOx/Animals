@@ -1,13 +1,16 @@
 package model.board;
 
 import image_library.Tile;
-import model.keys.ModelKey;
+import model.ModelKey;
 import view.ViewInterface;
 
 public class TreeNode extends Node{
 	
+	//Class Fields
 	private final static boolean PASSABLE = false;
+	private final static double WIND_FACTOR = 0.25;
 	
+	//Instance Fields
 	private ViewInterface view;
 	
 	TreeNode(ModelKey center, ViewInterface view){
@@ -17,8 +20,14 @@ public class TreeNode extends Node{
 	
 	///////////////////////// Accessor Methods //////////////////////
 	
+	@Override
 	public final Tile getTile() {
 		return view.getTree(getCenter(), ModelKey.getDimensions());
+	}
+	
+	@Override
+	protected final double getWindFactor() {
+		return WIND_FACTOR;
 	}
 	
 	//////////////////////// Checker Methods ///////////////////////

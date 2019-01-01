@@ -3,8 +3,8 @@ package model.screen;
 import java.util.Objects;
 
 import game.Directions.Direction;
+import model.ModelKey;
 import model.board.Node;
-import model.keys.ModelKey;
 
 public abstract class Cell implements Comparable<Cell>{
 	

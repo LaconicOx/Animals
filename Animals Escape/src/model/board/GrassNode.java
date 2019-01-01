@@ -3,14 +3,17 @@ package model.board;
 
 
 import image_library.Tile;
-import model.keys.ModelKey;
+import model.ModelKey;
 import view.ViewInterface;
 
 public class GrassNode extends Node{
 	
+	//Class Fields
 	private final static boolean PASSABLE = true;
 	private final static int DEER_ODDS = 10;
+	private final static double WIND_FACTOR = 1.0;
 	
+	//Instance Fields
 	private ViewInterface view;
 	
 	public GrassNode(ModelKey center, ViewInterface view){
@@ -23,6 +26,11 @@ public class GrassNode extends Node{
 	@Override
 	public Tile getTile() {
 		return view.getGrass(getCenter(), ModelKey.getDimensions());
+	}
+	
+	@Override
+	protected final double getWindFactor() {
+		return WIND_FACTOR;
 	}
 	
 	///////////////////// Checker Methods /////////////////////////

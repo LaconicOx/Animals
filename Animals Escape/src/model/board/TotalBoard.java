@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import game.Directions.Direction;
-import model.keys.ModelKey;
+import model.ModelKey;
 import view.ViewInterface;
 
 

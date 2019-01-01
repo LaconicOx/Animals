@@ -1,7 +1,7 @@
 package model.board;
 
 import image_library.Tile;
-import model.keys.ModelKey;
+import model.ModelKey;
 import view.ViewInterface;
 
 public class BushNode extends Node{
@@ -9,6 +9,7 @@ public class BushNode extends Node{
 	//Class Fields and Constants
 	private final static boolean PASSABLE = true;
 	private final static int DEER_ODDS = 5;
+	private final static double WIND_FACTOR = 0.75;
 	
 	//Instance Fields
 	private final ViewInterface view;
@@ -23,6 +24,11 @@ public class BushNode extends Node{
 	@Override
 	public final Tile getTile() {
 		return view.getBush(getCenter(), ModelKey.getDimensions());
+	}
+	
+	@Override
+	protected final double getWindFactor() {
+		return WIND_FACTOR;
 	}
 	
 	/////////////////// Checker Methods //////////////////////

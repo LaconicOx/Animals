@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import game.Directions.Direction;
+import model.ModelKey;
 import model.board.Node;
 import model.board.TotalBoard;
-import model.keys.ModelKey;
 import view.ViewInterface;
 
 public class Screen {

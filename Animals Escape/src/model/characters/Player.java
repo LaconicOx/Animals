@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import game.Directions.Direction;
 import image_library.PlayerImage;
-import model.keys.ModelKey;
+import model.ModelKey;
 import model.screen.Cell;
 import model.screen.Screen;
 import view.ViewInterface;
