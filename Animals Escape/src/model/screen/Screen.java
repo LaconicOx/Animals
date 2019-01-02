@@ -15,10 +15,12 @@ public class Screen {
 	
 	//Class fields
 	private static final int EXTENSION = 1;//Extends cell beyond edge of screen to prevent flickering
+	private static final Direction[] CELL_DIRECTIONS = {Direction.NE, Direction.N, Direction.NW, Direction.SW, Direction.S, Direction.SE};
+	
 	
 	//Instance Fields
 	private final ViewInterface view;
-	private Map<ModelKey, Cell> screen;
+	private Map<ModelKey, ScreenCell> screen;
 	private Map<ModelKey, BorderCell> border;
 	
 	
@@ -32,7 +34,7 @@ public class Screen {
 		double[] boundaries = getModelBoundaries(new double[] {0.0, 0.0});
 		ModelKey cenKey = new ModelKey(new int[] {0,0});
 		Node node = TotalBoard.getNode(cenKey, false);
-		Cell center = new ScreenCell(node);
+		ScreenCell center = new ScreenCell(node);
 		screen.put(cenKey, center);
 		recurInit(center.getNeighborKey(Direction.N), boundaries);
 	}
@@ -74,11 +76,10 @@ public class Screen {
 	 */
 	private void recurInit(ModelKey key, double[] boundaries) {
 		Node node = TotalBoard.getNode(key, false);
-		Cell newCell = new ScreenCell(node);
+		ScreenCell newCell = new ScreenCell(node);
 		screen.put(key, newCell);
 		
-		Direction[] directions = {Direction.NE, Direction.N, Direction.NW, Direction.SW, Direction.S, Direction.SE};
-		for (Direction dir : directions) {
+		for (Direction dir : CELL_DIRECTIONS) {
 			ModelKey dirKey = newCell.getNeighborKey(dir);
 			if(!screen.containsKey(dirKey) && !border.containsKey(dirKey)) {
 				double[] cen = dirKey.getCenter();
@@ -118,6 +119,7 @@ public class Screen {
 	////////////////////////// Mutator Methods /////////////////////////////////
 	
 	public void updateCells() {
+		border.forEach((key,cell) -> cell.update());
 		screen.forEach((key, cell) -> cell.update());
 	}
 	

@@ -21,17 +21,15 @@ public class SwingFacade implements ViewInterface{
 	private final ViewFrame vf;
 	private final ViewSurface sur;
 	private final ControlSurface con;
-	private final Game game;
 	
 	//Animation Parameters 
-	private double[] dimensions = {300.0, 300.0};//screen dimensions
+	private double[] dimensions = {600.0, 600.0};//screen dimensions
 	private double pixelsToUnit = 30.0; //Unit ratio of pixels to one model unit.
 	private double[] shift = {0.0, 0.0};//stored as model units.
 	
 	///////////////////////// Constructor //////////////////////////////
 	
 	public SwingFacade(Game game) {
-		this.game = game;
 		Dimension dim = new Dimension((int)dimensions[0], (int)dimensions[1]);
 		vf = new ViewFrame(dim);
 		

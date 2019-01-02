@@ -37,8 +37,6 @@ public class TotalBoard {
 		return uniqueInstance;
 	}
 	
-	
-
 	///////////////////// Accessor Methods /////////////////////////////
 	
 	/**
@@ -87,10 +85,10 @@ public class TotalBoard {
 	
 	////////////////////// Helper Methods //////////////////////////////
 	static void putNode(Node n) {
-		if(board.containsKey(n.getNodeKey()))
+		if(board.containsKey(n.getKey()))
 			System.err.println("Error in TotalBoard.putNode(): model already conatins a node at " + n);
 		else {
-			board.put(n.getNodeKey(), n);
+			board.put(n.getKey(), n);
 		}
 	}
 	

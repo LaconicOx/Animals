@@ -11,7 +11,9 @@ public class BorderCell extends Cell{
 	///////////////////////////// Mutator Methods //////////////////////////
 	
 	@Override
-	public void update() {};
+	public void update() {
+		node.genWind();
+	};
 	
 	///////////////////////////// Accessor Methods ///////////////////////////
 	

@@ -8,10 +8,11 @@ import model.board.Node;
 
 public abstract class Cell implements Comparable<Cell>{
 	
-	private final Node node;
+	protected final Node node;
 	
 	public Cell(Node node) {
 		this.node = node;
+		node.clearWind();
 	}
 	
 	////////////////////////// Mutator Methods ///////////////////////
@@ -25,7 +26,7 @@ public abstract class Cell implements Comparable<Cell>{
 	}
 	
 	public ModelKey getKey() {
-		return node.getNodeKey();
+		return node.getKey();
 	}
 	
 	public ModelKey getNeighborKey(Direction dir){ 

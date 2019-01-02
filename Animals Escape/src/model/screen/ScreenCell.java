@@ -9,6 +9,10 @@ import model.board.Node;
 
 public class ScreenCell extends Cell {
 	
+	//Class Fields
+	private static final double[] ORIGIN = {0,0};
+	
+	//Instance Fields
 	private final Tile tile;
 	private Direction facing;
 	
@@ -21,11 +25,38 @@ public class ScreenCell extends Cell {
 	
 	/////////////////////////// Mutator Methods ////////////////////////////
 	
+	public double eatFood(double quantity) {
+		return node.eatFood(quantity);
+	}
+	
+	public void setScent(double quantity) {
+		node.setScent(quantity);
+	}
+	
 	@Override
 	public void update() {
-		tile.advance(facing);
+		
+		//Node updating
+		node.updateFood();
+		node.updateScent();
+		
+		//Wind updating
+		double[] windDir = node.getWind();
+		if (windDir[0] != 0 || windDir[1] !=0) {
+			//System.out.println("Blowing");
+			facing = Direction.getDirection(ORIGIN, windDir);
+			tile.advance(facing);
+		}
+		else {
+			//Advances the tile if not at resting position.
+			if(!tile.checkResting())
+				tile.advance(facing);
+		}
+		
+		//Primes animation
 		tile.send();
 	}
+	
 	
 	///////////////////////////// Overrides ///////////////////////////////
 	

@@ -63,6 +63,8 @@ public abstract class SwingTile extends Images implements Tile{
 	
 	@Override
 	public final void advance(Direction dir) {
+		
+		
 		if (dir == facing) {
 			advance++;
 		}

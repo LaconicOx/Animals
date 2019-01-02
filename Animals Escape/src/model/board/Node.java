@@ -2,6 +2,7 @@ package model.board;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -14,30 +15,32 @@ public abstract class Node {
 	
 	//Class Fields
 	private static final double[] NO_WIND = {0,0};
+	private static final double WIND_FORCE = 5.0;
+	private static final double WIND_PROB = 0.001;
+	private static final double WIND_CUTOOF = 0.1;
+	private static final double SCENT_MIN = 0.0;
+	private static final double SCENT_FADE = 0.1;
 	
 	//Instance Fields
+	private double scent;
 	private final ModelKey key;
 	private Map<Direction, Node> neighbors;
-	private boolean neighborsComplete = false;
 	private ArrayList<double[]> windInputs;//Stores wind vectors received from neighboring nodes.
 	
 	/////////////////// Constructor and Initializers /////////////////////////
 	Node(ModelKey key) {
 		this.key = key;
-		neighbors = new HashMap<Direction, Node>();
+		scent = SCENT_MIN;
 		windInputs = new ArrayList<>();
 		windInputs.add(NO_WIND);
-		initNeighbors();
-	}
-	
-	private void initNeighbors() {
+		
 		/*
-		 * Helper function called only by the constructor. First creates keys
+		 * First creates keys
 		 * for hashmap. Sets references in the neighbors hashmap if they exist 
 		 * in the total board; otherwise, sets a null object. If the hashmap
 		 * contains null values, neighborsCompelete is set to false.
 		 */
-		
+		neighbors = new HashMap<Direction, Node>();
 		neighbors.put(Direction.NE, null);
 		neighbors.put(Direction.N, null);
 		neighbors.put(Direction.NW, null);
@@ -45,25 +48,20 @@ public abstract class Node {
 		neighbors.put(Direction.S, null);
 		neighbors.put(Direction.SE, null);
 		
-		neighborsComplete = true;
 		for(Direction dir : neighbors.keySet()) {
-			neighbors.put(dir, findNeighbor(dir));
+			neighbors.put(dir, TotalBoard.getNode(key.getNeighborKey(dir), true));
 		}
 	}
 
 	////////////////////// Accessor Methods /////////////////////////////////
 	
-	protected int getRanInt() {
-		return ThreadLocalRandom.current().nextInt(1, 101);//Uppperbound is exclusive.
-	}
-	
 	public abstract Tile getTile();
 	
-	public Node getNeighbor(Direction dir) {
+	private final Node getNeighbor(Direction dir) {
 		/*
 		 * Returns neighboring node if it exists, or creates new node to return.
 		 */
-		updateNeighbors();
+		//updateNeighbors();
 		Node n = neighbors.get(dir);
 		//Creates node if none exists.
 		if (n == null) {
@@ -75,7 +73,7 @@ public abstract class Node {
 			return n;
 	}
 	
-	public ModelKey getNodeKey() {
+	public final ModelKey getKey() {
 		return this.key;
 		}
 	
@@ -93,38 +91,12 @@ public abstract class Node {
 	
 	protected abstract double getWindFactor();
 	
-	/////////////////////////// Mutator Methods //////////////////////////////
-	
-	private void updateNeighbors() {
-		if (neighborsComplete ==  false) {
-			neighborsComplete = true;
-			for (Direction dir : neighbors.keySet())
-				neighbors.computeIfAbsent(dir, x -> findNeighbor(x));
-		}
-	}
-	
-	private Node findNeighbor(Direction dir) {
-		/*
-		 * Helper function for setNeighbors and updateNeighbors. It is particularly
-		 * necessary for the completeIfAbsent function used in updateNeighbors. It has the
-		 * side effect of setting neighborsComplete to false if it returns any null values.
-		 */
-		
-		Node n = TotalBoard.getNode(key.getNeighborKey(dir), true);
-		if (n == null && neighborsComplete == true)
-			neighborsComplete = false;
-		return n;
-	}
-	
-	protected final void recieveWind(double[] wind) {
-		windInputs.add(wind);
-	}
-	
-	public final void killWind() {
-		windInputs.clear();
-		windInputs.add(NO_WIND);
-	}
-	public final double[] findWind() {
+	/**
+	 * Uses values received from neighboring cells to calculate the cell's wind value and to 
+	 * send wind values to neighboring cells. Stored values are then cleared.
+	 * @return vector representing cell's wind value.
+	 */
+	public final double[] getWind() {
 		double[] wind = {0, 0};
 		
 		//Sums vectors to calculate wind's direction and magnitude.
@@ -145,7 +117,7 @@ public abstract class Node {
 		double magnitude = Math.sqrt(Math.pow(wind[0], 2.0) + Math.pow(wind[1], 2.0));
 		
 		//Gate to cut off tailing calculations.
-		if(magnitude > 0.1) {
+		if(magnitude < WIND_CUTOOF) {
 			return NO_WIND;
 		}
 		//Determines neighboring nodes to send wind.
@@ -154,6 +126,8 @@ public abstract class Node {
 			
 			Direction counterclockwise = null;
 			Direction clockwise = null;
+			
+			//System.out.println(main);
 			
 			switch(main) {
 			case NE:{
@@ -202,6 +176,59 @@ public abstract class Node {
 			
 			return wind;
 		}
+	}
+	
+	
+	public final double getScent() {
+		return scent;
+	}
+	
+	/////////////////////////// Mutator Methods //////////////////////////////
+	
+	/**
+	 * Recieves vector representing wind a wind value and stores it in a list.
+	 * @param wind - vector representing a wind value.
+	 */
+	protected final void recieveWind(double[] wind) {
+		windInputs.add(wind);
+	}
+	
+	/**
+	 * Arbitrarily clears wind inputs. 
+	 * Only to be called by border cells.
+	 */
+	public final void clearWind() {
+		windInputs.clear();
+		windInputs.add(NO_WIND);
+	}
+	
+	public final void genWind() {
+		double prob = ThreadLocalRandom.current().nextDouble(1.0);
+		if (prob <= WIND_PROB) {
+			Iterator<Direction> neighIt = neighbors.keySet().iterator();
+			
+			while (neighIt.hasNext()) {
+				Direction dir = neighIt.next();
+				Node node = getNeighbor(dir);
+				node.recieveWind(dir.scaledVector(WIND_FORCE));
+			}
+		}
+	}
+	
+	public abstract void updateFood();
+	
+	public final void updateScent() {
+		if (scent > SCENT_MIN) {
+			scent -= SCENT_FADE;
+		}
+	}
+	
+	public final void setScent(double scent) {
+		this.scent = scent;
+	}
+	
+	public double eatFood(double rate) {
+		return 0.0;
 	}
 	
 	/////////////////////////////// Checkers ////////////////////////////

@@ -30,6 +30,11 @@ public class RockNode extends Node{
 		return WIND_FACTOR;
 	}
 	
+	////////////////// Mutators /////////////////////////
+	
+	@Override
+	public final void updateFood() {};
+	
 	///////////////// Checker Methods //////////////////////
 	
 	@Override

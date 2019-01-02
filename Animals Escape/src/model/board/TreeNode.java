@@ -8,7 +8,7 @@ public class TreeNode extends Node{
 	
 	//Class Fields
 	private final static boolean PASSABLE = false;
-	private final static double WIND_FACTOR = 0.25;
+	private final static double WIND_FACTOR = 0.1;
 	
 	//Instance Fields
 	private ViewInterface view;
@@ -29,6 +29,11 @@ public class TreeNode extends Node{
 	protected final double getWindFactor() {
 		return WIND_FACTOR;
 	}
+	
+	//////////////////////// Mutators //////////////////////////
+	
+	@Override
+	public final void updateFood() {}
 	
 	//////////////////////// Checker Methods ///////////////////////
 	

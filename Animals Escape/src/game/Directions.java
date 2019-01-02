@@ -6,8 +6,22 @@ package game;
  */
 public class Directions{
 	
+	//The vertical components must be reflected to match screen coorindates.
 	public enum Direction{
-		E, NE, N, NW, W, SW, S, SE;
+		E(new double[]{1.0, 0.0}), 
+		NE(new double[]{Math.cos(Math.PI / 4.0), -1 * Math.sin(Math.PI / 4.0)}), 
+		N(new double[]{0.0, -1.0}),
+		NW(new double[]{Math.cos(3 * Math.PI / 4.0), -1 * Math.sin( 3 * Math.PI / 4.0)}),
+		W(new double[]{-1.0, 0.0}), 
+		SW(new double[]{Math.cos(5 * Math.PI / 4.0), -1 * Math.sin( 5 * Math.PI / 4.0)}), 
+		S(new double[]{0.0, 1.0}), 
+		SE(new double[]{Math.cos(7 * Math.PI / 4.0), -1 * Math.sin( 7 * Math.PI / 4.0)});
+		
+		private double[] vector;
+		
+		private Direction(double[] vector) {
+			this.vector = vector;
+		}
 		
 		public static Direction getDirection(double[] start, double[] end) {
 			/*
@@ -76,6 +90,10 @@ public class Directions{
 					break;
 			}
 			return output;
+		}
+	
+		public double[] scaledVector(double scalar) {
+			return new double[] {scalar * vector[0], scalar * vector[1]};
 		}
 	}//End of Direction
 
