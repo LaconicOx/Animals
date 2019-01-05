@@ -47,6 +47,9 @@ public class GameLoop implements Runnable{
 			//Takes the difference between the actual time interval and the ideal interval.
 			//Then converts to milliseconds
 			sleepTime = (IDEAL - (System.nanoTime() - beforeTime))/1000000;
+			if(sleepTime < 0) {
+				sleepTime = 0;
+			}
 			try {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {

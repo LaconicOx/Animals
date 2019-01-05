@@ -5,9 +5,15 @@ import java.util.Objects;
 import game.Directions.Direction;
 import model.ModelKey;
 import model.board.Node;
+import model.board.node_states.CornerTopLeft;
+import model.board.node_states.NodeState;
 
 public abstract class Cell implements Comparable<Cell>{
 	
+	//Class Fields
+	
+	
+	//Instance Fields
 	protected final Node node;
 	
 	public Cell(Node node) {
