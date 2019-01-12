@@ -1,6 +1,7 @@
 package game;
 
 
+
 /**
  * Represents the cardinal and primary intercardinal directions.
  */
@@ -21,6 +22,10 @@ public class Directions{
 		
 		private Direction(double[] vector) {
 			this.vector = vector;
+		}
+		
+		public static Direction[] getNodeDirections() {
+			return new Direction[] {Direction.NE, Direction.N, Direction.NW, Direction.SW, Direction.S, Direction.SE};
 		}
 		
 		public static Direction getDirection(double[] start, double[] end) {
@@ -80,7 +85,7 @@ public class Directions{
 					break;
 				case NW: output = Direction.SE;
 					break;
-				case W: output = Direction.W;
+				case W: output = Direction.E;
 					break;
 				case SW: output = Direction.NE;
 					break;

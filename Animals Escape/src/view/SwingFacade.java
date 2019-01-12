@@ -7,6 +7,7 @@ import javax.swing.JLayeredPane;
 
 import game.Game;
 import image_library.PlayerImage;
+import image_library.SwingBorder;
 import image_library.SwingBush;
 import image_library.SwingGrass;
 import image_library.SwingPlayer;
@@ -20,7 +21,7 @@ public class SwingFacade implements ViewInterface{
 	//Components
 	private final ViewFrame vf;
 	private final ViewSurface sur;
-	private final ControlSurface con;
+	private  ControlSurface con;
 	
 	//Animation Parameters 
 	private double[] dimensions = {300.0, 300.0};//screen dimensions
@@ -39,6 +40,21 @@ public class SwingFacade implements ViewInterface{
 		layered.add(sur, 1);
 		con = new ControlSurface(game, this, dim);
 		layered.add(con, 0);
+		vf.setContentPane(layered);
+		vf.pack();
+		vf.setVisible(true);
+		sur.init();
+	}
+	
+	//Only for testing
+	public SwingFacade() {
+		Dimension dim = new Dimension((int)dimensions[0], (int)dimensions[1]);
+		vf = new ViewFrame(dim);
+		
+		//Initializes a layered content pane
+		Container layered = new JLayeredPane();
+		sur = new ViewSurface(dim);
+		layered.add(sur, 1);
 		vf.setContentPane(layered);
 		vf.pack();
 		vf.setVisible(true);
@@ -73,6 +89,10 @@ public class SwingFacade implements ViewInterface{
 	
 	public Tile getTree(double[] coords, double[] dimensions) {
 		return new SwingTree(this, coords, dimensions);
+	}
+	
+	public Tile getBorder(double[] coords, double[] dimensions) {
+		return new SwingBorder(this, coords, dimensions);
 	}
 	
 	public PlayerImage getPlayer(double[] coords, double[] dimensions) {

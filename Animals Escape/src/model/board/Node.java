@@ -1,38 +1,49 @@
 package model.board;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Objects;
 
 import game.Directions.Direction;
 import image_library.Tile;
 import model.ModelKey;
+import model.board.node_states.NodeState;
+import model.board.node_states.Off;
+import model.board.node_states.On;
 
 
-public abstract class Node {
+
+public abstract class Node implements Comparable<Node>{
 	
-	//Class Fields
-	private static final double[] NO_WIND = {0,0};
-	private static final double WIND_FORCE = 5.0;
-	private static final double WIND_PROB = 0.001;
-	private static final double WIND_CUTOOF = 0.1;
-	private static final double SCENT_MIN = 0.0;
-	private static final double SCENT_FADE = 0.1;
+	//State Fields
+	private final On active;
+	private final Off off;
+	
 	
 	//Instance Fields
-	private double scent;
+	private NodeState state;
+	private NodeState updateState;
 	private final ModelKey key;
 	private Map<Direction, Node> neighbors;
-	private ArrayList<double[]> windInputs;//Stores wind vectors received from neighboring nodes.
+	
+	private final Tile tile;
+	private final Tile bord;//Strip this out before final.
 	
 	/////////////////// Constructor and Initializers /////////////////////////
-	Node(ModelKey key) {
+	Node(ModelKey key, Tile tile, Tile bord) {
 		this.key = key;
-		scent = SCENT_MIN;
-		windInputs = new ArrayList<>();
-		windInputs.add(NO_WIND);
+		
+		this.tile = tile;
+		this.bord = bord;
+		
+		//Initializes states
+		active = new On(this);
+		//border = new Border(this);
+		off = new Off(this);
+		
+		//Sets states
+		updateState = null;
+		state = off;
 		
 		/*
 		 * First creates keys
@@ -52,15 +63,37 @@ public abstract class Node {
 			neighbors.put(dir, TotalBoard.getNode(key.getNeighborKey(dir), true));
 		}
 	}
-
+	
+	public void initState(NodeState state){
+		this.state = state;
+	}
+	
 	////////////////////// Accessor Methods /////////////////////////////////
 	
-	public abstract Tile getTile();
 	
-	private final Node getNeighbor(Direction dir) {
-		/*
-		 * Returns neighboring node if it exists, or creates new node to return.
-		 */
+	
+	
+	/**
+	 * Forwarding method. 
+	 * @return Array representing the unit vector for the node.
+	 */
+	public double[] getCenter() {
+		return key.getCenter();
+		}
+	
+	public double getFood() {
+		return 0;
+	};
+	
+	public final ModelKey getKey() {
+		return this.key;
+		}
+	
+	/**
+	 * Returns neighboring node if it exists, or creates new node to return.
+	 */
+	public final Node getNeighbor(Direction dir) {
+		
 		//updateNeighbors();
 		Node n = neighbors.get(dir);
 		//Creates node if none exists.
@@ -73,177 +106,193 @@ public abstract class Node {
 			return n;
 	}
 	
-	public final ModelKey getKey() {
-		return this.key;
-		}
-	
-	/**
-	 * Forwarding method. 
-	 * @return Array representing the unit vector for the node.
-	 */
-	public double[] getCenter() {
-		return key.getCenter();
-		}
-	
 	public ModelKey getNeighborKey(Direction dir) {
 		return key.getNeighborKey(dir);
 	}
-	
-	protected abstract double getWindFactor();
-	
-	/**
-	 * Uses values received from neighboring cells to calculate the cell's wind value and to 
-	 * send wind values to neighboring cells. Stored values are then cleared.
-	 * @return vector representing cell's wind value.
-	 */
-	public final double[] getWind() {
-		double[] wind = {0, 0};
-		
-		//Sums vectors to calculate wind's direction and magnitude.
-		for (double[] vector : windInputs) {
-			wind[0] += vector[0];
-			wind[1] += vector[1];
-		}
-		
-		//Resets wind inputs
-		windInputs.clear();
-		windInputs.add(NO_WIND);
-		
-		//Scalar multiplication to represent wind interference.
-		double interference= getWindFactor();
-		wind[0] *= interference;
-		wind[1] *= interference;
-		
-		double magnitude = Math.sqrt(Math.pow(wind[0], 2.0) + Math.pow(wind[1], 2.0));
-		
-		//Gate to cut off tailing calculations.
-		if(magnitude < WIND_CUTOOF) {
-			return NO_WIND;
-		}
-		//Determines neighboring nodes to send wind.
-		else {
-			Direction main = Direction.getDirection(NO_WIND, wind);
-			
-			Direction counterclockwise = null;
-			Direction clockwise = null;
-			
-			//System.out.println(main);
-			
-			switch(main) {
-			case NE:{
-				counterclockwise = Direction.N;
-				clockwise = Direction.SE;
-			}
-			break;
-			case N:{
-				counterclockwise = Direction.NW;
-				clockwise = Direction.NE;
-			}
-			break;
-			case NW:{
-				counterclockwise = Direction.SW;
-				clockwise = Direction.N;
-			}
-			break;
-			case SW:{
-				counterclockwise = Direction.S;
-				clockwise = Direction.NW;
-			}
-			break;
-			case S:{
-				counterclockwise = Direction.SE;
-				clockwise = Direction.SW;
-			}
-			break;
-			case SE: {
-				counterclockwise = Direction.NE;
-				clockwise = Direction.S;
-			}
-			break;
-			case E:
-			case W:{
-				System.err.println("Error in findWind(): E or W selected as direction");
-				System.exit(0);
-			}
-			}
-			
-			//Wind is distributed by a simplified normal distribution.
-			double bulk = 0.68;
-			double tail = 0.21;
-			getNeighbor(main).recieveWind(new double[] {wind[0] * bulk, wind[1] * bulk});
-			getNeighbor(counterclockwise).recieveWind(new double[] {wind[0] * tail, wind[1] * tail});
-			getNeighbor(clockwise).recieveWind(new double[] {wind[0] * tail, wind[1] * tail});
-			
-			return wind;
-		}
+	public final On getOn() {
+		return active;
 	}
 	
+	public final Off getOff() {
+		return off;
+	}
+	
+	public abstract double getWindFactor();
 	
 	public final double getScent() {
-		return scent;
+		return state.getScent();
 	}
 	
 	/////////////////////////// Mutator Methods //////////////////////////////
 	
-	/**
-	 * Recieves vector representing wind a wind value and stores it in a list.
-	 * @param wind - vector representing a wind value.
-	 */
-	protected final void recieveWind(double[] wind) {
-		windInputs.add(wind);
+	public final void advance() {
+		tile.advance();
+	}
+	
+	public final double eat(double rate) {
+		return state.eat(rate);
+	}
+	
+	public final void receiveScent(double scent) {
+		state.receiveScent(scent);
+	}
+	
+	public final void receiveWind(double[] wind) {
+		state.receiveWind(wind);
+	}
+	
+	public final void sendTile() {
+		tile.send();
+	}
+	
+	public final void resetOn() {
+		active.reset();
+	}
+	
+	public final void sendBorder() {
+		//TODO Strip out of final
+		bord.send();
+	}
+	
+	public final void setState(NodeState state) {
+		this.updateState = state;
+	}
+	
+	public final void setTileFacing(Direction facing) {
+		tile.setFacing(facing);
+	}
+
+	public final Node shift(Direction toward) {
+		return state.shift(toward);
 	}
 	
 	/**
-	 * Arbitrarily clears wind inputs. 
-	 * Only to be called by border cells.
+	 * Performs update according to the node's internal state
+	 * @return - true if the node's internal state changed, otherwise false.
 	 */
-	public final void clearWind() {
-		windInputs.clear();
-		windInputs.add(NO_WIND);
-	}
-	
-	public final void genWind() {
-		double prob = ThreadLocalRandom.current().nextDouble(1.0);
-		if (prob <= WIND_PROB) {
-			Iterator<Direction> neighIt = neighbors.keySet().iterator();
+	public final void update() {
+		if (updateState != null) {
+			//System.out.println(this + " to " + updateState);
+			state = updateState;
+			updateState = null;
 			
-			while (neighIt.hasNext()) {
-				Direction dir = neighIt.next();
-				Node node = getNeighbor(dir);
-				node.recieveWind(dir.scaledVector(WIND_FORCE));
-			}
 		}
-	}
-	
-	public abstract void updateFood();
-	
-	public final void updateScent() {
-		if (scent > SCENT_MIN) {
-			scent -= SCENT_FADE;
-		}
-	}
-	
-	public final void setScent(double scent) {
-		this.scent = scent;
-	}
-	
-	public double eatFood(double rate) {
-		return 0.0;
+		state.update();
 	}
 	
 	/////////////////////////////// Checkers ////////////////////////////
+	
+	public final boolean checkActive() {
+		return state.checkInterior();
+	}
+	
+	public final boolean checkBorder() {
+		return state.checkBorder();
+	}
+	
+	public abstract boolean checkDeer();
+	
+	public boolean checkOff() {
+		return state.checkOff();
+	}
+	
+	public abstract boolean checkPassable();
 	
 	public boolean checkPoint(double[] point) {
 		return key.checkPoint(point);
 	}
 	
-	public abstract boolean checkPassable();
-	public abstract boolean checkDeer();
+	public  boolean checkResting() {
+		return tile.checkResting();
+	}
 	
-	///////////////////////// Overridden Methods ////////////////////////////
+	///////////////////////// Object Overrides ////////////////////////////
 	
+	@Override
 	public String toString() {
-		return key.toString();
+		return key.toString() + state.toString();
+	}
+	
+	/**
+	 * Nodes are first ordered by their internal state by the rule: border < active < off.
+	 * They are then ordered by column and finally by rows.
+	 * @param other
+	 * @return
+	 */
+	@Override
+	public int compareTo(Node other) {
+		/*
+		 * Cells are first ordered by columns and then by rows.
+		 * Thus, the top-left cell is the very least, while the bottom-right cell
+		 * is the very greatest.
+		 */
+		
+		int lesser = -1;
+		int equal = 0;
+		int greater = 1;
+		
+		//Orders nodes according to the state rule: border < active < off
+		if (checkBorder() && (other.checkActive()|| other.checkOff())) {
+			return lesser;
+		}
+		else if (checkActive()) {
+			if (other.checkBorder())
+				return greater;
+			else if (other.checkOff())
+				return lesser;
+		}
+		else if(checkOff() && (other.checkActive() || other.checkBorder()))
+				return greater;
+		
+		double[] currentCenter = getCenter();
+		double[] otherCenter = other.getCenter();
+		
+		//Orders nodes according to columns
+		if (currentCenter[0] < otherCenter[0])
+			return lesser;
+		else if (currentCenter[0] > otherCenter[0])
+			return greater;
+		//Orders nodes according to rows
+		else{
+			//Remember: the y-components have been relfected to better match screen coordinates.
+			if(currentCenter[1] < otherCenter[1])
+				return lesser;
+			else if (currentCenter[1] > otherCenter[1])
+				return greater;
+			else
+				return equal;
+		}
+	}
+	
+	
+	@Override
+	public boolean equals(Object ob) {
+		//Returns false if not a node
+		if(ob.getClass() != Node.class)
+			return false;
+		
+		//Returns true if both nodes have the same center
+		Node other = (Node)ob;
+		double[] otherCenter = other.getCenter();
+		double[] currentCenter = getCenter();
+		if((currentCenter[0] != otherCenter[0]) || currentCenter[1] != otherCenter[1]) {
+			return false;
+		}
+		else {
+			//Prompts errors if states are different. 
+			if((checkActive() && !other.checkActive()) || (checkBorder() && !other.checkBorder()) || checkOff() && !other.checkOff()) {
+				System.err.println("Error in Node.equals: same node coordinates but different states");
+				System.exit(0);
+			}
+			return true;
+		}
+	}
+	
+	@Override
+	public int hashCode() {
+		double[] center = getCenter();
+		return Objects.hash(center[0], center[1]);
+		
 	}
 	
 	//////////////////////////// Debugging Methods ///////////////////////////

@@ -12,6 +12,7 @@ public class ModelFacade{
 	
 	//Game Components
 	private TotalBoard total;
+	//private Screen active;
 	private Screen active;
 	private Game game;
 	private ViewInterface view;
@@ -25,8 +26,11 @@ public class ModelFacade{
 		this.view = view;
 		total = TotalBoard.getInstance(view);
 		active = new Screen(view);
+		
 		factory = CharacterFactory.getInstance(active, this, view);
 		player = new Player(active, view);
+		
+		
 	}
 	
 	///////////////////////// Accessor Methods ///////////////////////////
@@ -51,7 +55,7 @@ public class ModelFacade{
 	
 	public void update() {
 		player.update();
-		active.updateCells();
+		active.update();
 	}
 	
 	/////////////////////// Display Methods ////////////////////////////////////////

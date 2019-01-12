@@ -22,6 +22,7 @@ public interface ViewInterface {
 	public Tile getGrass(double[] coords, double[] dimensions);
 	public Tile getRock(double[] coords, double[] dimensions);
 	public Tile getTree(double[] coords, double[] dimensions);
+	public Tile getBorder(double[] coords, double[] dimensions);
 	
 	public PlayerImage getPlayer(double[] coords, double[] dimensions);
 }

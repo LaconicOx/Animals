@@ -130,7 +130,7 @@ public class ModelKey {
 	
 	@Override
 	public String toString() {
-		return "(" + center[0] + "," + center[1] + ")";
+		return "(" + center[0] + ", " + center[1] + ")";
 	}
 	
 	//////////////////////////// Inner Class /////////////////////////////////////

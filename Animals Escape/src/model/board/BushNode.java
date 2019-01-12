@@ -2,7 +2,6 @@ package model.board;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import image_library.Tile;
 import model.ModelKey;
 import view.ViewInterface;
 
@@ -12,48 +11,23 @@ public class BushNode extends Node{
 	private final static boolean PASSABLE = true;
 	private final static int DEER_ODDS = 5;
 	private final static double WIND_FACTOR = 0.75;
-	private final static double FOOD_GROWTH = 0.005;
-	private final static double FOOD_MAX = 10.0;
 	
-	//Instance Fields
-	private double food;
-	private final ViewInterface view;
+	private final static double FOOD = 10.0;
 	
 	BushNode(ModelKey center, ViewInterface view){
-		super(center);
-		this.view = view;
-		food = FOOD_MAX;
+		super(center, view.getBush(center.getCenter(), ModelKey.getDimensions()), view.getBorder(center.getCenter(), ModelKey.getDimensions()));
 	}
 	
 	//////////////////// Accessor Methods ///////////////////////
 	
 	@Override
-	public final Tile getTile() {
-		return view.getBush(getCenter(), ModelKey.getDimensions());
+	public final double getFood() {
+		return FOOD;
 	}
 	
 	@Override
-	protected final double getWindFactor() {
+	public final double getWindFactor() {
 		return WIND_FACTOR;
-	}
-	
-	//////////////////// Mutator////////////////////////////
-	
-	public final void updateFood() {
-		if (food < FOOD_MAX) {
-			food += FOOD_GROWTH;
-		}
-	}
-	
-	@Override
-	public double eatFood(double quantity) {
-		food -= quantity;
-		if (food > 0.0)
-			return quantity;
-		else {
-			food = 0.0;
-			return 0.0;
-		}
 	}
 	
 	/////////////////// Checker Methods //////////////////////
@@ -69,4 +43,5 @@ public class BushNode extends Node{
 		else
 			return false;
 	}
+	
 }

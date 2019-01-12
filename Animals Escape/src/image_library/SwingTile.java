@@ -62,21 +62,21 @@ public abstract class SwingTile extends Images implements Tile{
 	//////////////////////// Mutators //////////////////////////////
 	
 	@Override
-	public final void advance(Direction dir) {
-		
-		
-		if (dir == facing) {
-			advance++;
-		}
-		else {
-			facing = dir;
-			advance = 1;
-		}
+	public final void advance() {
+		advance++;
 	}
 	
 	@Override
 	public final void send() {
 		view.recieve(this);
+	}
+	
+	@Override
+	public final void setFacing(Direction dir) {
+		if (dir != facing) {
+			facing = dir;
+			advance = 0;
+		}
 	}
 	
 	@Override

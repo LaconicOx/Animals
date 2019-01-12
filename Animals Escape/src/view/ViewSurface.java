@@ -58,8 +58,7 @@ class ViewSurface extends JPanel{
 	}
 	
 	void render() {
-		
-		//Clear previous images by drawing a white background.
+		//Clear previous images by drawing a black background.
 		read.setColor(Color.black);
 		read.fillRect(0,0, dim.width, dim.height);
 		

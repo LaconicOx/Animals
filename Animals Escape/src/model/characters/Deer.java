@@ -1,12 +1,12 @@
 package model.characters;
 
-import model.screen.Cell;
+import model.board.Node;
 
 public class Deer extends Characters{
 	
 	
-	Deer(Cell cell){
-		super(cell);
+	Deer(Node node){
+		super(node);
 		
 	}
 	

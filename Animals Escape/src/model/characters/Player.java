@@ -5,7 +5,8 @@ import java.util.HashMap;
 import game.Directions.Direction;
 import image_library.PlayerImage;
 import model.ModelKey;
-import model.screen.Cell;
+import model.board.Node;
+import model.board.TotalBoard;
 import model.screen.Screen;
 import view.ViewInterface;
 
@@ -30,7 +31,7 @@ public class Player {
 	//Component Fields
 	private ViewInterface view;
 	private Screen screen;
-	private Cell cell;
+	private Node node;
 	
 	private PlayerImage image;
 	
@@ -42,8 +43,9 @@ public class Player {
 	public Player(Screen screen, ViewInterface view) {
 		this.screen = screen;
 		this.view = view;
-		cell = screen.getCell(new ModelKey(new int[] {0,0}));
-		this.center =  cell.getCenter();
+		
+		node = TotalBoard.getNode(new ModelKey(new int[] {0,0}), false);//TODO: Must find a better way to initialize the player.
+		this.center =  node.getCenter();
 		image = view.getPlayer(center, DIM);
 	}
 	
@@ -81,20 +83,20 @@ public class Player {
 		double[] destination = {center[0] + SPEED * unitVector[0], center[1] - SPEED * unitVector[1]};
 		
 		//Gates on whether the destination is within the cell.
-		if (cell.checkPoint(destination)) {
+		if (node.checkPoint(destination)) {
 			view.updateShift(destination);
 			center = destination;
 			image.advance(facing);
 		}
 		else {
-			Direction dir = Direction.getDirection(cell.getCenter(), destination);
-			Cell destCell = screen.getCell(cell.getNeighborKey(dir));
+			Direction dir = Direction.getDirection(node.getCenter(), destination);
+			Node destNode = node.getNeighbor(dir);
 			//Gates on whether the destination is passable.
-			if (destCell.checkPassable()) {
-				cell = destCell;
+			if (destNode.checkPassable()) {
+				node = destNode;
 				view.updateShift(destination);
 				center = destination;
-				screen.shiftCells(dir);
+				screen.shift(dir);
 				image.advance(facing);
 			}
 		}

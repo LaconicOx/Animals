@@ -1,7 +1,7 @@
 package model.characters;
 
 import model.ModelFacade;
-import model.screen.Cell;
+import model.board.Node;
 import model.screen.Screen;
 import view.ViewInterface;
 
@@ -24,7 +24,7 @@ public class CharacterFactory {
 		return unique;
 	}
 	
-	public static void initPlayer(Cell cell) {
+	public static void initPlayer(Node node) {
 		
 	}
 }

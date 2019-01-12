@@ -1,283 +1,170 @@
 package model.screen;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 import game.Directions.Direction;
-import model.ModelKey;
 import model.board.Node;
-import model.board.TotalBoard;
 import view.ViewInterface;
 
 public class Screen {
-	
-	//Class fields
-	private static final int EXTENSION = 1;//Extends cell beyond edge of screen to prevent flickering
-	private static final Direction[] CELL_DIRECTIONS = {Direction.NE, Direction.N, Direction.NW, Direction.SW, Direction.S, Direction.SE};
-	
+
+	//State fields
+	private final ScreenShift shift;
+	private final ScreenNormal normal;
+	private final ScreenStart start;
 	
 	//Instance Fields
-	private final ViewInterface view;
-	private Map<ModelKey, ScreenCell> screen;
-	private Map<ModelKey, BorderCell> border;
-	
-	
+	private TreeSet<Node> screenNodes;
+	private ScreenState state;
+		
 	////////////////////////// Constructors and Initializers //////////////////////////
 	public Screen(ViewInterface view){
-		this.view = view;
-		screen = new HashMap<>();
-		border = new HashMap<>();
+		screenNodes = new TreeSet<>();
 		
-		//Initializes screen and border.
-		double[] boundaries = getModelBoundaries(new double[] {0.0, 0.0});
-		ModelKey cenKey = new ModelKey(new int[] {0,0});
-		Node node = TotalBoard.getNode(cenKey, false);
-		ScreenCell center = new ScreenCell(node);
-		screen.put(cenKey, center);
-		recurInit(center.getNeighborKey(Direction.N), boundaries);
+		//Initializes states
+		shift = new ScreenShift(this);
+		normal = new ScreenNormal(this);
+		start = new ScreenStart(this, view);
+		state = start;
+		
+	}
+		
+	////////////////////////// Accessor Methods /////////////////////////////
+		
+	public Iterator<Node> getBorderIterator(){
+		return new BorderIterator(screenNodes);
 	}
 	
-	private double[] getModelBoundaries(double[] center) {
-		/*
-		 * boundaries[0] represents the left boundary.
-		 * boundaries[1] represents the right boundary.
-		 * boundaries[2] represents the top boundary.
-		 * boundaries[3] represents the bottom boundary.
-		 */
+	public Iterator<Node> getScreenIterator(){
+		return new ScreenIterator(screenNodes);
+	}
+	
+	public ScreenState getStateNormal() {
+		return normal;
+	}
+	
+	public ScreenState getStateShift() {
+		return shift;
+	}
 		
-		//Converts screendimensions form pixels to model units.
-		double[] screenDim = view.getScreenDim();//Screen dimensions in pixels
-		double scale = view.getScale();//number of pixels per model unit
-		double[] dim = new double[] {screenDim[0] / scale, screenDim[1] / scale};//Dimensions in model units
-		double[] vector = ModelKey.getDimensions();//Vector representing dimensions of a hexagon.
-		
-		double[] boundaries = new double[4];
-		
-		//Distance from the center to the top or bottom boundaries of the panel.
-		double vertical = dim[0] / 2.0 + vector[0] * EXTENSION;
-		//Distance from the center to the left of right boundaries of the panel.
-		double horizontal = dim[1] / 2.0 + vector[1] * EXTENSION;
-		
-		boundaries[0] = center[0] - horizontal;
-		boundaries[1] = center[0] + horizontal;
-		boundaries[2] = center[1] - vertical;
-		boundaries[3] = center[1] + vertical;
-		
-		return boundaries;	
+	////////////////////////// Mutator Methods /////////////////////////////////
+	
+	public void add(Node node) {
+		screenNodes.add(node);
+	}
+	
+	public void add(Set<Node> nodes) {
+		screenNodes.addAll(nodes);
+	}
+	
+	public void setState(ScreenState state) {
+		this.state = state;
+	}
+	
+	public void shift(Direction toward) {
+		state.shift(toward);
 	}
 	
 	/**
-	 * A helper method for init. It builds the screen recursively by traversing the 
-	 * node trees.
-	 * @param n - node for the new cell to be created and added to screen.
-	 * @param boundaries - inclusive boundaries for the screen.
+	 * This method repositions nodes with the screen by adding them to a new treeset.
+	 * TreeSet entries are ordered when objects are added, so repositioning the nodes requires
+	 * adding them to a new TreeSet. Also, creating a new Treeset avoid concurrent modification issues.
 	 */
-	private void recurInit(ModelKey key, double[] boundaries) {
-		Node node = TotalBoard.getNode(key, false);
-		ScreenCell newCell = new ScreenCell(node);
-		screen.put(key, newCell);
-		
-		for (Direction dir : CELL_DIRECTIONS) {
-			ModelKey dirKey = newCell.getNeighborKey(dir);
-			if(!screen.containsKey(dirKey) && !border.containsKey(dirKey)) {
-				double[] cen = dirKey.getCenter();
-				//Calls itself to add a new concrete cell to screen if within boundaries;
-				//otherwise, adds a border cell to border.
-				if ( cen[0] >= boundaries[0] && cen[0] <= boundaries[1] && cen[1] >= boundaries[2] && cen[1] <= boundaries[3])
-					recurInit(dirKey, boundaries);
-				else {
-					Node borderNode = TotalBoard.getNode(dirKey, false);
-					border.put(dirKey, new BorderCell(borderNode));
-				}
-					
+	void reposition() {
+		TreeSet<Node> newScreenNodes = new TreeSet<>();
+		Iterator<Node> oldIt = screenNodes.iterator();
+		Node current;
+		while(oldIt.hasNext()) {
+			current = oldIt.next();
+			current.update();
+			//Nodes in Off states should be removed.
+			if(!current.checkOff()) {
+				newScreenNodes.add(current);
 			}
 		}
+		screenNodes = newScreenNodes;
 	}
 	
-	////////////////////////// Accessor Methods /////////////////////////////
-	
-	public Cell getCell(ModelKey key) {
-		Cell cell = screen.get(key);
-		if (cell == null) {
-			System.err.println("Error in getCell(): cell not found");
-			System.exit(0);
-		}
-		return cell;
+	public void update() {
+		state.update();
 	}
-	
-	public Cell getNeighborCell(ModelKey key) {
-		if (screen.containsKey(key))
-			return screen.get(key);
-		else if(border.containsKey(key))
-			return border.get(key);
-		else
-			return null;
-	}
-	
-	////////////////////////// Mutator Methods /////////////////////////////////
-	
-	public void updateCells() {
-		border.forEach((key,cell) -> cell.update());
-		screen.forEach((key, cell) -> cell.update());
-	}
-	
-	public void shiftCells(Direction dir) {
-		ArrayList<Instruction> instructions = new ArrayList<>();
-		border.forEach((key,cell) -> instructions.add(new Instruction(cell, dir)));
-		instructions.forEach(instruct -> instruct.execute());
-	}
-	
-	void addScreenCell(ModelKey key) { 
-		Node node = TotalBoard.getNode(key, false);
-		screen.put(key, new ScreenCell(node)); 
-		}
-	
-	void removeScreenCell(ModelKey key) {
-		screen.remove(key);
-	}
-	
-	void addBorderCell(ModelKey key) { 
-		Node node = TotalBoard.getNode(key, false);
-		border.put(key, new BorderCell(node)); }
-	
-	void removeBorderCell(ModelKey key) {
-		border.remove(key);
-	}
-	
+		
+		
+		
+		
 	////////////////////////// Checker Methods ////////////////////////////////
 	
-	public boolean checkScreen(ModelKey key) {
-		return screen.containsKey(key);
+	public boolean checkNode(Node node) {
+		if(screenNodes.contains(node))
+			return true;
+		else
+			return false;
 	}
 	
-	public boolean checkBorder(ModelKey key) {
-		return border.containsKey(key);
-	}
 	
-	///////////////////////// Inner Class /////////////////////////////////////
-	private enum State{NULL, SCREEN, BORDER};
-	
-	class Instruction {
+	///////////////////////// Inner Classes ///////////////////////////////
+	public class BorderIterator implements Iterator<Node>{
+		//TODO: Temporary fix. Rewrite this class
+		private final Iterator<Node> storedIt;
+		private Set<Node> stored;
 		
-		private BorderCell cell;
-		private List<Action> actions;
-		private Direction toward;
-		private HashMap<Direction, State> orientation = null;
-		
-		//////////////// Constructor and initializers ///////////////////////
-		
-		Instruction(BorderCell cell, Direction toward){
-			this.cell = cell;
-			this.toward = toward;
-			actions = new ArrayList<>();
-			initOrientation();
-			getShiftInstruction(toward);
-		}
-		
-		private void getShiftInstruction(Direction dir) {
-			
-			//Builds instruction for creating a cell at the node in the direction of dir.
-			State toward = orientation.get(dir);
-			if (toward == State.NULL)
-				nullToBorder();
-			else if (toward == State.SCREEN)
-				screenToBorder();
-			else if (toward == State.BORDER)
-				keep();
-			else
-				System.err.println("Error in getInstruction(): unrecognized choice.");
-			
-			//Builds instruction for creating a cell at the node for this cell.
-			State away = orientation.get(Direction.getOpposite(dir));
-			if (away == State.NULL)
-				selfToNull();
-			else if (away == State.SCREEN)
-				selfToScreen();
-			else if (away == State.BORDER)
-				keep();
-			else
-				System.err.println("Error in getInstruction(): unrecognized choice.");
-			
-			if(away == State.NULL && toward == State.NULL) {
-				System.err.println("Error in getShiftInstructions(): Null, null orientation" );
-			}
-		}
-		
-		/**
-		 * Determines where the cell is relative to other screen objects.
-		 */
-		private void initOrientation() {
-			orientation = new HashMap<>();
-			Direction[] directions = {Direction.NE, Direction.N, Direction.NW, Direction.SW, Direction.S, Direction.SE};
-			for (Direction dir : directions) {
-				ModelKey test = cell.getNeighborKey(dir);
-
-				if (checkScreen(test))
-					orientation.put(dir, State.SCREEN);
-				else if (checkBorder(test))
-					orientation.put(dir, State.BORDER);
+		public BorderIterator(TreeSet<Node> nodes) {
+			Iterator<Node> nodeIt = nodes.iterator();
+			stored = new HashSet<>();
+			Node n;
+			while(nodeIt.hasNext()) {
+				n = nodeIt.next();
+				if(n.checkBorder())
+					stored.add(n);
 				else
-					orientation.put(dir, State.NULL);
+					break;
 			}
+			storedIt = stored.iterator();
 		}
-		
-		///////////////////// Accessor Method ////////////////////
-		
-		void execute() {
-			actions.forEach(action -> action.execute());
+
+		@Override
+		public boolean hasNext() {
+			return storedIt.hasNext();
 		}
-		
-		///////////////////// Builder Methods ////////////////////
-		void screenToBorder() {
-			actions.add(new DeleteScreen());
-			actions.add(new CreateBorder());
+
+		@Override
+		public Node next() {
+			return storedIt.next();
 		}
+	}//End of BorderIterator
+	
+	/**
+	 * Iterates through every nodes stored in Screen.
+	 * @author dvdco
+	 *
+	 */
+	public class ScreenIterator implements Iterator<Node>{
+		private final Iterator<Node> screenIt;
 		
-		void nullToBorder() {
-			actions.add(new CreateBorder());
+		public ScreenIterator(TreeSet<Node> nodes) {
+			screenIt = nodes.iterator();
 		}
-		
-		void selfToNull(){
-			actions.add(new DeleteSelf());
+
+		@Override
+		public boolean hasNext() {
+			return screenIt.hasNext();
 		}
-		
-		void selfToScreen() {
-			actions.add(new Transform());
+
+		@Override
+		public Node next() {
+			return screenIt.next();
 		}
+	}
+	
+	//////////////////////////// Debugging ////////////////////////////
+	public void display() {
+		Iterator<Node> screenIt = screenNodes.iterator();
+		System.out.println("***************************************");
+		while(screenIt.hasNext())
+			System.out.println(screenIt.next());
+		System.out.println("***************************************");
+	}
 		
-		void keep() {};//The method is here to represent the choice of keeping the cell
-		
-		/////////////////////// Inner Classes /////////////////////
-		abstract class Action { abstract void execute(); }
-		
-		class CreateBorder extends Action{
-			void execute() { 
-				ModelKey key = cell.getNeighborKey(toward);
-				addBorderCell(key);; 
-			}
-		}
-		
-		class DeleteSelf extends Action{
-			void execute() { 
-				removeBorderCell(cell.getKey());	
-			}
-		}
-		
-		class DeleteScreen extends Action{
-			void execute() { 
-				ModelKey key = cell.getNeighborKey(toward);
-				removeScreenCell(key);//remove screen cell.
-			}
-		}
-		
-		class Transform extends Action{
-			void execute() {
-				ModelKey key = cell.getKey();
-				removeBorderCell(key);
-				addScreenCell(key);
-				}
-		}
-	}//End of Instruction
 }//End of Screen

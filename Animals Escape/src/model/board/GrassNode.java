@@ -4,7 +4,6 @@ package model.board;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import image_library.Tile;
 import model.ModelKey;
 import view.ViewInterface;
 
@@ -14,50 +13,26 @@ public class GrassNode extends Node{
 	private final static boolean PASSABLE = true;
 	private final static int DEER_ODDS = 10;
 	private final static double WIND_FACTOR = 1.0;
-	private final static double FOOD_GROWTH = 0.01;
-	private final static double FOOD_MAX = 20.0;
-	
-	//Instance Fields
-	private ViewInterface view;
-	private double food;
+	private final static double FOOD = 20.0;
 	
 	public GrassNode(ModelKey center, ViewInterface view){
-		super(center);
-		this.view = view;
-		food = FOOD_MAX;
+		super(center, view.getGrass(center.getCenter(),ModelKey.getDimensions()), view.getBorder(center.getCenter(), ModelKey.getDimensions()));
 	}
 	
 	/////////////////////// Accessor Methods //////////////////////
 	
 	@Override
-	public Tile getTile() {
-		return view.getGrass(getCenter(), ModelKey.getDimensions());
+	public final double getFood() {
+		return FOOD;
 	}
 	
 	@Override
-	protected final double getWindFactor() {
+	public final double getWindFactor() {
 		return WIND_FACTOR;
 	}
 	
 	////////////////////Mutator////////////////////////////
-	
-	@Override
-	public final void updateFood() {
-		if (food < FOOD_MAX) {
-			food += FOOD_GROWTH;
-		}
-	}
-	
-	@Override
-	public double eatFood(double quantity) {
-		food -= quantity;
-		if (food > 0.0)
-			return quantity;
-		else {
-			food = 0.0;
-			return 0.0;
-		}
-	}
+
 	
 	///////////////////// Checker Methods /////////////////////////
 	
@@ -71,5 +46,11 @@ public class GrassNode extends Node{
 			return true;
 		else
 			return false;
+	}
+	
+	////////////////////////// Overrides ////////////////////////
+	@Override
+	public String toString() {
+		return "Grass at " + super.toString();
 	}
 }
