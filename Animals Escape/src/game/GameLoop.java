@@ -24,11 +24,6 @@ public class GameLoop implements Runnable{
 		this.model = model;
 		model.update();//initializing the model before starting the loop provides more accurate FPS readings
 		startLoop();
-		//test();
-	}
-	
-	private void test() {
-		model.update();
 	}
 	
 	private void startLoop() {
@@ -63,7 +58,7 @@ public class GameLoop implements Runnable{
 			}
 			long elapsed = System.nanoTime() - startTime;
 			double ups = 1000000000 * updates/elapsed;
-			//System.out.println(ups);
+			System.out.println(ups);
 		}//End of run()
 	}
 	

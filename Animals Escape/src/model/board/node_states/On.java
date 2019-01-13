@@ -76,7 +76,6 @@ public class On implements NodeState{
 	public final void initBorder() {
 		if(updateState == null) {
 			state = new BorderWrapper(state);
-			System.out.println("Init " + state.checkBorder());
 		}
 		else {
 			System.err.println("Error in initBorder");

@@ -41,9 +41,9 @@ class ControlSurface extends JPanel{
 				break;
 			case KeyEvent.VK_S: game.movePlayer(3 * angle);//Moves down.
 				break;
-			case KeyEvent.VK_I: sf.updateScale(1.2);//Zooms in.
+			case KeyEvent.VK_I: game.screenDilate(1.2);//Zooms in.
 				break;
-			case KeyEvent.VK_K: sf.updateScale(0.8);//Zooms out.
+			case KeyEvent.VK_K: game.screenDilate(0.8);//Zooms out.
 				break;
 			}
 		}

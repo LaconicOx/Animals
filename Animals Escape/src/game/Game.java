@@ -28,6 +28,10 @@ public class Game {
 	
 	////////////////////////////// Mutator Methods //////////////////////////////
 	
+	public void screenDilate(double factor) {
+		model.screenDilate(factor);
+	}
+	
 	public void movePlayer(double angle) {
 		model.movePlayer(angle);
 	}

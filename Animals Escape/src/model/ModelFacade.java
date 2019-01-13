@@ -49,6 +49,10 @@ public class ModelFacade{
 		player.move(angle);
 	}
 	
+	public void screenDilate(double factor) {
+		active.dilate(factor);
+	}
+	
 	public void stopPlayer() {
 		player.stop();
 	}

@@ -11,6 +11,7 @@ import view.ViewInterface;
 public class Screen {
 
 	//State fields
+	private final ScreenDilate dilate;
 	private final ScreenShift shift;
 	private final ScreenNormal normal;
 	private final ScreenStart start;
@@ -24,6 +25,7 @@ public class Screen {
 		screenNodes = new TreeSet<>();
 		
 		//Initializes states
+		dilate = new ScreenDilate(this, view);
 		shift = new ScreenShift(this);
 		normal = new ScreenNormal(this);
 		start = new ScreenStart(this, view);
@@ -33,33 +35,41 @@ public class Screen {
 		
 	////////////////////////// Accessor Methods /////////////////////////////
 		
-	public Iterator<Node> getBorderIterator(){
+	final Iterator<Node> getBorderIterator(){
 		return new BorderIterator(screenNodes);
 	}
 	
-	public Iterator<Node> getScreenIterator(){
+	final Iterator<Node> getScreenIterator(){
 		return new ScreenIterator(screenNodes);
 	}
 	
-	public ScreenState getStateNormal() {
+	final ScreenState getStateDilate() {
+		return dilate;
+	}
+	
+	final ScreenState getStateNormal() {
 		return normal;
 	}
 	
-	public ScreenState getStateShift() {
+	final ScreenState getStateShift() {
 		return shift;
 	}
 		
 	////////////////////////// Mutator Methods /////////////////////////////////
 	
-	public void add(Node node) {
+	final void add(Node node) {
 		screenNodes.add(node);
 	}
 	
-	public void add(Set<Node> nodes) {
+	final void add(Set<Node> nodes) {
 		screenNodes.addAll(nodes);
 	}
 	
-	public void setState(ScreenState state) {
+	public void dilate(double factor) {
+		state.dilate(factor);
+	}
+	
+	final void setState(ScreenState state) {
 		this.state = state;
 	}
 	
@@ -72,7 +82,7 @@ public class Screen {
 	 * TreeSet entries are ordered when objects are added, so repositioning the nodes requires
 	 * adding them to a new TreeSet. Also, creating a new Treeset avoid concurrent modification issues.
 	 */
-	void reposition() {
+	final void reposition() {
 		TreeSet<Node> newScreenNodes = new TreeSet<>();
 		Iterator<Node> oldIt = screenNodes.iterator();
 		Node current;
