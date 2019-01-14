@@ -73,6 +73,10 @@ public class On implements NodeState{
 		updateState.receiveWind(wind);
 	}
 	
+	public final void initInterior() {
+		//TODO
+	}
+	
 	public final void initBorder() {
 		if(updateState == null) {
 			state = new BorderWrapper(state);

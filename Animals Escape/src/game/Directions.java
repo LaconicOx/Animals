@@ -1,13 +1,13 @@
 package game;
 
-
+import java.util.Iterator;
 
 /**
- * Represents the cardinal and primary intercardinal directions.
+ * Represents the cardinal and primary inter-cardinal directions.
  */
 public class Directions{
 	
-	//The vertical components must be reflected to match screen coorindates.
+	//The vertical components must be reflected to match screen coordinates.
 	public enum Direction{
 		E(new double[]{1.0, 0.0}), 
 		NE(new double[]{Math.cos(Math.PI / 4.0), -1 * Math.sin(Math.PI / 4.0)}), 
@@ -22,6 +22,10 @@ public class Directions{
 		
 		private Direction(double[] vector) {
 			this.vector = vector;
+		}
+		
+		public static Iterator<Direction> getNodeIterator(){
+			return new NodeDirections();
 		}
 		
 		public static Direction[] getNodeDirections() {
@@ -100,6 +104,34 @@ public class Directions{
 		public double[] scaledVector(double scalar) {
 			return new double[] {scalar * vector[0], scalar * vector[1]};
 		}
+		
+		/////////////////////// Inner Class //////////////////////////
+		
+		private static class NodeDirections implements Iterator<Direction>{
+			
+			private static final Direction[] NODE_DIR = {Direction.NE, Direction.N, Direction.NW, Direction.SW, Direction.S, Direction.SE};
+			private int next;
+			
+			NodeDirections(){
+				next = 0;
+			}
+			
+			@Override
+			public boolean hasNext() {
+				if(next < 6)
+					return true;
+				else
+					return false;
+			}
+
+			@Override
+			public Direction next() {
+				Direction output = NODE_DIR[next];
+				next++;
+				return output;
+			}
+			
+		}//End of NodeDirections
 	}//End of Direction
 
 }
