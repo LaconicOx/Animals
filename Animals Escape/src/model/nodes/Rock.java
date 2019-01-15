@@ -1,26 +1,30 @@
-package model.board;
-import model.ModelKey;
+package model.nodes;
 import view.ViewInterface;
 
-public class RockNode extends Node{
+class Rock extends Node{
 	
 	//Class Fields
 	private final static boolean PASSABLE = false;
 	private final static double WIND_FACTOR = 0.0;
+	private final static double FOOD = 0.0;
 	
 	//Instance Fields
 	
-	public RockNode(ModelKey center, ViewInterface view){
+	Rock(ModelKey center, ViewInterface view){
 		super(center, view.getRock(center.getCenter(), ModelKey.getDimensions()), view.getBorder(center.getCenter(), ModelKey.getDimensions()));
 	}
 	
 	/////////////////// Accessor Methods ////////////////////
 	
 	@Override
-	public final double  getWindFactor() {
+	final double  getWindFactor() {
 		return WIND_FACTOR;
 	}
 	
+	@Override
+	final double getFoodFactor() {
+		return FOOD;
+	}
 	////////////////// Mutators /////////////////////////
 
 	

@@ -1,30 +1,27 @@
 package model;
 
 
-import game.Game;
-import model.board.TotalBoard;
 import model.characters.CharacterFactory;
 import model.characters.Player;
+import model.nodes.NodeFactory;
 import model.screen.Screen;
 import view.ViewInterface;
 
 public class ModelFacade{
 	
 	//Game Components
-	private TotalBoard total;
+	private NodeFactory total;
 	//private Screen active;
 	private Screen active;
-	private Game game;
 	private ViewInterface view;
 	private Player player;
 	private CharacterFactory factory;
 	
 	////////////////////////////// Constructor //////////////////////////////////
 	
-	public ModelFacade(Game game, ViewInterface view){
-		this.game = game;
+	public ModelFacade(ViewInterface view){
 		this.view = view;
-		total = TotalBoard.getInstance(view);
+		total = NodeFactory.getInstance(view);
 		active = new Screen(view);
 		
 		factory = CharacterFactory.getInstance(active, this, view);

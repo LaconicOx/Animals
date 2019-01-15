@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import game.Directions.Direction;
-import model.board.Node;
-import model.board.node_states.NodeState;
+import model.nodes.Node;
+import model.nodes.NodeState;
 import view.ViewInterface;
 
 public class ScreenDilate extends ScreenState{

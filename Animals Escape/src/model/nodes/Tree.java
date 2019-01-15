@@ -1,27 +1,31 @@
-package model.board;
+package model.nodes;
 
-import model.ModelKey;
 import view.ViewInterface;
 
-public class TreeNode extends Node{
+class Tree extends Node{
 	
 	//Class Fields
 	private final static boolean PASSABLE = false;
 	private final static double WIND_FACTOR = 0.1;
+	private final static double FOOD = 0.0;
 	
 	//Instance Fields
 	
-	TreeNode(ModelKey center, ViewInterface view){
+	Tree(ModelKey center, ViewInterface view){
 		super(center, view.getTree(center.getCenter(), ModelKey.getDimensions()), view.getBorder(center.getCenter(), ModelKey.getDimensions()));
 	}
 	
 	///////////////////////// Accessor Methods //////////////////////
 	
 	@Override
-	public final double getWindFactor() {
+	final double getWindFactor() {
 		return WIND_FACTOR;
 	}
 	
+	@Override
+	final double getFoodFactor() {
+		return FOOD;
+	}
 	//////////////////////// Mutators //////////////////////////
 	
 	

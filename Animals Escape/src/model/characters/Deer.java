@@ -1,6 +1,6 @@
 package model.characters;
 
-import model.board.Node;
+import model.nodes.Node;
 
 public class Deer extends Characters{
 	

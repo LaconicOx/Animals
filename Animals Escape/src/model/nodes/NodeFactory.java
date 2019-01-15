@@ -1,4 +1,4 @@
-package model.board;
+package model.nodes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,28 +11,27 @@ import java.util.Map;
 import java.util.Set;
 
 import game.Directions.Direction;
-import model.ModelKey;
 import view.ViewInterface;
 
 
-public class TotalBoard {
+public class NodeFactory {
 	/*
 	 * Singleton class for creating and storing the game board.
 	 */
 	
 	private static ViewInterface view;
-	private static TotalBoard uniqueInstance;
+	private static NodeFactory uniqueInstance;
 	private static Map<ModelKey, Node> board;
 	
 	/////////////////// Singleton Constructor ////////////////////////
-	private TotalBoard(ViewInterface view) {
-		TotalBoard.view = view;
+	private NodeFactory(ViewInterface view) {
+		NodeFactory.view = view;
 		board = new HashMap<ModelKey, Node>();
 	}
 	
-	public static TotalBoard getInstance(ViewInterface view) {
+	public static NodeFactory getInstance(ViewInterface view) {
 		if (uniqueInstance == null) {
-			uniqueInstance = new TotalBoard(view);
+			uniqueInstance = new NodeFactory(view);
 			}
 		return uniqueInstance;
 	}
@@ -61,13 +60,13 @@ public class TotalBoard {
 				Node output = null;
 				
 				switch(type) {
-				case GRASS: output = new GrassNode(key, view);
+				case GRASS: output = new Grass(key, view);
 					break;
-				case BUSH: output = new BushNode(key, view);
+				case BUSH: output = new Bush(key, view);
 					break;
-				case OAK: output = new TreeNode(key, view);
+				case OAK: output = new Tree(key, view);
 					break;
-				case ROCK: output = new RockNode(key, view);
+				case ROCK: output = new Rock(key, view);
 					break;
 				}
 				putNode(output);//Assures all nodes have been entered into the TotalBoard
@@ -113,13 +112,13 @@ public class TotalBoard {
 			Iterator<Node>neighIt = neighbors.iterator();
 			while(neighIt.hasNext()) {
 				Node n = neighIt.next();
-				if(n.getClass() == GrassNode.class)
+				if(n.getClass() == Grass.class)
 					deck.addAll(HexType.GRASS.getCards());
-				else if(n.getClass() == BushNode.class)
+				else if(n.getClass() == Bush.class)
 					deck.addAll(HexType.BUSH.getCards());
-				else if(n.getClass() == TreeNode.class)
+				else if(n.getClass() == Tree.class)
 					deck.addAll(HexType.OAK.getCards());
-				else if(n.getClass() == RockNode.class)
+				else if(n.getClass() == Rock.class)
 					deck.addAll(HexType.ROCK.getCards());
 				else
 					System.err.println("Unrecognized type in initType.");

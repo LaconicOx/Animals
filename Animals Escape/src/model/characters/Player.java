@@ -4,9 +4,9 @@ import java.util.HashMap;
 
 import game.Directions.Direction;
 import image_library.PlayerImage;
-import model.ModelKey;
-import model.board.Node;
-import model.board.TotalBoard;
+import model.nodes.ModelKey;
+import model.nodes.Node;
+import model.nodes.NodeFactory;
 import model.screen.Screen;
 import view.ViewInterface;
 
@@ -44,7 +44,7 @@ public class Player {
 		this.screen = screen;
 		this.view = view;
 		
-		node = TotalBoard.getNode(new ModelKey(new int[] {0,0}), false);//TODO: Must find a better way to initialize the player.
+		node = NodeFactory.getNode(new ModelKey(new int[] {0,0}), false);//TODO: Must find a better way to initialize the player.
 		this.center =  node.getCenter();
 		image = view.getPlayer(center, DIM);
 	}

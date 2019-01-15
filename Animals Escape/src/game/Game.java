@@ -22,7 +22,7 @@ public class Game {
 			System.exit(0);
 		}
 		
-		model = new ModelFacade(this, view);
+		model = new ModelFacade(view);
 		loop = new GameLoop(this, view, model);
 	}
 	

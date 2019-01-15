@@ -1,7 +1,7 @@
 package model.characters;
 
 import model.ModelFacade;
-import model.board.Node;
+import model.nodes.Node;
 import model.screen.Screen;
 import view.ViewInterface;
 

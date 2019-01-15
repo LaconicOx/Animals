@@ -1,11 +1,11 @@
 package model.screen;
 
 import game.Directions.Direction;
-import model.ModelKey;
-import model.board.Node;
-import model.board.TotalBoard;
-import model.board.node_states.NodeState;
-import model.board.node_states.On;
+import model.nodes.ModelKey;
+import model.nodes.Node;
+import model.nodes.NodeState;
+import model.nodes.On;
+import model.nodes.NodeFactory;
 import view.ViewInterface;
 
 public class ScreenStart extends ScreenState{
@@ -57,7 +57,7 @@ public class ScreenStart extends ScreenState{
 	@Override
 	public void update() {
 		double[] boundaries = getModelBoundaries(view.getShift(), view.getScreenDim(), view.getScale());
-		Node center = TotalBoard.getNode(new ModelKey(new int[] {0,0}), false);
+		Node center = NodeFactory.getNode(new ModelKey(new int[] {0,0}), false);
 		
 		initScreen(center, boundaries);//Initializes screen.
 		

@@ -3,7 +3,7 @@ package model.screen;
 
 import java.util.Iterator;
 
-import model.board.Node;
+import model.nodes.Node;
 
 public class ScreenNormal extends ScreenState{
 	

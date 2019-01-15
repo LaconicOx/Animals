@@ -1,4 +1,4 @@
-package model;
+package model.nodes;
 
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ import game.Directions.Direction;
  * Model units do not correspond to the cartesian plane. The vertical components have been reflected across the x-axis. This allows 
  * them to mirror screen coordinates more closely. 
  */
-public class ModelKey {
+class ModelKey {
 	
 	//Class Fields
 	private static final double UNIT_APOTHEM = 1.0;//One model unit is equivalent to the unit apothem of a hexagon.
@@ -26,7 +26,7 @@ public class ModelKey {
 	private final int[] steps;
 	private final Hexagon region;
 	
-	public ModelKey(int[] steps) {
+	ModelKey(int[] steps) {
 		/*
 		 * Tests coordinates. Accepts (even, even) or (odd, odd).
 		 * Rejects (even, odd) and (odd, even).
@@ -43,15 +43,15 @@ public class ModelKey {
 	
 	////////////////// Accessors ///////////////////////////
 	
-	public double[] getCenter() {
+	double[] getCenter() {
 		return center.clone();
 	}
 	
-	public static double[] getDimensions() {
+	static double[] getDimensions() {
 		return DIM;
 	}
 	
-	public ModelKey getNeighborKey(Direction dir) {
+	ModelKey getNeighborKey(Direction dir) {
 		int[] neighbor = steps.clone();
 		switch(dir) {
 		case NE:{
@@ -100,7 +100,7 @@ public class ModelKey {
 	
 	////////////////////// Checkers ///////////////////////
 	
-	public boolean checkPoint(double[] point) {
+	boolean checkPoint(double[] point) {
 		return region.contains(point);
 	}
 	

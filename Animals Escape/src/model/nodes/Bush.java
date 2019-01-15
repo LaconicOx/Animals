@@ -1,32 +1,30 @@
-package model.board;
+package model.nodes;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import model.ModelKey;
 import view.ViewInterface;
 
-public class BushNode extends Node{
+class Bush extends Node{
 	
 	//Class Fields and Constants
 	private final static boolean PASSABLE = true;
 	private final static int DEER_ODDS = 5;
 	private final static double WIND_FACTOR = 0.75;
-	
 	private final static double FOOD = 10.0;
 	
-	BushNode(ModelKey center, ViewInterface view){
+	Bush(ModelKey center, ViewInterface view){
 		super(center, view.getBush(center.getCenter(), ModelKey.getDimensions()), view.getBorder(center.getCenter(), ModelKey.getDimensions()));
 	}
 	
 	//////////////////// Accessor Methods ///////////////////////
 	
 	@Override
-	public final double getFood() {
+	final double getFoodFactor() {
 		return FOOD;
 	}
 	
 	@Override
-	public final double getWindFactor() {
+	final double getWindFactor() {
 		return WIND_FACTOR;
 	}
 	

@@ -1,11 +1,10 @@
-package model.board.node_states;
+package model.nodes;
 
 import java.util.ArrayList;
 
 import game.Directions.Direction;
-import model.board.Node;
 
-public class WindWrapper extends OnStates{
+public class WindWrapper extends OnWrapper{
 	
 	//Class Fields
 	private static final double[] NO_WIND = {0,0};
@@ -24,8 +23,8 @@ public class WindWrapper extends OnStates{
 	
 	
 	
-	public WindWrapper(Active active, double interference) {
-		super(active);
+	public WindWrapper(OnState state, double interference) {
+		super(state);
 		scent = 0;
 		scentInputs = new ArrayList<>();
 		scentInputs.add(NO_SCENT);
@@ -149,27 +148,22 @@ public class WindWrapper extends OnStates{
 		double tail = 0.21;
 		
 		Node mainNode = active.getNeighbor(main);
-		mainNode.receiveWind(new double[] {wind[0] * bulk, wind[1] * bulk});
-		mainNode.receiveScent(scent * bulk);
+		mainNode.setWind(new double[] {wind[0] * bulk, wind[1] * bulk});
+		mainNode.setScent(scent * bulk);
 		
 		Node ccwNode = active.getNeighbor(counterclockwise);
-		ccwNode.receiveWind(new double[] {wind[0] * tail, wind[1] * tail});
-		ccwNode.receiveScent(scent * tail);
+		ccwNode.setWind(new double[] {wind[0] * tail, wind[1] * tail});
+		ccwNode.setScent(scent * tail);
 		
 		
 		Node cwNode = active.getNeighbor(clockwise);
-		cwNode.receiveWind(new double[] {wind[0] * tail, wind[1] * tail});
-		cwNode.receiveScent(scent * tail);
+		cwNode.setWind(new double[] {wind[0] * tail, wind[1] * tail});
+		cwNode.setScent(scent * tail);
 		
 		//Handles animation
 		facing = main;
 		active.setTileFacing(facing);
 		active.advance();
-	}
-	
-	@Override
-	public final void receiveScent(double scent) {
-		scentInputs.add(scent);
 	}
 	
 	@Override

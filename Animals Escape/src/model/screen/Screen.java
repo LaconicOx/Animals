@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 import game.Directions.Direction;
-import model.board.Node;
+import model.nodes.Node;
 import view.ViewInterface;
 
 public class Screen {

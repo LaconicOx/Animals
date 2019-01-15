@@ -1,14 +1,14 @@
-package model.board.node_states;
+package model.nodes;
 
-public class FoodWrapper extends OnStates{
+public class FoodWrapper extends OnWrapper{
 	
 	private final static double FOOD_GROWTH = 0.005;
 	
 	private double food;
 	private final double max;
 	
-	public FoodWrapper(Active active, double food) {
-		super(active);
+	public FoodWrapper(OnState state, double food) {
+		super(state);
 		this.food = food;
 		max = food;
 	}

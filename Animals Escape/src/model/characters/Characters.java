@@ -2,7 +2,7 @@ package model.characters;
 
 
 import game.Directions.Direction;
-import model.board.Node;
+import model.nodes.Node;
 
 public abstract class Characters {
 	

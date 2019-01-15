@@ -1,4 +1,4 @@
-package model.board;
+package model.nodes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,21 +6,13 @@ import java.util.Objects;
 
 import game.Directions.Direction;
 import image_library.Tile;
-import model.ModelKey;
-import model.board.node_states.NodeState;
-import model.board.node_states.Off;
-import model.board.node_states.On;
 
 
 
 public abstract class Node implements Comparable<Node>{
 	
 	//State Fields
-	private final On active;
-	private final Off off;
-	
-	
-	//Instance Fields
+	private final Base base;
 	private NodeState state;
 	private NodeState updateState;
 	private final ModelKey key;
@@ -30,20 +22,18 @@ public abstract class Node implements Comparable<Node>{
 	private final Tile bord;//Strip this out before final.
 	
 	/////////////////// Constructor and Initializers /////////////////////////
-	Node(ModelKey key, Tile tile, Tile bord) {
+	protected Node(ModelKey key, Tile tile, Tile bord) {
 		this.key = key;
 		
 		this.tile = tile;
 		this.bord = bord;
 		
 		//Initializes states
-		active = new On(this);
-		//border = new Border(this);
-		off = new Off(this);
+		base = new Base(this);
 		
 		//Sets states
 		updateState = null;
-		state = off;
+		state = new Off(base);
 		
 		/*
 		 * First creates keys
@@ -60,7 +50,7 @@ public abstract class Node implements Comparable<Node>{
 		neighbors.put(Direction.SE, null);
 		
 		for(Direction dir : neighbors.keySet()) {
-			neighbors.put(dir, TotalBoard.getNode(key.getNeighborKey(dir), true));
+			neighbors.put(dir, NodeFactory.getNode(key.getNeighborKey(dir), true));
 		}
 	}
 	
@@ -70,9 +60,6 @@ public abstract class Node implements Comparable<Node>{
 	
 	////////////////////// Accessor Methods /////////////////////////////////
 	
-	
-	
-	
 	/**
 	 * Forwarding method. 
 	 * @return Array representing the unit vector for the node.
@@ -81,9 +68,7 @@ public abstract class Node implements Comparable<Node>{
 		return key.getCenter();
 		}
 	
-	public double getFood() {
-		return 0;
-	};
+	abstract double getFoodFactor();
 	
 	public final ModelKey getKey() {
 		return this.key;
@@ -98,7 +83,7 @@ public abstract class Node implements Comparable<Node>{
 		Node n = neighbors.get(dir);
 		//Creates node if none exists.
 		if (n == null) {
-			Node newNode = TotalBoard.getNode(key.getNeighborKey(dir), false);
+			Node newNode = NodeFactory.getNode(key.getNeighborKey(dir), false);
 			neighbors.put(dir, newNode);
 			return newNode;
 		}
@@ -106,18 +91,12 @@ public abstract class Node implements Comparable<Node>{
 			return n;
 	}
 	
-	public ModelKey getNeighborKey(Direction dir) {
+	ModelKey getNeighborKey(Direction dir) {
 		return key.getNeighborKey(dir);
 	}
-	public final On getOn() {
-		return active;
-	}
 	
-	public final Off getOff() {
-		return off;
-	}
 	
-	public abstract double getWindFactor();
+	abstract double getWindFactor();
 	
 	public final double getScent() {
 		return state.getScent();
@@ -125,7 +104,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	/////////////////////////// Mutator Methods //////////////////////////////
 	
-	public final void advance() {
+	final void advance() {
 		tile.advance();
 	}
 	
@@ -133,20 +112,16 @@ public abstract class Node implements Comparable<Node>{
 		return state.eat(rate);
 	}
 	
-	public final void receiveScent(double scent) {
-		state.receiveScent(scent);
+	public final void setScent(double scent) {
+		state.setScent(scent);
 	}
 	
-	public final void receiveWind(double[] wind) {
-		state.receiveWind(wind);
+	final void setWind(double[] wind) {
+		state.setWind(wind);
 	}
 	
-	public final void sendTile() {
+	final void sendTile() {
 		tile.send();
-	}
-	
-	public final void resetOn() {
-		active.reset();
 	}
 	
 	public final void sendBorder() {
@@ -158,12 +133,18 @@ public abstract class Node implements Comparable<Node>{
 		this.updateState = state;
 	}
 	
-	public final void setTileFacing(Direction facing) {
+	final void setTileFacing(Direction facing) {
 		tile.setFacing(facing);
 	}
-
-	public final Node shift(Direction toward) {
-		return state.shift(toward);
+	
+	/**
+	 * Any underlying Borderwrapper should strip
+	 * themselves out when updating.
+	 */
+	void transfer(Border bord) {
+		
+		//TODO
+		
 	}
 	
 	/**
@@ -182,7 +163,7 @@ public abstract class Node implements Comparable<Node>{
 	
 	/////////////////////////////// Checkers ////////////////////////////
 	
-	public final boolean checkActive() {
+	public final boolean checkInterior() {
 		return state.checkInterior();
 	}
 	
@@ -190,7 +171,7 @@ public abstract class Node implements Comparable<Node>{
 		return state.checkBorder();
 	}
 	
-	public abstract boolean checkDeer();
+	abstract boolean checkDeer();
 	
 	public boolean checkOff() {
 		return state.checkOff();
@@ -202,7 +183,7 @@ public abstract class Node implements Comparable<Node>{
 		return key.checkPoint(point);
 	}
 	
-	public  boolean checkResting() {
+	boolean checkResting() {
 		return tile.checkResting();
 	}
 	
@@ -232,16 +213,16 @@ public abstract class Node implements Comparable<Node>{
 		int greater = 1;
 		
 		//Orders nodes according to the state rule: border < active < off
-		if (checkBorder() && (other.checkActive()|| other.checkOff())) {
+		if (checkBorder() && (other.checkInterior()|| other.checkOff())) {
 			return lesser;
 		}
-		else if (checkActive()) {
+		else if (checkInterior()) {
 			if (other.checkBorder())
 				return greater;
 			else if (other.checkOff())
 				return lesser;
 		}
-		else if(checkOff() && (other.checkActive() || other.checkBorder()))
+		else if(checkOff() && (other.checkInterior() || other.checkBorder()))
 				return greater;
 		
 		double[] currentCenter = getCenter();
@@ -280,7 +261,7 @@ public abstract class Node implements Comparable<Node>{
 		}
 		else {
 			//Prompts errors if states are different. 
-			if((checkActive() && !other.checkActive()) || (checkBorder() && !other.checkBorder()) || checkOff() && !other.checkOff()) {
+			if((checkInterior() && !other.checkInterior()) || (checkBorder() && !other.checkBorder()) || checkOff() && !other.checkOff()) {
 				System.err.println("Error in Node.equals: same node coordinates but different states");
 				System.exit(0);
 			}

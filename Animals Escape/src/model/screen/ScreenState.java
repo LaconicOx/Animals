@@ -1,7 +1,7 @@
 package model.screen;
 
 import game.Directions.Direction;
-import model.ModelKey;
+import model.nodes.ModelKey;
 
 public abstract class ScreenState {
 	
