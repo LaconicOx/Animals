@@ -147,6 +147,10 @@ public abstract class Node implements Comparable<Node>{
 		
 	}
 	
+	public final void turnOn() {
+		
+	}
+	
 	/**
 	 * Performs update according to the node's internal state
 	 * @return - true if the node's internal state changed, otherwise false.

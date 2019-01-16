@@ -1,7 +1,9 @@
 package model.screen;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import game.Directions.Direction;
@@ -17,12 +19,12 @@ public class Screen {
 	private final ScreenStart start;
 	
 	//Instance Fields
-	private TreeSet<Node> screenNodes;
+	private final HashMap<Double, Row> screenRows;
 	private ScreenState state;
 		
 	////////////////////////// Constructors and Initializers //////////////////////////
 	public Screen(ViewInterface view){
-		screenNodes = new TreeSet<>();
+		screenRows = new HashMap<>();
 		
 		//Initializes states
 		dilate = new ScreenDilate(this, view);
@@ -36,11 +38,11 @@ public class Screen {
 	////////////////////////// Accessor Methods /////////////////////////////
 		
 	final Iterator<Node> getBorderIterator(){
-		return new BorderIterator(screenNodes);
+		return new BorderIterator(screenRows);
 	}
 	
 	final Iterator<Node> getScreenIterator(){
-		return new ScreenIterator(screenNodes);
+		return new ScreenIterator(screenRows);
 	}
 	
 	final ScreenState getStateDilate() {
@@ -58,11 +60,14 @@ public class Screen {
 	////////////////////////// Mutator Methods /////////////////////////////////
 	
 	final void add(Node node) {
-		screenNodes.add(node);
-	}
-	
-	final void add(Set<Node> nodes) {
-		screenNodes.addAll(nodes);
+		
+		double key = node.getCenter()[1];
+		if(screenRows.containsKey(key)) {
+			screenRows.get(key).add(node);
+		}
+		else {
+			screenRows.put(key, new Row(node));
+		}
 	}
 	
 	public void dilate(double factor) {
@@ -77,26 +82,6 @@ public class Screen {
 		state.shift(toward);
 	}
 	
-	/**
-	 * This method repositions nodes with the screen by adding them to a new treeset.
-	 * TreeSet entries are ordered when objects are added, so repositioning the nodes requires
-	 * adding them to a new TreeSet. Also, creating a new Treeset avoid concurrent modification issues.
-	 */
-	final void reposition() {
-		TreeSet<Node> newScreenNodes = new TreeSet<>();
-		Iterator<Node> oldIt = screenNodes.iterator();
-		Node current;
-		while(oldIt.hasNext()) {
-			current = oldIt.next();
-			current.update();
-			//Nodes in Off states should be removed.
-			if(!current.checkOff()) {
-				newScreenNodes.add(current);
-			}
-		}
-		screenNodes = newScreenNodes;
-	}
-	
 	public void update() {
 		state.update();
 	}
@@ -106,12 +91,6 @@ public class Screen {
 		
 	////////////////////////// Checker Methods ////////////////////////////////
 	
-	public boolean checkNode(Node node) {
-		if(screenNodes.contains(node))
-			return true;
-		else
-			return false;
-	}
 	
 	
 	///////////////////////// Inner Classes ///////////////////////////////
@@ -168,13 +147,117 @@ public class Screen {
 		}
 	}
 	
+	//////////////////////////// Inner Class////////////////////////
+	
+	private class Row implements Comparable<Row>{
+		
+		private final TreeSet<Node> row;
+		private final double yComponent;
+		
+		Row(Node first){
+			row = new TreeSet<>();
+			yComponent = first.getCenter()[1];
+			row.add(first);
+		}
+		
+		///////////////////// Accessors ////////////////////
+		
+		final Node getFirst() {
+			return row.first();
+		}
+		
+		final Node getLast() {
+			return row.last();
+		}
+		
+		final double getYComp() {
+			return yComponent;
+		}
+		
+		final Iterator<Node> getIterator(){
+			return row.iterator();
+		}
+		
+		///////////////////// Mutator ///////////////////////
+		
+		final void add(Node node) {
+			if(node.getCenter()[1] == yComponent) {
+				row.add(node);
+			}
+			else {
+				System.err.println("Error in Screen.Row.add");
+				System.exit(0);
+			}
+		}
+		
+		final void remove(Node node) {
+			if(!row.remove(node)) {
+				System.err.println("Error in Screen.Row.remove");
+				System.exit(0);
+			}
+		}
+		
+		/////////////////// Checkers /////////////////////////
+		
+		final boolean checkY(double yComp) {
+			if(yComp == yComponent) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		
+		/////////////////// Object Overrides /////////////////////
+		
+		@Override
+		public int compareTo(Row other) {
+			
+			int lesser = -1;
+			int equal = 0;
+			int greater = 1;
+			
+			double otherY = other.getYComp();
+			
+			if(yComponent < otherY)
+				return lesser;
+			else if (yComponent > otherY)
+				return greater;
+			else
+				return equal;
+		}
+		
+		@Override
+		public boolean equals(Object other) {
+			if(other.getClass() != Row.class)
+				return false;
+			
+			Row otherRow = (Row)other;
+			if(yComponent == otherRow.getYComp())
+				return true;
+			else
+				return false;
+		}
+		
+		@Override
+		public int hashCode() {
+			
+			return Objects.hash(yComponent);
+		}
+		
+		
+		
+		
+		
+	}
+	
 	//////////////////////////// Debugging ////////////////////////////
 	public void display() {
-		Iterator<Node> screenIt = screenNodes.iterator();
+		Iterator<Node> screenIt = getScreenIterator();
 		System.out.println("***************************************");
 		while(screenIt.hasNext())
 			System.out.println(screenIt.next());
 		System.out.println("***************************************");
 	}
-		
+	
 }//End of Screen
