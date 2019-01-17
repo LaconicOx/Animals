@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import game.Directions.Direction;
-import model.nodes.Node;
+import model.nodes.ConcreteNode;
 import model.nodes.NodeState;
 import view.ViewInterface;
 
@@ -22,7 +22,7 @@ public class ScreenDilate extends ScreenState{
 	private final void decrease(double factor) {
 		view.updateScale(factor);
 		double[] boundaries = getModelBoundaries(view.getShift(), view.getScreenDim(), view.getScale());
-		Iterator<Node> screenIt = screen.getScreenIterator();
+		Iterator<ConcreteNode> screenIt = screen.getScreenIterator();
 		
 	
 		
@@ -39,8 +39,8 @@ public class ScreenDilate extends ScreenState{
 		
 		//Strips all bordering nodes of their border wrappers so
 		//they read as interior nodes.
-		Node current = null;
-		Iterator<Node> borderIt = screen.getBorderIterator();
+		ConcreteNode current = null;
+		Iterator<ConcreteNode> borderIt = screen.getBorderIterator();
 		while(borderIt.hasNext()) {
 			
 			current = borderIt.next();

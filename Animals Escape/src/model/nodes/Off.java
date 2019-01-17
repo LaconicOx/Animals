@@ -24,7 +24,7 @@ class Off extends BaseWrapper{
 	}
 	
 	@Override
-	final protected Node getNeighbor(Direction dir) {
+	final protected ConcreteNode getNeighbor(Direction dir) {
 		System.err.println("Off.getNeighbor called");
 		System.exit(0);
 		return null;
@@ -101,6 +101,8 @@ class Off extends BaseWrapper{
 	public String toString() {
 		return " is Off";
 	}
+
+	
 
 	
 

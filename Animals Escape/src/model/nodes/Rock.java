@@ -1,7 +1,7 @@
 package model.nodes;
 import view.ViewInterface;
 
-class Rock extends Node{
+class Rock extends ConcreteNode{
 	
 	//Class Fields
 	private final static boolean PASSABLE = false;

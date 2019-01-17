@@ -147,16 +147,16 @@ public class WindWrapper extends OnWrapper{
 		double bulk = 0.68;
 		double tail = 0.21;
 		
-		Node mainNode = active.getNeighbor(main);
+		ConcreteNode mainNode = (ConcreteNode)active.getNeighbor(main);
 		mainNode.setWind(new double[] {wind[0] * bulk, wind[1] * bulk});
 		mainNode.setScent(scent * bulk);
 		
-		Node ccwNode = active.getNeighbor(counterclockwise);
+		ConcreteNode ccwNode = (ConcreteNode)active.getNeighbor(counterclockwise);
 		ccwNode.setWind(new double[] {wind[0] * tail, wind[1] * tail});
 		ccwNode.setScent(scent * tail);
 		
 		
-		Node cwNode = active.getNeighbor(clockwise);
+		ConcreteNode cwNode = (ConcreteNode)active.getNeighbor(clockwise);
 		cwNode.setWind(new double[] {wind[0] * tail, wind[1] * tail});
 		cwNode.setScent(scent * tail);
 		

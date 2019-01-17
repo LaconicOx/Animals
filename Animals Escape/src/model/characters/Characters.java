@@ -2,16 +2,16 @@ package model.characters;
 
 
 import game.Directions.Direction;
-import model.nodes.Node;
+import model.nodes.ConcreteNode;
 
 public abstract class Characters {
 	
-	protected Node node;//cell containing the character.
+	protected ConcreteNode node;//cell containing the character.
 	protected Direction facing;//the direction the animation should be facing/moving.
 	protected double[] center;//Character's center in model units.
 	protected double[]  moveVector;//unit vector for movement.
 	
-	public Characters(Node node) {
+	public Characters(ConcreteNode node) {
 		this.node = node;
 		this.center = node.getCenter();
 	}
@@ -25,7 +25,7 @@ public abstract class Characters {
 	
 	
 	
-	public boolean offScreen(Node test) {
+	public boolean offScreen(ConcreteNode test) {
 		if (test.equals(node))
 			return true;
 		else

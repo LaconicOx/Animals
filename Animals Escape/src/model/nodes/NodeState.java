@@ -7,10 +7,12 @@ abstract class NodeState {
 	///////////////////////// Accessors /////////////////////////////
 	
 	abstract double eat(double amount);
-	abstract double getScent();
-	protected abstract Node getNeighbor(Direction dir);
 	abstract protected double getFoodFactor();
+	protected abstract Node getNeighbor(Direction dir);
+	abstract Pattern getPattern();
+	abstract double getScent();
 	abstract protected double getWindFactor();
+	abstract NodeState getWrapped();
 	
 	//////////////////////// Mutators ///////////////////////////////
 	
@@ -35,9 +37,12 @@ abstract class NodeState {
 	
 	////////////////////// Checkers //////////////////////////////
 	
-	abstract boolean checkInterior();
 	abstract boolean checkBorder();
+	abstract boolean checkBorder(Direction dir);
+	abstract boolean checkInterior();
+	abstract boolean checkInterior(Direction dir);
 	abstract boolean checkOff();
+	abstract boolean checkOff(Direction dir);
 	abstract protected boolean checkResting();
 	
 	////////////////////// Object Overrides ////////////////////////

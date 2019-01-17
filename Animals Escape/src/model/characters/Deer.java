@@ -1,11 +1,11 @@
 package model.characters;
 
-import model.nodes.Node;
+import model.nodes.ConcreteNode;
 
 public class Deer extends Characters{
 	
 	
-	Deer(Node node){
+	Deer(ConcreteNode node){
 		super(node);
 		
 	}

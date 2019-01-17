@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import view.ViewInterface;
 
-class Grass extends Node{
+class Grass extends ConcreteNode{
 	
 	//Class Fields
 	private final static boolean PASSABLE = true;

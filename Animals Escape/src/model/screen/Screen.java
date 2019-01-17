@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import game.Directions.Direction;
-import model.nodes.Node;
+import model.nodes.ConcreteNode;
 import view.ViewInterface;
 
 public class Screen {
@@ -37,11 +37,11 @@ public class Screen {
 		
 	////////////////////////// Accessor Methods /////////////////////////////
 		
-	final Iterator<Node> getBorderIterator(){
+	final Iterator<ConcreteNode> getBorderIterator(){
 		return new BorderIterator(screenRows);
 	}
 	
-	final Iterator<Node> getScreenIterator(){
+	final Iterator<ConcreteNode> getScreenIterator(){
 		return new ScreenIterator(screenRows);
 	}
 	
@@ -59,7 +59,7 @@ public class Screen {
 		
 	////////////////////////// Mutator Methods /////////////////////////////////
 	
-	final void add(Node node) {
+	final void add(ConcreteNode node) {
 		
 		double key = node.getCenter()[1];
 		if(screenRows.containsKey(key)) {
@@ -94,15 +94,15 @@ public class Screen {
 	
 	
 	///////////////////////// Inner Classes ///////////////////////////////
-	public class BorderIterator implements Iterator<Node>{
+	public class BorderIterator implements Iterator<ConcreteNode>{
 		//TODO: Temporary fix. Rewrite this class
-		private final Iterator<Node> storedIt;
-		private Set<Node> stored;
+		private final Iterator<ConcreteNode> storedIt;
+		private Set<ConcreteNode> stored;
 		
-		public BorderIterator(TreeSet<Node> nodes) {
-			Iterator<Node> nodeIt = nodes.iterator();
+		public BorderIterator(TreeSet<ConcreteNode> nodes) {
+			Iterator<ConcreteNode> nodeIt = nodes.iterator();
 			stored = new HashSet<>();
-			Node n;
+			ConcreteNode n;
 			while(nodeIt.hasNext()) {
 				n = nodeIt.next();
 				if(n.checkBorder())
@@ -119,7 +119,7 @@ public class Screen {
 		}
 
 		@Override
-		public Node next() {
+		public ConcreteNode next() {
 			return storedIt.next();
 		}
 	}//End of BorderIterator
@@ -129,10 +129,10 @@ public class Screen {
 	 * @author dvdco
 	 *
 	 */
-	public class ScreenIterator implements Iterator<Node>{
-		private final Iterator<Node> screenIt;
+	public class ScreenIterator implements Iterator<ConcreteNode>{
+		private final Iterator<ConcreteNode> screenIt;
 		
-		public ScreenIterator(TreeSet<Node> nodes) {
+		public ScreenIterator(TreeSet<ConcreteNode> nodes) {
 			screenIt = nodes.iterator();
 		}
 
@@ -142,7 +142,7 @@ public class Screen {
 		}
 
 		@Override
-		public Node next() {
+		public ConcreteNode next() {
 			return screenIt.next();
 		}
 	}
@@ -151,10 +151,10 @@ public class Screen {
 	
 	private class Row implements Comparable<Row>{
 		
-		private final TreeSet<Node> row;
+		private final TreeSet<ConcreteNode> row;
 		private final double yComponent;
 		
-		Row(Node first){
+		Row(ConcreteNode first){
 			row = new TreeSet<>();
 			yComponent = first.getCenter()[1];
 			row.add(first);
@@ -162,11 +162,11 @@ public class Screen {
 		
 		///////////////////// Accessors ////////////////////
 		
-		final Node getFirst() {
+		final ConcreteNode getFirst() {
 			return row.first();
 		}
 		
-		final Node getLast() {
+		final ConcreteNode getLast() {
 			return row.last();
 		}
 		
@@ -174,13 +174,13 @@ public class Screen {
 			return yComponent;
 		}
 		
-		final Iterator<Node> getIterator(){
+		final Iterator<ConcreteNode> getIterator(){
 			return row.iterator();
 		}
 		
 		///////////////////// Mutator ///////////////////////
 		
-		final void add(Node node) {
+		final void add(ConcreteNode node) {
 			if(node.getCenter()[1] == yComponent) {
 				row.add(node);
 			}
@@ -190,7 +190,7 @@ public class Screen {
 			}
 		}
 		
-		final void remove(Node node) {
+		final void remove(ConcreteNode node) {
 			if(!row.remove(node)) {
 				System.err.println("Error in Screen.Row.remove");
 				System.exit(0);
@@ -253,7 +253,7 @@ public class Screen {
 	
 	//////////////////////////// Debugging ////////////////////////////
 	public void display() {
-		Iterator<Node> screenIt = getScreenIterator();
+		Iterator<ConcreteNode> screenIt = getScreenIterator();
 		System.out.println("***************************************");
 		while(screenIt.hasNext())
 			System.out.println(screenIt.next());

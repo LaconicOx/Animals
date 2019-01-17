@@ -3,7 +3,6 @@ package model.nodes;
 import java.util.concurrent.ThreadLocalRandom;
 
 import game.Directions.Direction;
-import model.Pattern;
 
 
 class Border extends BaseWrapper{
@@ -15,7 +14,6 @@ class Border extends BaseWrapper{
 	//Instance Fields
 	private Pattern pattern;
 	private Pattern updatePattern;
-	private boolean stripFlag;
 	
 	//////////////////////////Constructor and Initializers ////////////////////////////
 	
@@ -23,7 +21,6 @@ class Border extends BaseWrapper{
 		super(state);
 		pattern = null;
 		updatePattern = null;
-		stripFlag = false;
 	}
 	
 	void initPattern() {
@@ -81,10 +78,8 @@ class Border extends BaseWrapper{
 		}
 	}
 	
-	
-	
-	final void transfer(Border wrap) {
-		updatePattern = wrap.getPattern();
+	final void transfer(Pattern pat) {
+		updatePattern = pat;
 	}
 	
 	@Override
@@ -108,6 +103,8 @@ class Border extends BaseWrapper{
 	public final String toString() {
 		return state.toString() + " with a border wrapper";
 	}
+
+	
 
 	
 	

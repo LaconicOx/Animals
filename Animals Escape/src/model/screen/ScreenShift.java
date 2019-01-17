@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import game.Directions.Direction;
-import model.nodes.Node;
+import model.nodes.ConcreteNode;
 
 public class ScreenShift extends ScreenState{
 	
@@ -18,10 +18,10 @@ public class ScreenShift extends ScreenState{
 	////////////////////////// Mutators ///////////////////////////////
 	
 	@Override
-	final Node shift(Direction toward) {
+	final ConcreteNode shift(Direction toward) {
 		
 		//Transfer border wrapper to the toward node.
-		Node neighNode = state.getNeighbor(toward);
+		ConcreteNode neighNode = state.getNeighbor(toward);
 		neighNode.transfer(this);
 		
 		//Changes the current node's internal state based on the state of the node
@@ -51,11 +51,11 @@ public class ScreenShift extends ScreenState{
 	
 	@Override
 	public final void update() {
-		Iterator<Node> borderIt = screen.getBorderIterator();
-		HashSet<Node> altered = new HashSet<>();//Altered nodes must be resubmitted to Screen to change their position in the treeset.
+		Iterator<ConcreteNode> borderIt = screen.getBorderIterator();
+		HashSet<ConcreteNode> altered = new HashSet<>();//Altered nodes must be resubmitted to Screen to change their position in the treeset.
 		
 		//Iterates through the border nodes so each performs its shift operations.
-		Node current;
+		ConcreteNode current;
 		while(borderIt.hasNext()) {
 			current = borderIt.next();
 			altered.add(current.shift(toward));

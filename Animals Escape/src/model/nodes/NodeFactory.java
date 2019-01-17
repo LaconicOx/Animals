@@ -21,12 +21,12 @@ public class NodeFactory {
 	
 	private static ViewInterface view;
 	private static NodeFactory uniqueInstance;
-	private static Map<ModelKey, Node> board;
+	private static Map<ModelKey, ConcreteNode> board;
 	
 	/////////////////// Singleton Constructor ////////////////////////
 	private NodeFactory(ViewInterface view) {
 		NodeFactory.view = view;
-		board = new HashMap<ModelKey, Node>();
+		board = new HashMap<ModelKey, ConcreteNode>();
 	}
 	
 	public static NodeFactory getInstance(ViewInterface view) {
@@ -45,19 +45,19 @@ public class NodeFactory {
 	 * 	 instead of node.
 	 * @return
 	 */
-	public static Node getNode(ModelKey key, boolean nullReturn) {
+	public final static Node getNode(ModelKey key, boolean nullReturn) {
 		
 		//Gate for nullReturn
 		if(nullReturn)
 			return board.get(key);
 		else {
-			Node n = board.get(key);
+			ConcreteNode n = board.get(key);
 			if(n != null) {
 				return n;
 			}
 			else {
 				HexType type = initType(key);
-				Node output = null;
+				ConcreteNode output = null;
 				
 				switch(type) {
 				case GRASS: output = new Grass(key, view);
@@ -74,16 +74,10 @@ public class NodeFactory {
 			}
 		}
 	}
-	
-	public static HashSet<Node> getAllNodes(){
-		HashSet<Node> output = new HashSet<>();
-		output.addAll(board.values());
-		
-		return output;
-	}
-	
+
 	////////////////////// Helper Methods //////////////////////////////
-	static void putNode(Node n) {
+	
+	private static void putNode(ConcreteNode n) {
 		if(board.containsKey(n.getKey()))
 			System.err.println("Error in TotalBoard.putNode(): model already conatins a node at " + n);
 		else {

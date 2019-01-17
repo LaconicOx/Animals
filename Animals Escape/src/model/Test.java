@@ -1,7 +1,8 @@
 package model;
 
 import game.Directions.Direction;
-import model.Pattern.States;
+import model.nodes.Pattern;
+import model.nodes.Pattern.States;
 
 public class Test {
 	

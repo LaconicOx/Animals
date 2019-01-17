@@ -4,9 +4,9 @@ import game.Directions.Direction;
 
 class Base extends NodeState{
 	
-private final Node node;
+	private final ConcreteNode node;
 	
-	Base(Node node) {
+	Base(ConcreteNode node) {
 		this.node = node;
 	}
 	
@@ -29,6 +29,13 @@ private final Node node;
 	}
 	
 	@Override
+	final Pattern getPattern() {
+		System.err.println("Base.getPattern called");
+		System.exit(0);
+		return null;
+	}
+	
+	@Override
 	final double getScent() {
 		System.err.println("Base.getScent called");
 		System.exit(0);
@@ -38,6 +45,11 @@ private final Node node;
 	@Override
 	final protected double getWindFactor() {
 		return node.getWindFactor();
+	}
+	
+	@Override
+	final NodeState getWrapped() {
+		return this;
 	}
 	
 	////////////////////////Mutators ///////////////////////////////
@@ -86,19 +98,29 @@ private final Node node;
 	//////////////////////Checkers //////////////////////////////
 	
 	@Override
-	final boolean checkInterior() {
-		System.err.println("Base.checkInterior called");
-		System.exit(0);
-		return false;
-	}
-
-	@Override
 	final boolean checkBorder() {
 		System.err.println("Base.checkBorder called");
 		System.exit(0);
 		return false;
 	}
-
+	
+	@Override
+	final boolean checkBorder(Direction dir) {
+		return node.getNeighbor(dir).checkBorder();
+	}
+	
+	@Override
+	final boolean checkInterior(Direction dir) {
+		return node.getNeighbor(dir).checkInterior();
+	}
+	
+	@Override
+	final boolean checkInterior() {
+		System.err.println("Base.checkInterior called");
+		System.exit(0);
+		return false;
+	}
+	
 	@Override
 	final boolean checkOff() {
 		System.err.println("Base.checkOff called");
@@ -107,9 +129,13 @@ private final Node node;
 	}
 	
 	@Override
+	boolean checkOff(Direction dir) {
+		return node.getNeighbor(dir).checkOff();
+	}
+	
+	@Override
 	final protected boolean checkResting() {
-		// TODO Auto-generated method stub
-		return false;
+		return node.checkResting();
 	}
 	
 	////////////////////// Object Overrides ////////////////////////
@@ -119,9 +145,5 @@ private final Node node;
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	
-
-	
 
 }

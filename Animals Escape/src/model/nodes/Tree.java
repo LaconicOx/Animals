@@ -2,7 +2,7 @@ package model.nodes;
 
 import view.ViewInterface;
 
-class Tree extends Node{
+class Tree extends ConcreteNode{
 	
 	//Class Fields
 	private final static boolean PASSABLE = false;

@@ -25,6 +25,16 @@ abstract class BaseWrapper extends NodeState{
 	}
 	
 	@Override
+	protected Node getNeighbor(Direction dir) {
+		return state.getNeighbor(dir);
+	}
+	
+	@Override
+	Pattern getPattern() {
+		return state.getPattern();
+	}
+	
+	@Override
 	double getScent() {
 		state.getScent();
 		return 0;
@@ -36,13 +46,8 @@ abstract class BaseWrapper extends NodeState{
 	}
 	
 	@Override
-	protected Node getNeighbor(Direction dir) {
-		return state.getNeighbor(dir);
-	}
-	
-	@Override
-	final protected boolean checkResting() {
-		return state.checkResting();
+	NodeState getWrapped() {
+		return state;
 	}
 	
 	/////////////////////// Mutators ///////////////////////
@@ -81,10 +86,24 @@ abstract class BaseWrapper extends NodeState{
 	
 	//////////////////////Checkers //////////////////////////////
 	
+	
+	boolean checkBorder() {
+		return false;
+	}
+	
+	@Override
+	boolean checkBorder(Direction dir) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
 	boolean checkInterior() {
 		return false;
 	}
-	boolean checkBorder() {
+	
+	@Override
+	boolean checkInterior(Direction dir) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 	
@@ -92,12 +111,16 @@ abstract class BaseWrapper extends NodeState{
 		return false;
 	}
 	
+	@Override
+	boolean checkOff(Direction dir) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
+	@Override
+	final protected boolean checkResting() {
+		return state.checkResting();
+	}
 	
-
-	
-
-	
-
 	
 }

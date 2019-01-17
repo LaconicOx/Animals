@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import view.ViewInterface;
 
-class Bush extends Node{
+class Bush extends ConcreteNode{
 	
 	//Class Fields and Constants
 	private final static boolean PASSABLE = true;
