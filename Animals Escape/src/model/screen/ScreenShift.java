@@ -1,10 +1,7 @@
 package model.screen;
 
-import java.util.HashSet;
-import java.util.Iterator;
 
 import game.Directions.Direction;
-import model.nodes.ConcreteNode;
 
 public class ScreenShift extends ScreenState{
 	
@@ -18,53 +15,12 @@ public class ScreenShift extends ScreenState{
 	////////////////////////// Mutators ///////////////////////////////
 	
 	@Override
-	final ConcreteNode shift(Direction toward) {
-		
-		//Transfer border wrapper to the toward node.
-		ConcreteNode neighNode = state.getNeighbor(toward);
-		neighNode.transfer(this);
-		
-		//Changes the current node's internal state based on the state of the node
-		//in the direction opposite of the toward node.
-		Direction opposite = Direction.getOpposite(toward);
-		
-		//If the opposite node is INTERIOR, this border wrapper should be stripped off.
-		if(pattern.checkInterior(opposite)) {
-			
-		}
-		//If the opposite node is OFF, this node should be turned off.
-		else if(pattern.checkOff(opposite)) {
-			state.turnOff();
-		}
-		//If the opposite node is BORDER, the node in that direction will transfer its state to this node,
-		//this wrapper must be stripped off.
-		else if(pattern.checkBorder(opposite)) {
-		}
-		else {
-			System.err.println("Error in shift: unhandled state");
-			System.exit(0);
-		}
-		
-		stripFlag = true;
-		return neighNode;
+	final void shift(Direction toward) {
+		//TODO
 	}//End of Shift
 	
 	@Override
 	public final void update() {
-		Iterator<ConcreteNode> borderIt = screen.getBorderIterator();
-		HashSet<ConcreteNode> altered = new HashSet<>();//Altered nodes must be resubmitted to Screen to change their position in the treeset.
-		
-		//Iterates through the border nodes so each performs its shift operations.
-		ConcreteNode current;
-		while(borderIt.hasNext()) {
-			current = borderIt.next();
-			altered.add(current.shift(toward));
-			altered.add(current);
-		}
-		screen.add(altered);
-		screen.reposition();
-		
-		//Returns state to normal
-		screen.setState(screen.getStateNormal());
+		//TODO
 	}
 }

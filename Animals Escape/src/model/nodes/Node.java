@@ -16,7 +16,7 @@ public interface Node {
 	public void setOff();
 	public void setScent(double scent);
 	public void transfer(Node node);
-	public void update();
+	public boolean update();
 	
 	///////////////////// Checkers //////////////////////////////
 	public boolean checkBorder();

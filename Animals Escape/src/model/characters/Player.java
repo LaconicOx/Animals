@@ -4,8 +4,7 @@ import java.util.HashMap;
 
 import game.Directions.Direction;
 import image_library.PlayerImage;
-import model.nodes.ModelKey;
-import model.nodes.ConcreteNode;
+import model.nodes.Node;
 import model.nodes.NodeFactory;
 import model.screen.Screen;
 import view.ViewInterface;
@@ -31,7 +30,7 @@ public class Player {
 	//Component Fields
 	private ViewInterface view;
 	private Screen screen;
-	private ConcreteNode node;
+	private Node node;
 	
 	private PlayerImage image;
 	
@@ -44,7 +43,7 @@ public class Player {
 		this.screen = screen;
 		this.view = view;
 		
-		node = NodeFactory.getNode(new ModelKey(new int[] {0,0}), false);//TODO: Must find a better way to initialize the player.
+		node = NodeFactory.getOrigin();
 		this.center =  node.getCenter();
 		image = view.getPlayer(center, DIM);
 	}
@@ -90,7 +89,7 @@ public class Player {
 		}
 		else {
 			Direction dir = Direction.getDirection(node.getCenter(), destination);
-			ConcreteNode destNode = node.getNeighbor(dir);
+			Node destNode = node.getNeighbor(dir);
 			//Gates on whether the destination is passable.
 			if (destNode.checkPassable()) {
 				node = destNode;

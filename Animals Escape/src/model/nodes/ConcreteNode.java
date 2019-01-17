@@ -9,7 +9,7 @@ import image_library.Tile;
 
 
 
-public abstract class ConcreteNode implements Node, Comparable<ConcreteNode>{
+abstract class ConcreteNode implements Node, Comparable<ConcreteNode>{
 	
 	//State Fields
 	private final Base base;
@@ -206,8 +206,8 @@ public abstract class ConcreteNode implements Node, Comparable<ConcreteNode>{
 	 * Performs update according to the node's internal state
 	 */
 	@Override
-	public final void update() {
-		state.update();
+	public final boolean update() {
+		return state.update();
 	}
 	
 	/////////////////////////////// Checkers ////////////////////////////

@@ -1,20 +1,20 @@
 package model.nodes;
 
-public class FoodWrapper extends OnWrapper{
+class FoodWrapper extends OnWrapper{
 	
 	private final static double FOOD_GROWTH = 0.005;
 	
 	private double food;
 	private final double max;
 	
-	public FoodWrapper(OnState state, double food) {
+	FoodWrapper(OnState state, double food) {
 		super(state);
 		this.food = food;
 		max = food;
 	}
 	
 	@Override
-	public final double eat(double amount) {
+	final double eat(double amount) {
 		food -= amount;
 		if (food < 0.0)
 			return 0.0;
@@ -23,7 +23,7 @@ public class FoodWrapper extends OnWrapper{
 	}
 	
 	@Override
-	public final boolean update() {
+	final boolean update() {
 		
 		food += FOOD_GROWTH;
 		

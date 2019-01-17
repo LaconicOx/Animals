@@ -31,7 +31,7 @@ class Rock extends ConcreteNode{
 	///////////////// Checker Methods //////////////////////
 	
 	@Override
-	public boolean checkDeer() {
+	boolean checkDeer() {
 		return false;
 	}
 	

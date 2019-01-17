@@ -37,6 +37,7 @@ abstract class NodeState {
 	
 	////////////////////// Checkers //////////////////////////////
 	
+	abstract boolean checkBase();
 	abstract boolean checkBorder();
 	abstract boolean checkBorder(Direction dir);
 	abstract boolean checkInterior();

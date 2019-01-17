@@ -34,7 +34,7 @@ class Bush extends ConcreteNode{
 	public boolean checkPassable() {return PASSABLE;}
 
 	@Override
-	public boolean checkDeer() {
+	boolean checkDeer() {
 		int outcome = ThreadLocalRandom.current().nextInt(1, 101);
 		if(outcome <= DEER_ODDS	)
 			return true;

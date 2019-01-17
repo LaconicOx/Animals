@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import game.Directions.Direction;
 
-public class WindWrapper extends OnWrapper{
+class WindWrapper extends OnWrapper{
 	
 	//Class Fields
 	private static final double[] NO_WIND = {0,0};
@@ -23,7 +23,7 @@ public class WindWrapper extends OnWrapper{
 	
 	
 	
-	public WindWrapper(OnState state, double interference) {
+	WindWrapper(OnState state, double interference) {
 		super(state);
 		scent = 0;
 		scentInputs = new ArrayList<>();
@@ -167,14 +167,14 @@ public class WindWrapper extends OnWrapper{
 	}
 	
 	@Override
-	public final void receiveWind(double[] wind) {
+	final void receiveWind(double[] wind) {
 		windInputs.add(wind);
 	}
 	
 	
 	
 	@Override
-	public final boolean update() {
+	final boolean update() {
 		
 		boolean finished = false;
 		

@@ -7,10 +7,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import game.Directions.Direction;
 
-public class Pattern {
+class Pattern {
 	
 	//Class Fields
-	public enum States {INTERIOR, BORDER, OFF};
+	private enum States {INTERIOR, BORDER, OFF};
 	private static final HashSet<Pattern> PERMITTED;	
 	static {
 		//The arrays store the direction in the following indexes {NE, N, NW, SW, S, SE}
@@ -67,7 +67,7 @@ public class Pattern {
 	 * @param pattern  - array storing states with directions corresponding to indexes as {NE, N, NW, SW, S, SE}
 	 * @param build - Flag for distinguishing between building objects vs initializing PERMITTED.
 	 */
-	public Pattern(States[] candidate, boolean build) {
+	Pattern(States[] candidate, boolean build) {
 		this.pattern = new HashMap<>();
 		actives = new HashSet<>();
 		
@@ -95,7 +95,7 @@ public class Pattern {
 	/////////////////// Accessors ///////////////////////
 	
 	
-	public final Direction getRandomDir() {
+	final Direction getRandomDir() {
 		Direction[] act = actives.toArray(new Direction[actives.size()]);
 		return act[ThreadLocalRandom.current().nextInt(act.length)];
 	}
@@ -106,21 +106,21 @@ public class Pattern {
 	
 	//////////////////////// Checkers ////////////////////
 	
-	public final boolean checkBorder(Direction dir) {
+	final boolean checkBorder(Direction dir) {
 		if(pattern.get(dir) == States.BORDER)
 			return true;
 		else
 			return false;
 	}
 	
-	public final boolean checkInterior(Direction dir) {
+	final boolean checkInterior(Direction dir) {
 		if(pattern.get(dir) == States.INTERIOR)
 			return true;
 		else
 			return false;
 	}
 	
-	public final boolean checkOff(Direction dir) {
+	final boolean checkOff(Direction dir) {
 		if(pattern.get(dir) == States.OFF)
 			return true;
 		else
@@ -168,7 +168,7 @@ public class Pattern {
 	
 	///////////////////////// Inner Class ////////////////////////////////////////////////
 	
-	public static class Builder{
+	static class Builder{
 		private States[] candidate;
 		private static Builder build = null;
 		
@@ -176,12 +176,12 @@ public class Pattern {
 			candidate = new States[] {null, null, null, null, null, null};
 		}
 		
-		public final Pattern build() {
+		final Pattern build() {
 			build = null;
 			return new Pattern(candidate, true);
 		}
 		
-		public final static Builder getInstance() {
+		final static Builder getInstance() {
 			if(build == null) {
 				build = new Builder();
 			}
@@ -216,15 +216,15 @@ public class Pattern {
 			return output;
 		}
 		
-		public final void border(Direction dir){
+		final void border(Direction dir){
 			candidate[dirToIndex(dir)] = States.BORDER;
 		}
 		
-		public final void interior(Direction dir) {
+		final void interior(Direction dir) {
 			candidate[dirToIndex(dir)] = States.INTERIOR;
 		}
 		
-		public final void off(Direction dir) {
+		final void off(Direction dir) {
 			candidate[dirToIndex(dir)] = States.OFF;
 		}
 	}

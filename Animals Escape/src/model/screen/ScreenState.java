@@ -1,7 +1,7 @@
 package model.screen;
 
 import game.Directions.Direction;
-import model.nodes.ModelKey;
+import model.nodes.NodeFactory;
 
 public abstract class ScreenState {
 	
@@ -29,7 +29,7 @@ public abstract class ScreenState {
 		
 		//Converts screen dimensions form pixels to model units.
 		double[] dim = new double[] {pixelDim[0] / pixelsToUnit, pixelDim[1] / pixelsToUnit};//Dimensions in model units
-		double[] vector = ModelKey.getDimensions();//Vector representing dimensions of a hexagon.
+		double[] vector = NodeFactory.getHexDim();//Vector representing dimensions of a hexagon.
 		
 		double[] boundaries = new double[4];
 		
@@ -48,17 +48,17 @@ public abstract class ScreenState {
 	
 	/////////////////////// Mutators ///////////////////////
 	
-	public void dilate(double factor) {
+	void dilate(double factor) {
 		ScreenState state = screen.getStateDilate();
 		state.dilate(factor);
 		screen.setState(state);
 	}
 	
-	public void shift(Direction toward) {
+	void shift(Direction toward) {
 		ScreenState state = screen.getStateShift();
 		state.shift(toward);
 		screen.setState(state);
 	}
 	
-	public abstract void update();
+	abstract void update();
 }

@@ -1,14 +1,14 @@
 package model.screen;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.NavigableSet;
 import java.util.Objects;
-import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import game.Directions.Direction;
-import model.nodes.ConcreteNode;
+import model.nodes.Node;
 import view.ViewInterface;
+
 
 public class Screen {
 
@@ -19,12 +19,12 @@ public class Screen {
 	private final ScreenStart start;
 	
 	//Instance Fields
-	private final HashMap<Double, Row> screenRows;
+	private final TreeMap<Double, Row> screenRows;
 	private ScreenState state;
 		
 	////////////////////////// Constructors and Initializers //////////////////////////
 	public Screen(ViewInterface view){
-		screenRows = new HashMap<>();
+		screenRows = new TreeMap<>();
 		
 		//Initializes states
 		dilate = new ScreenDilate(this, view);
@@ -37,11 +37,11 @@ public class Screen {
 		
 	////////////////////////// Accessor Methods /////////////////////////////
 		
-	final Iterator<ConcreteNode> getBorderIterator(){
-		return new BorderIterator(screenRows);
+	final Iterator<Node> getShiftIterator(){
+		return new ShiftIterator(screenRows);
 	}
 	
-	final Iterator<ConcreteNode> getScreenIterator(){
+	final Iterator<Node> getScreenIterator(){
 		return new ScreenIterator(screenRows);
 	}
 	
@@ -59,7 +59,7 @@ public class Screen {
 		
 	////////////////////////// Mutator Methods /////////////////////////////////
 	
-	final void add(ConcreteNode node) {
+	final void add(Node node) {
 		
 		double key = node.getCenter()[1];
 		if(screenRows.containsKey(key)) {
@@ -70,8 +70,18 @@ public class Screen {
 		}
 	}
 	
-	public void dilate(double factor) {
+	public final void dilate(double factor) {
 		state.dilate(factor);
+	}
+	
+	final void remove(Node node) {
+		Row row = screenRows.get(node.getCenter()[1]);
+		if(row != null) {
+			row.remove(node);
+		}
+		else {
+			//TODO error code
+		}
 	}
 	
 	final void setState(ScreenState state) {
@@ -94,67 +104,141 @@ public class Screen {
 	
 	
 	///////////////////////// Inner Classes ///////////////////////////////
-	public class BorderIterator implements Iterator<ConcreteNode>{
-		//TODO: Temporary fix. Rewrite this class
-		private final Iterator<ConcreteNode> storedIt;
-		private Set<ConcreteNode> stored;
+	abstract class BorderIterator implements Iterator<Node>{
 		
-		public BorderIterator(TreeSet<ConcreteNode> nodes) {
-			Iterator<ConcreteNode> nodeIt = nodes.iterator();
-			stored = new HashSet<>();
-			ConcreteNode n;
-			while(nodeIt.hasNext()) {
-				n = nodeIt.next();
-				if(n.checkBorder())
-					stored.add(n);
-				else
-					break;
+		protected NavigableSet<Node> collection;
+		protected Node next;
+		
+		protected abstract NavigableSet<Node> initSet();
+		
+		protected NavigableSet<Node> initCollection(TreeMap<Double, Row> collection) {
+			NavigableSet<Node> output = initSet();
+			
+			NavigableSet<Double> keys = collection.navigableKeySet();
+			int size = keys.size();
+			double key;
+			for(int i = 0; i < size; i++) {
+				key = keys.pollFirst();
+				//The top border spans the topmost two rows.
+				if(i < 2) {
+					output.addAll(collection.get(key).getAll());
+				}
+				//For the middle rows, only the first and last nodes are on the border.
+				else if(i < size - 2) {
+					Row row = collection.get(key);
+					output.add(row.getFirst());
+					output.add(row.getLast());
+				}
+				//the bottom border spans the bottom-most two rows.
+				else {
+					output.addAll(collection.get(key).getAll());
+				}
 			}
-			storedIt = stored.iterator();
+			return output;
 		}
-
+		
+		////////////////////////// Overrides /////////////////////////////
+		
 		@Override
 		public boolean hasNext() {
-			return storedIt.hasNext();
+			if(next != null) {
+				return true;
+			}
+			else
+				return false;
 		}
 
 		@Override
-		public ConcreteNode next() {
-			return storedIt.next();
+		public Node next() {
+			Node output = next;
+			next = collection.higher(output);
+			return output;
 		}
+		
 	}//End of BorderIterator
+	
+	class ShiftIterator extends BorderIterator{
+		//Must add code for comparators based on shift direction.
+		ShiftIterator(TreeMap<Double, Row> collection){
+			this.collection = initCollection(collection);
+			next = this.collection.first();
+		}
+		
+		@Override
+		protected final NavigableSet<Node> initSet() {
+			return new TreeSet<Node>();
+		}
+	}//End of ShiftIterator
 	
 	/**
 	 * Iterates through every nodes stored in Screen.
 	 * @author dvdco
 	 *
 	 */
-	public class ScreenIterator implements Iterator<ConcreteNode>{
-		private final Iterator<ConcreteNode> screenIt;
+	class ScreenIterator implements Iterator<Node>{
 		
-		public ScreenIterator(TreeSet<ConcreteNode> nodes) {
-			screenIt = nodes.iterator();
+		private final TreeMap<Double, Row> collection;
+		private double key;
+		private Node next;
+		private Iterator<Double> keyIt;
+		private Iterator<Node> rowIt;
+		
+		ScreenIterator(TreeMap<Double, Row> collection) {
+			this.collection = collection;
+			keyIt = collection.navigableKeySet().iterator();
+			if(keyIt.hasNext()) {
+				key = keyIt.next();
+				rowIt = collection.get(key).getIterator();
+			}
+			next = getNext();
+		}
+		
+		private Node getNext(){
+			if(rowIt.hasNext()) {
+				return rowIt.next();
+			}
+			
+			//Loop protects against empty rows.
+			Node output = null;
+			while(keyIt.hasNext()) {
+				key = keyIt.next();
+				rowIt = collection.get(key).getIterator();
+				if(rowIt.hasNext()) {
+					output = rowIt.next();
+					break;
+				}
+			}
+			return output;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return screenIt.hasNext();
+			if(next != null)
+				return true;
+			else
+				return false;
 		}
 
 		@Override
-		public ConcreteNode next() {
-			return screenIt.next();
+		public Node next() {
+			if(hasNext()) {
+				Node output = next;
+				next = getNext();
+				return output;
+			}
+			else {
+				//TODO error code
+				return null;
+			}
 		}
 	}
 	
-	//////////////////////////// Inner Class////////////////////////
-	
 	private class Row implements Comparable<Row>{
 		
-		private final TreeSet<ConcreteNode> row;
+		private final TreeSet<Node> row;
 		private final double yComponent;
 		
-		Row(ConcreteNode first){
+		Row(Node first){
 			row = new TreeSet<>();
 			yComponent = first.getCenter()[1];
 			row.add(first);
@@ -162,11 +246,15 @@ public class Screen {
 		
 		///////////////////// Accessors ////////////////////
 		
-		final ConcreteNode getFirst() {
+		final NavigableSet<Node> getAll(){
+			return row;
+		}
+		
+		final Node getFirst() {
 			return row.first();
 		}
 		
-		final ConcreteNode getLast() {
+		final Node getLast() {
 			return row.last();
 		}
 		
@@ -174,13 +262,13 @@ public class Screen {
 			return yComponent;
 		}
 		
-		final Iterator<ConcreteNode> getIterator(){
+		final Iterator<Node> getIterator(){
 			return row.iterator();
 		}
 		
 		///////////////////// Mutator ///////////////////////
 		
-		final void add(ConcreteNode node) {
+		final void add(Node node) {
 			if(node.getCenter()[1] == yComponent) {
 				row.add(node);
 			}
@@ -190,7 +278,7 @@ public class Screen {
 			}
 		}
 		
-		final void remove(ConcreteNode node) {
+		final void remove(Node node) {
 			if(!row.remove(node)) {
 				System.err.println("Error in Screen.Row.remove");
 				System.exit(0);
@@ -199,6 +287,7 @@ public class Screen {
 		
 		/////////////////// Checkers /////////////////////////
 		
+		@SuppressWarnings("unused")
 		final boolean checkY(double yComp) {
 			if(yComp == yComponent) {
 				return true;
@@ -253,7 +342,7 @@ public class Screen {
 	
 	//////////////////////////// Debugging ////////////////////////////
 	public void display() {
-		Iterator<ConcreteNode> screenIt = getScreenIterator();
+		Iterator<Node> screenIt = getScreenIterator();
 		System.out.println("***************************************");
 		while(screenIt.hasNext())
 			System.out.println(screenIt.next());

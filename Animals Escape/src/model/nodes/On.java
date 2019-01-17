@@ -9,6 +9,10 @@ class On extends BaseWrapper{
 	
 	On(NodeState ns) {
 		super(ns);
+		if(!ns.checkBase()) {
+			System.err.println("Error in On.constructor");
+			System.exit(0);
+		}
 		base = new Idle(this);
 		internal = base;
 	}
@@ -82,8 +86,8 @@ class On extends BaseWrapper{
 	
 	@Override
 	final boolean update() {
-		//TODO
-		return false;
+		internal.update();
+		return true;
 		
 	}
 	
@@ -103,18 +107,5 @@ class On extends BaseWrapper{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-
 	
 }

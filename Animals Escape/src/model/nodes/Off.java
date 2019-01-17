@@ -7,6 +7,10 @@ class Off extends BaseWrapper{
 	
 	Off(NodeState state) {
 		super(state);
+		if(!state.checkBase()) {
+			System.err.println("Error in Off.constructor");
+			System.exit(0);
+		}
 	}
 	
 	//////////////////// Accessors ////////////////////////
@@ -84,7 +88,6 @@ class Off extends BaseWrapper{
 	
 	@Override
 	final boolean update() {
-		//TODO
 		return false;
 	}
 	

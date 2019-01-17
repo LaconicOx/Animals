@@ -86,6 +86,10 @@ abstract class BaseWrapper extends NodeState{
 	
 	//////////////////////Checkers //////////////////////////////
 	
+	@Override
+	final boolean checkBase() {
+		return false;
+	}
 	
 	boolean checkBorder() {
 		return false;
@@ -93,8 +97,7 @@ abstract class BaseWrapper extends NodeState{
 	
 	@Override
 	boolean checkBorder(Direction dir) {
-		// TODO Auto-generated method stub
-		return false;
+		return state.checkBorder(dir);
 	}
 	
 	boolean checkInterior() {
@@ -103,8 +106,7 @@ abstract class BaseWrapper extends NodeState{
 	
 	@Override
 	boolean checkInterior(Direction dir) {
-		// TODO Auto-generated method stub
-		return false;
+		return state.checkInterior(dir);
 	}
 	
 	boolean checkOff() {
@@ -113,8 +115,7 @@ abstract class BaseWrapper extends NodeState{
 	
 	@Override
 	boolean checkOff(Direction dir) {
-		// TODO Auto-generated method stub
-		return false;
+		return state.checkOff(dir);
 	}
 	
 	@Override

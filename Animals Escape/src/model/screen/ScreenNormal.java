@@ -3,7 +3,7 @@ package model.screen;
 
 import java.util.Iterator;
 
-import model.nodes.ConcreteNode;
+import model.nodes.Node;
 
 public class ScreenNormal extends ScreenState{
 	
@@ -13,10 +13,14 @@ public class ScreenNormal extends ScreenState{
 	
 	@Override
 	public final void update() {
-		Iterator<ConcreteNode> screenIt = screen.getScreenIterator();
+		Iterator<Node> screenIt = screen.getScreenIterator();
 		
 		while(screenIt.hasNext()) {
-			screenIt.next().update();
+			//Updates and checks whether node must be removed.
+			Node node = screenIt.next();
+			if(node.update()) {
+				screen.remove(node);
+			}
 		}
 	}
 

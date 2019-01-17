@@ -13,14 +13,16 @@ class Border extends BaseWrapper{
 	
 	//Instance Fields
 	private Pattern pattern;
-	private Pattern updatePattern;
 	
 	//////////////////////////Constructor and Initializers ////////////////////////////
 	
 	Border(NodeState state) {
 		super(state);
+		if(!state.checkInterior()) {
+			System.err.println("Error in Border.constructor");
+			System.exit(0);
+		}
 		pattern = null;
-		updatePattern = null;
 	}
 	
 	void initPattern() {
@@ -79,13 +81,19 @@ class Border extends BaseWrapper{
 	}
 	
 	final void transfer(Pattern pat) {
-		updatePattern = pat;
+		pattern = pat;
 	}
 	
 	@Override
 	final boolean update() {
-		//TODO
-		return false;
+		if(pattern == null) {
+			initPattern();
+		}
+		//genWind();
+		//state.update();
+		state.sendBorder();
+		
+		return true;
 	}
 	
 	///////////////////////////////// Checkers /////////////////////////////////////

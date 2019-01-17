@@ -1,10 +1,7 @@
 package model.screen;
 
 import game.Directions.Direction;
-import model.nodes.ModelKey;
-import model.nodes.ConcreteNode;
-import model.nodes.NodeState;
-import model.nodes.On;
+import model.nodes.Node;
 import model.nodes.NodeFactory;
 import view.ViewInterface;
 
@@ -28,26 +25,25 @@ public class ScreenStart extends ScreenState{
 	 * @param n - node for the new cell to be created and added to screen.
 	 * @param boundaries - inclusive boundaries for the screen.
 	 */
-	private void initScreen(ConcreteNode node, double[] boundaries) {
+	private void initScreen(Node node, double[] boundaries) {
 		//Adds active node to screen.
-		NodeState active = node.getOn();
-		node.initState(active);
 		screen.add(node);
 		Direction[] directions = Direction.getNodeDirections();
 		
 		//Iterates through neighbors
 		for (Direction dir : directions) {
-			ConcreteNode candidate = node.getNeighbor(dir);
-			if(!screen.checkNode(candidate)) {
+			Node candidate = node.getNeighbor(dir);
+			//Checks if node has not been turned on.
+			if(candidate.checkOff()) {
 				double[] cen = candidate.getCenter();
-				//Calls itself to add candidate node to screen if within boundaries;
-				//otherwise, does nothing.
-				if ( cen[0] >= boundaries[0] && cen[0] <= boundaries[1] && cen[1] >= boundaries[2] && cen[1] <= boundaries[3])
+				candidate.setInterior();
+				//If node is within boundaries, node is turned on and recursion continues.
+				if ( cen[0] >= boundaries[0] && cen[0] <= boundaries[1] && cen[1] >= boundaries[2] && cen[1] <= boundaries[3]) {
 					initScreen(candidate, boundaries);
+				}
+				//Otherwise, node is set as border and added to the screen.
 				else {
-					On border = candidate.getOn();
-					border.initBorder();
-					candidate.initState(border);
+					candidate.setBorder();
 					screen.add(candidate);
 				}
 			}
@@ -57,9 +53,9 @@ public class ScreenStart extends ScreenState{
 	@Override
 	public void update() {
 		double[] boundaries = getModelBoundaries(view.getShift(), view.getScreenDim(), view.getScale());
-		ConcreteNode center = NodeFactory.getNode(new ModelKey(new int[] {0,0}), false);
-		
-		initScreen(center, boundaries);//Initializes screen.
+		Node origin = NodeFactory.getOrigin();
+		origin.setInterior();
+		initScreen(origin, boundaries);//Initializes screen.
 		
 		
 		// Sets state to normal.

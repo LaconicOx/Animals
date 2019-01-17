@@ -38,6 +38,10 @@ public class NodeFactory {
 	
 	///////////////////// Accessor Methods /////////////////////////////
 	
+	public final static double[] getHexDim() {
+		return ModelKey.getDimensions();
+	}
+	
 	/**
 	 * Gets node from board. 
 	 * @param key
@@ -45,7 +49,7 @@ public class NodeFactory {
 	 * 	 instead of node.
 	 * @return
 	 */
-	public final static Node getNode(ModelKey key, boolean nullReturn) {
+	final static Node getNode(ModelKey key, boolean nullReturn) {
 		
 		//Gate for nullReturn
 		if(nullReturn)
@@ -74,7 +78,10 @@ public class NodeFactory {
 			}
 		}
 	}
-
+	
+	public final static Node getOrigin() {
+		return getNode(new ModelKey(new int[] {0,0}), false);
+	}
 	////////////////////// Helper Methods //////////////////////////////
 	
 	private static void putNode(ConcreteNode n) {

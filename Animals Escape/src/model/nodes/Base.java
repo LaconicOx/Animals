@@ -92,10 +92,16 @@ class Base extends NodeState{
 	final boolean update() {
 		System.err.println("Base.update called");
 		System.exit(0);
+		
 		return false;
 	}
 	
 	//////////////////////Checkers //////////////////////////////
+	
+	@Override
+	final boolean checkBase() {
+		return true;
+	}
 	
 	@Override
 	final boolean checkBorder() {

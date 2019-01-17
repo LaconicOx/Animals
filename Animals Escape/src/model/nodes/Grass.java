@@ -34,12 +34,12 @@ class Grass extends ConcreteNode{
 	///////////////////// Checker Methods /////////////////////////
 	
 	@Override
-	public boolean checkPassable() {
+	public final boolean checkPassable() {
 		return PASSABLE;
 		}
 
 	@Override
-	public boolean checkDeer() {
+	boolean checkDeer() {
 		int roll = ThreadLocalRandom.current().nextInt(1, 101);
 		if (roll <= DEER_ODDS)
 			return true;
