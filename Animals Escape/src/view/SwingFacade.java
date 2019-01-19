@@ -24,7 +24,7 @@ public class SwingFacade implements ViewInterface{
 	private  ControlSurface con;
 	
 	//Animation Parameters 
-	private double[] dimensions = {300.0, 300.0};//screen dimensions
+	private double[] dimensions = {100.0, 100.0};//screen dimensions
 	private double pixelsToUnit = 30.0; //Unit ratio of pixels to one model unit.
 	private double[] shift = {0.0, 0.0};//stored as model units.
 	

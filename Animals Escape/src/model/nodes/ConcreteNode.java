@@ -9,7 +9,7 @@ import image_library.Tile;
 
 
 
-abstract class ConcreteNode implements Node, Comparable<ConcreteNode>{
+abstract class ConcreteNode implements Node{
 	
 	//State Fields
 	private final Base base;
@@ -263,42 +263,7 @@ abstract class ConcreteNode implements Node, Comparable<ConcreteNode>{
 		return key.toString() + state.toString();
 	}
 	
-	/**
-	 * Nodes are then ordered by column and finally by rows.
-	 * @param other
-	 * @return
-	 */
-	@Override
-	public int compareTo(ConcreteNode other) {
-		/*
-		 * Cells are first ordered by columns and then by rows.
-		 * Thus, the top-left cell is the very least, while the bottom-right cell
-		 * is the very greatest.
-		 */
-		
-		int lesser = -1;
-		int equal = 0;
-		int greater = 1;
-		
-		double[] currentCenter = getCenter();
-		double[] otherCenter = other.getCenter();
-		
-		//Orders nodes according to columns
-		if (currentCenter[0] < otherCenter[0])
-			return lesser;
-		else if (currentCenter[0] > otherCenter[0])
-			return greater;
-		//Orders nodes according to rows
-		else{
-			//Remember: the y-components have been relfected to better match screen coordinates.
-			if(currentCenter[1] < otherCenter[1])
-				return lesser;
-			else if (currentCenter[1] > otherCenter[1])
-				return greater;
-			else
-				return equal;
-		}
-	}
+	
 	
 	
 	@Override

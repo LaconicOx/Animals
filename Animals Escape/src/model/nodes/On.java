@@ -95,7 +95,7 @@ class On extends BaseWrapper{
 	
 	@Override
 	final boolean checkInterior() {
-		return state.checkInterior();
+		return true;
 	}
 	
 	
@@ -104,8 +104,7 @@ class On extends BaseWrapper{
 	
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		return " is On";
 	}
 	
 }

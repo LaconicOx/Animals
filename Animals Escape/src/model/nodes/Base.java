@@ -122,7 +122,7 @@ class Base extends NodeState{
 	
 	@Override
 	final boolean checkInterior() {
-		System.err.println("Base.checkInterior called");
+		System.err.println("Base.checkInterior called for " + node);
 		System.exit(0);
 		return false;
 	}
@@ -148,8 +148,7 @@ class Base extends NodeState{
 	
 	@Override
 	final public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		return " with base";
 	}
 
 }

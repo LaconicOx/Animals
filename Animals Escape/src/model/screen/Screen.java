@@ -1,5 +1,6 @@
 package model.screen;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NavigableSet;
 import java.util.Objects;
@@ -158,7 +159,134 @@ public class Screen {
 	}//End of BorderIterator
 	
 	class ShiftIterator extends BorderIterator{
-		//Must add code for comparators based on shift direction.
+		
+		/**
+		 * Comparator orders treeset for iterating when the shifting
+		 * toward the north. Top is less than bottom and left is less than right.
+		 * @author dvdco
+		 *
+		 */
+		private final class North implements Comparator<Node>{
+
+			@Override
+			public int compare(Node left, Node right) {
+				int lesser = -1;
+				int equal = 0;
+				int greater = 1;
+				
+				double[] leftCen = left.getCenter();
+				double[] rightCen = right.getCenter();
+				
+				double xDiff = leftCen[0] - rightCen[0];
+				double yDiff = leftCen[1] - rightCen[1];
+				//Remember the y-values have been reflected over the x-axis 
+				//in order to mirror screen values.
+				
+				//The topmost nodes should be first.
+				if(yDiff < 0)
+					return lesser;
+				else if(yDiff > 0)
+					return greater;
+				else {
+					if(xDiff < 0)
+						return lesser;
+					else if(xDiff > 0)
+						return greater;
+					else
+						return equal;
+				}
+			}
+			
+		}
+		
+		/**
+		 * Comparator orders treeset for iterating when the shifting
+		 * toward the south. Bottom is less than top and left is less than right.
+		 * @author dvdco
+		 *
+		 */
+		private final class South implements Comparator<Node>{
+
+			@Override
+			public int compare(Node left, Node right) {
+				int lesser = -1;
+				int equal = 0;
+				int greater = 1;
+				
+				double[] leftCen = left.getCenter();
+				double[] rightCen = right.getCenter();
+				
+				double xDiff = leftCen[0] - rightCen[0];
+				double yDiff = leftCen[1] - rightCen[1];
+				//Remember the y-values have been reflected over the x-axis 
+				//in order to mirror screen values.
+				
+				//The bottom-most nodes should be first.
+				if(yDiff > 0)
+					return lesser;
+				else if(yDiff < 0)
+					return greater;
+				else {
+					if(xDiff < 0)
+						return lesser;
+					else if(xDiff > 0)
+						return greater;
+					else
+						return equal;
+				}
+			}
+			
+		}
+		
+		private final class NorthEast implements Comparator<Node>{
+
+			@Override
+			public int compare(Node left, Node right) {
+				int lesser = -1;
+				int equal = 0;
+				int greater = 1;
+				
+				double[] leftCen = left.getCenter();
+				double[] rightCen = right.getCenter();
+				double xComp = rightCen[0] - leftCen[0];
+				//Multiplying by negative one adjusting for the reflection
+				double yComp = -1.0 * (rightCen[1] - leftCen[1]);
+				double angle = 0.0;
+				
+				//Calculates angles using arctan.
+				if(xComp > 0.0 && yComp >= 0.0) {
+					angle = Math.atan(yComp/xComp);
+				}
+				else if(xComp < 0.0) {
+					angle = Math.PI + Math.atan(yComp/xComp);
+				}
+				else if(xComp > 0.0 && yComp < 0.0) {
+					angle = 2.0 * Math.PI + Math.atan(yComp/xComp);
+				}
+				else if(xComp == 0.0 && yComp > 0.0) {
+					angle = Math.PI / 2.0;
+				}
+				else if(xComp == 0.0 && yComp < 0.0) {
+					angle = 3.0 * Math.PI / 2.0;
+				}
+				else {
+					//TODO error code.
+				}
+				
+				if(angle <= 5.0 * Math.PI / 6.0) {
+					return greater;
+				}
+				else if(angle <= 11.0* Math.PI /6.0) {
+					return lesser;
+				}
+				else
+					return equal;
+			}
+			
+		}
+		
+		/////////////////////// Constructor /////////////////////////
+		
 		ShiftIterator(TreeMap<Double, Row> collection){
 			this.collection = initCollection(collection);
 			next = this.collection.first();
@@ -237,9 +365,44 @@ public class Screen {
 		
 		private final TreeSet<Node> row;
 		private final double yComponent;
+		/**
+		 * Orders nodes from left to right according to their
+		 * x-components. Throws exception if y-components are not equal.
+		 * @author dvdco
+		 *
+		 */
+		private final class RowOrder implements Comparator<Node>{
+			
+			@Override
+			public int compare(Node left, Node right) {
+				int lesser = -1;
+				int equal = 0;
+				int greater = 1;
+				double[] leftCen = left.getCenter();
+				double[] rightCen = right.getCenter();
+				double xDiff = leftCen[0] - rightCen[0];
+				
+				//Row nodes must have the same y-component.
+				if(leftCen[1] != rightCen[1]) {
+					//TODO error code
+					System.err.println("Error in Row.RowOrder.compare");
+					System.exit(0);
+				}
+				
+				if (xDiff < 0)
+					return lesser;
+				else if (xDiff > 0)
+					return greater;
+				else
+					return equal;
+				
+			}
+			
+		}
 		
+		/////////////////// Constructor ///////////////////////
 		Row(Node first){
-			row = new TreeSet<>();
+			row = new TreeSet<>(new RowOrder());
 			yComponent = first.getCenter()[1];
 			row.add(first);
 		}
