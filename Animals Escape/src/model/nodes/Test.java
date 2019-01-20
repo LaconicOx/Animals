@@ -18,7 +18,10 @@ class Test {
 		double yComp = -1.0 * (rightCen[1] - leftCen[1]);
 		double angle = 0.0;
 		
-		//Calculates angles using arctan.
+		/*
+		 * Calculates radians using arctan. The conditionals assure that 
+		 * angle will always be positive and that 0 <= angle <= 2PI.
+		 */
 		if(xComp > 0.0 && yComp >= 0.0) {
 			angle = Math.atan(yComp/xComp);
 		}
@@ -34,24 +37,28 @@ class Test {
 		else if(xComp == 0.0 && yComp < 0.0) {
 			angle = 3.0 * Math.PI / 2.0;
 		}
+		//The remaining case is xComp == 0 && yComp == 0.
 		else {
-			//TODO error code.
-		}
-		System.out.println(angle);
-		System.out.println(5.0 * Math.PI/6);
-		if(angle == 11.0 * Math.PI/6 || angle == 5.0 * Math.PI/6) {
-			System.out.println("On line");
-			
+			return equal;
 		}
 		
-		if(angle <= 5.0 * Math.PI / 6.0) {
-			return greater;
+		/*
+		 * ray1 and ray2 represent the two rays that make up 
+		 * the diagonal. ray1 should come before ray2 when rotating
+		 * counter-clockwise.
+		 */
+		double ray1 = Math.PI / 6.0;
+		double ray2 = ray1 + Math.PI;
+		double error = 0.00000000000001;
+		
+		if(angle - ray2 >= error) {
+			return lesser;
 		}
-		else if(angle <= 11.0* Math.PI /6.0) {
+		else if(angle - ray1 >= error) {
 			return lesser;
 		}
 		else
-			return equal;
+			return greater;
 	}
 	
 	public static void main(String[] args) {
@@ -60,10 +67,12 @@ class Test {
 		
 		Node origin = NodeFactory.getOrigin();
 		Node se = origin.getNeighbor(Direction.SE);
+		Node sw = origin.getNeighbor(Direction.SW);
+		Node ne = origin.getNeighbor(Direction.NE);
 		Node sese = se.getNeighbor(Direction.SE);
 		Node nw = origin.getNeighbor(Direction.NW);
 		
-		System.out.println(compare(origin, nw));
+		System.out.println(compare(origin, sw));
 	}
 
 }

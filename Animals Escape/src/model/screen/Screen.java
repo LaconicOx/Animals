@@ -38,8 +38,8 @@ public class Screen {
 		
 	////////////////////////// Accessor Methods /////////////////////////////
 		
-	final Iterator<Node> getShiftIterator(){
-		return new ShiftIterator(screenRows);
+	final Iterator<Node> getShiftIterator(Direction toward){
+		return new ShiftIterator(screenRows, toward);
 	}
 	
 	final Iterator<Node> getScreenIterator(){
@@ -197,7 +197,7 @@ public class Screen {
 				}
 			}
 			
-		}
+		}//End of North
 		
 		/**
 		 * Comparator orders treeset for iterating when the shifting
@@ -236,11 +236,10 @@ public class Screen {
 				}
 			}
 			
-		}
+		}//End of South
 		
 		private final class NorthEast implements Comparator<Node>{
 
-			@Override
 			public int compare(Node left, Node right) {
 				int lesser = -1;
 				int equal = 0;
@@ -253,7 +252,10 @@ public class Screen {
 				double yComp = -1.0 * (rightCen[1] - leftCen[1]);
 				double angle = 0.0;
 				
-				//Calculates angles using arctan.
+				/*
+				 * Calculates radians using arctan. The conditionals assure that 
+				 * angle will always be positive and that 0 <= angle <= 2PI.
+				 */
 				if(xComp > 0.0 && yComp >= 0.0) {
 					angle = Math.atan(yComp/xComp);
 				}
@@ -269,32 +271,232 @@ public class Screen {
 				else if(xComp == 0.0 && yComp < 0.0) {
 					angle = 3.0 * Math.PI / 2.0;
 				}
+				//The remaining case is xComp == 0 && yComp == 0.
 				else {
-					//TODO error code.
+					return equal;
 				}
 				
-				if(angle <= 5.0 * Math.PI / 6.0) {
+				/*
+				 * ray1 and ray2 represent the two rays that make up 
+				 * the diagonal. ray1 should come before ray2 when rotating
+				 * counter-clockwise.
+				 */
+				double ray1 = 5.0 * Math.PI / 6.0;
+				double ray2 = ray1 + Math.PI;
+				double error = 0.00000000000001;
+				
+				if(angle - ray1 <= error) {
 					return greater;
 				}
-				else if(angle <= 11.0* Math.PI /6.0) {
+				else if(angle - ray2 <= error) {
 					return lesser;
 				}
 				else
-					return equal;
+					return greater;
 			}
-			
-		}
+		}//End of NorthEast
+		
+		private final class NorthWest implements Comparator<Node>{
+			public int compare(Node left, Node right) {
+				int lesser = -1;
+				int equal = 0;
+				int greater = 1;
+				
+				double[] leftCen = left.getCenter();
+				double[] rightCen = right.getCenter();
+				double xComp = rightCen[0] - leftCen[0];
+				//Multiplying by negative one adjusting for the reflection
+				double yComp = -1.0 * (rightCen[1] - leftCen[1]);
+				double angle = 0.0;
+				
+				/*
+				 * Calculates radians using arctan. The conditionals assure that 
+				 * angle will always be positive and that 0 <= angle <= 2PI.
+				 */
+				if(xComp > 0.0 && yComp >= 0.0) {
+					angle = Math.atan(yComp/xComp);
+				}
+				else if(xComp < 0.0) {
+					angle = Math.PI + Math.atan(yComp/xComp);
+				}
+				else if(xComp > 0.0 && yComp < 0.0) {
+					angle = 2.0 * Math.PI + Math.atan(yComp/xComp);
+				}
+				else if(xComp == 0.0 && yComp > 0.0) {
+					angle = Math.PI / 2.0;
+				}
+				else if(xComp == 0.0 && yComp < 0.0) {
+					angle = 3.0 * Math.PI / 2.0;
+				}
+				//The remaining case is xComp == 0 && yComp == 0.
+				else {
+					return equal;
+				}
+				
+				/*
+				 * ray1 and ray2 represent the two rays that make up 
+				 * the diagonal. ray1 should come before ray2 when rotating
+				 * counter-clockwise.
+				 */
+				double ray1 = Math.PI / 6.0;
+				double ray2 = ray1 + Math.PI;
+				double error = 0.00000000000001;
+				
+				if(angle - ray2 >= error) {
+					return lesser;
+				}
+				else if(angle - ray1 >= error) {
+					return lesser;
+				}
+				else
+					return greater;
+			}
+		}//End of NorthWest
+		
+		private final class SouthWest implements Comparator<Node>{
+			public int compare(Node left, Node right) {
+				int lesser = -1;
+				int equal = 0;
+				int greater = 1;
+				
+				double[] leftCen = left.getCenter();
+				double[] rightCen = right.getCenter();
+				double xComp = rightCen[0] - leftCen[0];
+				//Multiplying by negative one adjusting for the reflection
+				double yComp = -1.0 * (rightCen[1] - leftCen[1]);
+				double angle = 0.0;
+				
+				/*
+				 * Calculates radians using arctan. The conditionals assure that 
+				 * angle will always be positive and that 0 <= angle <= 2PI.
+				 */
+				if(xComp > 0.0 && yComp >= 0.0) {
+					angle = Math.atan(yComp/xComp);
+				}
+				else if(xComp < 0.0) {
+					angle = Math.PI + Math.atan(yComp/xComp);
+				}
+				else if(xComp > 0.0 && yComp < 0.0) {
+					angle = 2.0 * Math.PI + Math.atan(yComp/xComp);
+				}
+				else if(xComp == 0.0 && yComp > 0.0) {
+					angle = Math.PI / 2.0;
+				}
+				else if(xComp == 0.0 && yComp < 0.0) {
+					angle = 3.0 * Math.PI / 2.0;
+				}
+				//The remaining case is xComp == 0 && yComp == 0.
+				else {
+					return equal;
+				}
+				
+				/*
+				 * ray1 and ray2 represent the two rays that make up 
+				 * the diagonal. ray1 should come before ray2 when rotating
+				 * counter-clockwise.
+				 */
+				double ray1 = 5.0 * Math.PI / 6.0;
+				double ray2 = ray1 + Math.PI;
+				double error = 0.00000000000001;
+				
+				if(angle - ray1 <= error) {
+					return lesser;
+				}
+				else if(angle - ray2 <= error) {
+					return greater;
+				}
+				else
+					return lesser;
+			}
+		}//End of SouthWest
+		
+		private final class SouthEast implements Comparator<Node>{
+			public int compare(Node left, Node right) {
+				int lesser = -1;
+				int equal = 0;
+				int greater = 1;
+				
+				double[] leftCen = left.getCenter();
+				double[] rightCen = right.getCenter();
+				double xComp = rightCen[0] - leftCen[0];
+				//Multiplying by negative one adjusting for the reflection
+				double yComp = -1.0 * (rightCen[1] - leftCen[1]);
+				double angle = 0.0;
+				
+				/*
+				 * Calculates radians using arctan. The conditionals assure that 
+				 * angle will always be positive and that 0 <= angle <= 2PI.
+				 */
+				if(xComp > 0.0 && yComp >= 0.0) {
+					angle = Math.atan(yComp/xComp);
+				}
+				else if(xComp < 0.0) {
+					angle = Math.PI + Math.atan(yComp/xComp);
+				}
+				else if(xComp > 0.0 && yComp < 0.0) {
+					angle = 2.0 * Math.PI + Math.atan(yComp/xComp);
+				}
+				else if(xComp == 0.0 && yComp > 0.0) {
+					angle = Math.PI / 2.0;
+				}
+				else if(xComp == 0.0 && yComp < 0.0) {
+					angle = 3.0 * Math.PI / 2.0;
+				}
+				//The remaining case is xComp == 0 && yComp == 0.
+				else {
+					return equal;
+				}
+				
+				/*
+				 * ray1 and ray2 represent the two rays that make up 
+				 * the diagonal. ray1 should come before ray2 when rotating
+				 * counter-clockwise.
+				 */
+				double ray1 = Math.PI / 6.0;
+				double ray2 = ray1 + Math.PI;
+				double error = 0.00000000000001;
+				
+				if(angle - ray2 >= error) {
+					return greater;
+				}
+				else if(angle - ray1 >= error) {
+					return lesser;
+				}
+				else
+					return greater;
+			}
+		}//End of SouthEast
+		
+		//Instance Field
+		private final Direction toward;
 		
 		/////////////////////// Constructor /////////////////////////
 		
-		ShiftIterator(TreeMap<Double, Row> collection){
+		ShiftIterator(TreeMap<Double, Row> collection, Direction toward){
+			this.toward = toward;
 			this.collection = initCollection(collection);
 			next = this.collection.first();
 		}
 		
 		@Override
 		protected final NavigableSet<Node> initSet() {
-			return new TreeSet<Node>();
+			Comparator<Node> comp = null;
+			if(toward == Direction.NE)
+				comp = new NorthEast();
+			else if(toward == Direction.N)
+				comp = new North();
+			else if(toward == Direction.NW)
+				comp = new NorthWest();
+			else if(toward == Direction.SW)
+				comp = new SouthWest();
+			else if(toward == Direction.S)
+				comp = new South();
+			else if(toward == Direction.SE)
+				comp = new SouthEast();
+			else {
+				//TODO Error code
+			}
+			return new TreeSet<Node>(comp);
 		}
 	}//End of ShiftIterator
 	
