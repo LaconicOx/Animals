@@ -30,14 +30,10 @@ class Border extends BaseWrapper{
 			Direction[] directions = Direction.getNodeDirections();
 			Pattern.Builder patBuild = Pattern.Builder.getInstance();
 			
-			System.out.println("******************* " + state + "*************************");
 			
 			Node neighbor;
 			for(int i = 0; i < 6; i++) {
 				neighbor = state.getNeighbor(directions[i]);
-				
-				System.out.println(neighbor);
-				System.out.println("Acitve: " + neighbor.checkInterior() + ", Border: " + neighbor.checkBorder() + ", Off: " + neighbor.checkOff());
 				
 				if(neighbor.checkInterior()) {
 					patBuild.interior(directions[i]);
@@ -55,9 +51,6 @@ class Border extends BaseWrapper{
 			}
 			
 			pattern = patBuild.build();
-			
-			System.out.println("******************* " + pattern + "*************************");
-			
 			
 		}
 		
@@ -89,7 +82,7 @@ class Border extends BaseWrapper{
 		if(pattern == null) {
 			initPattern();
 		}
-		//genWind();
+		genWind();
 		//state.update();
 		state.sendBorder();
 		

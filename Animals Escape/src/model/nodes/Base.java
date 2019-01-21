@@ -30,14 +30,14 @@ class Base extends NodeState{
 	
 	@Override
 	final Pattern getPattern() {
-		System.err.println("Base.getPattern called");
+		System.err.println("Base.getPattern called on " + node);
 		System.exit(0);
 		return null;
 	}
 	
 	@Override
 	final double getScent() {
-		System.err.println("Base.getScent called");
+		System.err.println("Base.getScent called on ");
 		System.exit(0);
 		return 0;
 	}

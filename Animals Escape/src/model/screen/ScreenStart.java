@@ -26,7 +26,7 @@ public class ScreenStart extends ScreenState{
 	 * @param boundaries - inclusive boundaries for the screen.
 	 */
 	private void initScreen(Node node, double[] boundaries) {
-		System.out.println("initScreen called for " + node);
+		
 		//Adds active node to screen.
 		screen.add(node);
 		Direction[] directions = Direction.getNodeDirections();

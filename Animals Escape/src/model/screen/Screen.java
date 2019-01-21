@@ -76,12 +76,19 @@ public class Screen {
 	}
 	
 	final void remove(Node node) {
-		Row row = screenRows.get(node.getCenter()[1]);
+
+		double key = node.getCenter()[1];
+		Row row = screenRows.get(key);
 		if(row != null) {
 			row.remove(node);
 		}
 		else {
 			//TODO error code
+		}
+
+		if(row.getSize() == 0) {
+			screenRows.remove(key);
+		
 		}
 	}
 	
@@ -97,12 +104,6 @@ public class Screen {
 		state.update();
 	}
 		
-		
-		
-		
-	////////////////////////// Checker Methods ////////////////////////////////
-	
-	
 	
 	///////////////////////// Inner Classes ///////////////////////////////
 	abstract class BorderIterator implements Iterator<Node>{
@@ -114,21 +115,39 @@ public class Screen {
 		
 		protected NavigableSet<Node> initCollection(TreeMap<Double, Row> collection) {
 			NavigableSet<Node> output = initSet();
-			
+			System.out.println("**************** initCollection *******************");
 			NavigableSet<Double> keys = collection.navigableKeySet();
 			int size = keys.size();
-			double key;
+			double key = 0;
+			Node left = null;
+			Node right = null;
+			
 			for(int i = 0; i < size; i++) {
-				key = keys.pollFirst();
+				if(i == 0) {
+					key = keys.first();
+				}
+				else {
+					key = keys.higher(key);
+				}
+		
+				
 				//The top border spans the topmost two rows.
 				if(i < 2) {
+					//System.out.println(key);
+					//System.out.println(collection.get(key));
 					output.addAll(collection.get(key).getAll());
 				}
 				//For the middle rows, only the first and last nodes are on the border.
 				else if(i < size - 2) {
 					Row row = collection.get(key);
-					output.add(row.getFirst());
-					output.add(row.getLast());
+					left = row.getFirst();
+					if(left.checkBorder())
+						output.add(left);
+					
+					right = row.getLast();
+					if(right.checkBorder())
+						output.add(right);
+					
 				}
 				//the bottom border spans the bottom-most two rows.
 				else {
@@ -285,10 +304,14 @@ public class Screen {
 				double ray2 = ray1 + Math.PI;
 				double error = 0.00000000000001;
 				
-				if(angle - ray1 <= error) {
+				/*
+				 * Error checking is necessary because I found that these calculations
+				 * don't always have the same number of significant digits.
+				 */
+				if(angle <= ray1 || Math.abs(angle - ray1) <= error) {
 					return greater;
 				}
-				else if(angle - ray2 <= error) {
+				else if(angle <= ray2 || Math.abs(angle - ray2) <= error) {
 					return lesser;
 				}
 				else
@@ -342,14 +365,18 @@ public class Screen {
 				double ray2 = ray1 + Math.PI;
 				double error = 0.00000000000001;
 				
-				if(angle - ray2 >= error) {
+				/*
+				 * Error checking is necessary because I found that these calculations
+				 * don't always have the same number of significant digits.
+				 */
+				if(angle >= ray2 || Math.abs(angle - ray2) <= error) {
 					return lesser;
 				}
-				else if(angle - ray1 >= error) {
-					return lesser;
+				else if (angle >= ray1 || Math.abs(angle - ray1) <= error) {
+					return greater;
 				}
 				else
-					return greater;
+					return lesser;
 			}
 		}//End of NorthWest
 		
@@ -399,10 +426,14 @@ public class Screen {
 				double ray2 = ray1 + Math.PI;
 				double error = 0.00000000000001;
 				
-				if(angle - ray1 <= error) {
+				/*
+				 * Error checking is necessary because I found that these calculations
+				 * don't always have the same number of significant digits.
+				 */
+				if(angle <= ray1 || Math.abs(angle - ray1) <= error) {
 					return lesser;
 				}
-				else if(angle - ray2 <= error) {
+				else if(angle <= ray2 || Math.abs(angle - ray2) <= error) {
 					return greater;
 				}
 				else
@@ -456,10 +487,14 @@ public class Screen {
 				double ray2 = ray1 + Math.PI;
 				double error = 0.00000000000001;
 				
-				if(angle - ray2 >= error) {
+				/*
+				 * Error checking is necessary because I found that these calculations
+				 * don't always have the same number of significant digits.
+				 */
+				if(angle >= ray2 || Math.abs(angle - ray2) <= error) {
 					return greater;
 				}
-				else if(angle - ray1 >= error) {
+				else if(angle >= ray1 || Math.abs(angle - ray1) <= error) {
 					return lesser;
 				}
 				else
@@ -485,8 +520,10 @@ public class Screen {
 				comp = new NorthEast();
 			else if(toward == Direction.N)
 				comp = new North();
-			else if(toward == Direction.NW)
+			else if(toward == Direction.NW) {
+				System.out.println("**************** initSet *******************");
 				comp = new NorthWest();
+			}
 			else if(toward == Direction.SW)
 				comp = new SouthWest();
 			else if(toward == Direction.S)
@@ -508,60 +545,12 @@ public class Screen {
 	class ScreenIterator implements Iterator<Node>{
 		
 		private final TreeMap<Double, Row> collection;
-		private double key;
-		private Node next;
-		private Iterator<Double> keyIt;
-		private Iterator<Node> rowIt;
+		
 		
 		ScreenIterator(TreeMap<Double, Row> collection) {
 			this.collection = collection;
-			keyIt = collection.navigableKeySet().iterator();
-			if(keyIt.hasNext()) {
-				key = keyIt.next();
-				rowIt = collection.get(key).getIterator();
-			}
-			next = getNext();
 		}
-		
-		private Node getNext(){
-			if(rowIt.hasNext()) {
-				return rowIt.next();
-			}
-			
-			//Loop protects against empty rows.
-			Node output = null;
-			while(keyIt.hasNext()) {
-				key = keyIt.next();
-				rowIt = collection.get(key).getIterator();
-				if(rowIt.hasNext()) {
-					output = rowIt.next();
-					break;
-				}
-			}
-			return output;
-		}
-
-		@Override
-		public boolean hasNext() {
-			if(next != null)
-				return true;
-			else
-				return false;
-		}
-
-		@Override
-		public Node next() {
-			if(hasNext()) {
-				Node output = next;
-				next = getNext();
-				return output;
-			}
-			else {
-				//TODO error code
-				return null;
-			}
-		}
-	}
+	}//End of ScreenIterator
 	
 	private class Row implements Comparable<Row>{
 		
@@ -629,6 +618,10 @@ public class Screen {
 		
 		final Iterator<Node> getIterator(){
 			return row.iterator();
+		}
+		
+		final int getSize() {
+			return row.size();
 		}
 		
 		///////////////////// Mutator ///////////////////////
@@ -706,7 +699,19 @@ public class Screen {
 	}
 	
 	//////////////////////////// Debugging ////////////////////////////
-	public void display() {
+	
+	void displayRows() {
+		NavigableSet<Double> keys = screenRows.navigableKeySet();
+		for(double key : keys) {
+			System.out.println("*************** Row at " + key + " ********************");
+			Iterator<Node> rowIt = screenRows.get(key).getIterator();
+			while(rowIt.hasNext()) {
+				System.out.println(rowIt.next());
+			}
+		}
+	}
+	
+	void display() {
 		Iterator<Node> screenIt = getScreenIterator();
 		System.out.println("***************************************");
 		while(screenIt.hasNext())
