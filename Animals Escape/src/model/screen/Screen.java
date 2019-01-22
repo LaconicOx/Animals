@@ -545,11 +545,96 @@ public class Screen {
 	class ScreenIterator implements Iterator<Node>{
 		
 		private final TreeMap<Double, Row> collection;
-		
+		private final Iterator<Double> keyIt;
+		private Row curRow = null;
+		private Iterator<Node> curIt;
+		private Row lastRow = null;
+		private boolean retFlag = false;
+		private boolean swapFlag = false;
+		private Node cursor = null;
 		
 		ScreenIterator(TreeMap<Double, Row> collection) {
 			this.collection = collection;
+			keyIt = collection.navigableKeySet().iterator();
+			if(keyIt.hasNext()) {
+				curRow = collection.get(keyIt.next());
+				curIt = curRow.getIterator();
+			}
 		}
+		
+		private void advance() {
+			if(!curIt.hasNext()) {
+				lastRow = curRow;
+				swapFlag = true;
+				while(keyIt.hasNext()) {
+					double key = keyIt.next();
+					curRow = collection.get(key);
+					if(curRow.getSize() > 0) {
+						curIt = curRow.getIterator();
+						break;
+					}
+					else {
+						collection.remove(key);
+					}
+				}
+			}
+		}
+
+		@Override
+		public boolean hasNext() {
+			if(curIt.hasNext()) {
+				return true;
+			}
+			else {
+				advance();
+				return curIt.hasNext();
+			}
+		}
+
+		@Override
+		public Node next() {
+			if(curIt.hasNext()) {
+				retFlag = true;
+				swapFlag = false;
+				cursor = curIt.next();
+				return cursor;
+			}
+			else {
+				advance();
+				if(curIt.hasNext()) {
+					retFlag = true;
+					swapFlag = false;
+					cursor = curIt.next();
+					return cursor;
+				}
+				else {
+					//TODO: error code.
+					return null;
+				}
+			}
+		}
+		
+		@Override
+		public void remove() {
+			if(retFlag) {
+				if(swapFlag) {
+					lastRow.remove(cursor);
+					if(lastRow.getSize() == 0) {
+						collection.remove(lastRow.getYComp());
+					}
+					retFlag = false;
+				}
+				else {
+					curIt.remove();
+					if(curRow.getSize() == 0) {
+						advance();
+						collection.remove(lastRow.getYComp());
+					}
+					retFlag = false;
+				}
+			}
+		}
+		
 	}//End of ScreenIterator
 	
 	private class Row implements Comparable<Row>{
