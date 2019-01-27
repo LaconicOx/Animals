@@ -1,5 +1,7 @@
 package model.nodes;
 
+import java.util.Iterator;
+
 import game.Directions.Direction;
 
 abstract class NodeState {

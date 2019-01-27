@@ -4,7 +4,7 @@ package model;
 import model.characters.CharacterFactory;
 import model.characters.Player;
 import model.nodes.NodeFactory;
-import model.screen.Screen;
+import model.screen.CurrentScreen;
 import view.ViewInterface;
 
 public class ModelFacade{
@@ -12,7 +12,7 @@ public class ModelFacade{
 	//Game Components
 	private NodeFactory total;
 	//private Screen active;
-	private Screen active;
+	private CurrentScreen active;
 	private ViewInterface view;
 	private Player player;
 	private CharacterFactory factory;
@@ -22,7 +22,7 @@ public class ModelFacade{
 	public ModelFacade(ViewInterface view){
 		this.view = view;
 		total = NodeFactory.getInstance(view);
-		active = new Screen(view);
+		active = new CurrentScreen(view);
 		
 		factory = CharacterFactory.getInstance(active, this, view);
 		player = new Player(active, view);

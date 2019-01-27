@@ -1,5 +1,7 @@
 package model.nodes;
 
+
+
 import game.Directions.Direction;
 
 public interface Node {

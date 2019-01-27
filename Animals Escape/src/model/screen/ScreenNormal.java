@@ -18,12 +18,7 @@ public class ScreenNormal extends ScreenState{
 		while(screenIt.hasNext()) {
 			//Updates and checks whether node must be removed.
 			Node node = screenIt.next();
-			boolean flag = !node.update();
-			if(flag) {
-				System.out.println("flagged");
-			}
-			
-			if(flag) {
+			if(!node.update()) {
 				screenIt.remove();
 			}
 		}

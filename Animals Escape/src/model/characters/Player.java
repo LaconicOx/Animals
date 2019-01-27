@@ -6,7 +6,7 @@ import game.Directions.Direction;
 import image_library.PlayerImage;
 import model.nodes.Node;
 import model.nodes.NodeFactory;
-import model.screen.Screen;
+import model.screen.CurrentScreen;
 import view.ViewInterface;
 
 public class Player {
@@ -29,7 +29,7 @@ public class Player {
 	
 	//Component Fields
 	private ViewInterface view;
-	private Screen screen;
+	private CurrentScreen screen;
 	private Node node;
 	
 	private PlayerImage image;
@@ -39,7 +39,7 @@ public class Player {
 	private Direction facing = Direction.E;
 	private boolean moveFlag = false;
 	
-	public Player(Screen screen, ViewInterface view) {
+	public Player(CurrentScreen screen, ViewInterface view) {
 		this.screen = screen;
 		this.view = view;
 		
