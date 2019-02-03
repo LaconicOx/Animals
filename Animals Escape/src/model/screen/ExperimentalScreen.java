@@ -1,6 +1,9 @@
 package model.screen;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -91,15 +94,214 @@ public class ExperimentalScreen implements Screen{
 			
 		
 		///////////////////////// Inner Classes ///////////////////////////////
-
-		class BorderIterator implements Iterator<Node>{
+		
+		class BorderQueue implements Queue<Node>{
 			
-			NavigableSet<Node> sorter;
+			private final Comparator<Node> order;
+			private int size;//Current number of entries
+			private final int maxSize;//Max size of the array
+			private Node[] sorted;//Sorted array used for queue
+			Deque<Node> stack;//Stack for shifting array.
+			//////////////////// Constructor and initializer //////////////////////////
 			
-			BorderIterator(Comparator<Node> order){
+			BorderQueue(Comparator<Node> order){
+				this.order = order;
+				size = 0;
+				maxSize = screen.size();
+				sorted = new Node[maxSize];
+				stack = new ArrayDeque<>();
 				
 				Iterator<Node> screenIt = screen.iterator();
-				sorter = new TreeSet<>(order);
+				Node candidate;
+				while(screenIt.hasNext()) {
+					candidate = screenIt.next();
+					
+					//Adds border nodes
+					if(candidate.checkBorder()) {
+						if(size == 0){
+							sorted[0] = candidate;
+						}
+						shift(candidate, binaryIndex(candidate, 0, size - 1));
+					}
+						
+					
+				}
+			}
+			
+			private final int binaryIndex(Node node, int low, int high) {
+				int lesser = -1;
+				int greater = 1;
+				int median = (low + high) / 2;
+				int output = -1;
+				
+				int medVal = order.compare(node, sorted[median]);
+				if(medVal == lesser) {
+					int left = median - 1;
+					if(left <=  low)
+						output = low;
+					else
+						output = binaryIndex(node, low, left);
+				}
+				else if(medVal == greater) {
+					int right = median + 1;
+					if(right >= size) {
+						output = size;
+					}
+					if(right >= high)
+						output = high;
+					else
+						output = binaryIndex(node, right, high);
+				}
+				else {
+					output = median;
+				}
+				return output;
+				
+			}
+			
+			private final void shift(Node node, int position) {
+				
+				//Starts at the tail and stores all nodes in an stack, including the node at the index of position. 
+				int cur = size - 1;
+				while(cur >= position) {
+					stack.push(sorted[cur]);
+					cur--;
+				}
+				
+				sorted[position] = node;
+				cur++;//Increment in order to equal index.
+				
+				while(!stack.isEmpty()) {
+					cur++;
+					sorted[cur] = stack.pop();
+				}
+				size++;
+			}
+			
+			//////////////////////////////// Overrides ////////////////////////////////
+
+			@Override
+			public int size() {
+				return size;
+			}
+
+			@Override
+			public boolean isEmpty() {
+				if(size == 0)
+					return true;
+				else
+					return false;
+			}
+
+			@Override
+			public boolean contains(Object o) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public Iterator<Node> iterator() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Object[] toArray() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public <T> T[] toArray(T[] a) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public boolean remove(Object o) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean containsAll(Collection<?> c) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean addAll(Collection<? extends Node> c) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean removeAll(Collection<?> c) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean retainAll(Collection<?> c) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public void clear() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public boolean add(Node e) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public boolean offer(Node e) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public Node remove() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Node poll() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Node element() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Node peek() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+		}
+		
+		class BorderIterator implements Iterator<Node>{
+			
+			Comparator<Node> order;
+			Node[] sorted;
+			int end;
+			
+			BorderIterator(Comparator<Node> order){
+				this.order = order;
+				
+				Iterator<Node> screenIt = screen.iterator();
+				sorted = new Node[screen.size()];
+				
 				Node candidate;
 				while(screenIt.hasNext()) {
 					candidate = screenIt.next();
